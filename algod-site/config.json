@@ -1,0 +1,13 @@
+{
+   "baseurl": "http://replace-this-with-your-hugo-site.com/",
+   "languageCode": "pt-br",
+   "title": "AlGod",
+   "theme": "hugo-incorporated",
+   "params": {
+      "inc": {
+         "title": "Algorithm God - AlGod",
+         "subtitle": "Plataforma web para apoio do ensino de disciplinas de algoritmos e de programação.",
+         "github": "renatorroliveira/algod"
+      }
+   }
+}
