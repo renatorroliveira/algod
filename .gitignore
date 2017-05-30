@@ -1,3 +1,5 @@
 .settings/
 dump_database/
-
+node_modules/
+.sass-cache/
+target/
