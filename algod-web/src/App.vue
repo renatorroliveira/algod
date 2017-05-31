@@ -1,16 +1,19 @@
 <template>
 	<div id="app">
-		<nav>
+		<nav class="black">
 			<div class="nav-wrapper container">
-				<a href="#/" class="brand-logo">AlGod</a>
+				<a href="#/" class="brand-logo">
+					<img src="./assets/logo.png" style="height: 50px; margin: 10px auto;" />
+				</a>
 				<ul id="nav-mobile" class="right hide-on-med-and-down">
 					<li><a href="#/login">Entrar</a></li>
 					<li><a href="#/register">Cadastre-se</a></li>
 				</ul>
 			</div>
 		</nav>
-	
-		<div class="container">
+		<div class="blue-grey" style="height: 5px; margin: 5px auto;"></div>
+
+		<div class="container" style="margin: 20px auto;">
 			<router-view></router-view>
 		</div>
 
