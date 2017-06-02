@@ -6,7 +6,8 @@
   "readme": "../README.md",
   "license": "GPL-3.0",
   "repository": {
-	  "url": "https://github.com/renatorroliveira/algod"
+    "type": "git",
+    "url": "https://github.com/renatorroliveira/algod"
   },
   "scripts": {
     "dev": "node build/dev-server.js",
