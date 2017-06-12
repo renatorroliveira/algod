@@ -43,7 +43,7 @@ export default {
   name: 'registration',
   data () {
     return {
-      email: '',
+      email: 'renato@ifc.edu.br',
       password: '',
       passwordconfirm: '',
       fullname: "",
