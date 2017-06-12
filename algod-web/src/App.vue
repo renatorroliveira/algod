@@ -4,7 +4,7 @@
 		<nav class="blue-grey darken-2">
 			<div class="nav-wrapper container">
 				<a href="#/" class="brand-logo">
-					<img src="./assets/logoAGlighten.png" style="height: 50px; margin: 10px auto;" />
+					<img src="./assets/logo-50px.png" style="height: 50px; margin: 10px auto;" />
 				</a>
 				<ul id="nav-mobile" class="right hide-on-med-and-down">
 					<li><a href="#/login">Entrar</a></li>
