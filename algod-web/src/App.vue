@@ -1,7 +1,7 @@
 <template>
 
 	<div id="app">
-		<nav class="blue-grey darken-2">
+		<nav>
 			<div class="nav-wrapper container">
 				<a href="#/" class="brand-logo">
 					<img src="./assets/logo-50px.png" style="height: 50px; margin: 10px auto;" />
@@ -19,7 +19,7 @@
 			<router-view></router-view>
 		</div>
 
-		<footer class=" blue-grey darken-3 page-footer">
+		<footer class="page-footer">
 			<div class="container center-align">
 				<div class="row">
 						<h5 class="white-text">Instituto Federal Catarinense Campus Concórdia</h5>
@@ -28,7 +28,7 @@
 			</div>
 			<div class="footer-copyright">
 				<div class="container center-align">
-					<h6>© 2017 Copyright Text</h6>
+					<h6>© 2017 Copyright</h6>
 				</div>
 			</div>
 		</footer>
