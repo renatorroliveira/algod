@@ -1,8 +1,8 @@
 <template>
-  <div class="card-panel">
-    <h1 class="center">Cursos abertos</h1>
-
+  <div class="card-panel white">
+    <h1 class="blue-grey-text text-darken-4 center-align">Bem Vindo ao AlGod</h1>
   </div>
+
 </template>
 
 <script>
