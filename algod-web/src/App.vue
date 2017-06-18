@@ -1,5 +1,4 @@
 <template>
-
 	<div id="app">
 		<nav>
 			<div class="nav-wrapper container">
@@ -9,6 +8,9 @@
 				<ul id="nav-mobile" class="right hide-on-med-and-down">
 					<li><a href="#/login">Entrar</a></li>
 					<li><a href="#/register">Cadastre-se</a></li>
+					<li><a href="#/disciplina">Disciplina</a></li>
+					<li><a href="#/curso">Cursos</a></li>
+					<li><a href="#/atividade">Atividade</a></li>
 				</ul>
 			</div>
 		</nav>
@@ -22,8 +24,8 @@
 		<footer class="page-footer">
 			<div class="container center-align">
 				<div class="row">
-						<h5 class="white-text">Instituto Federal Catarinense Campus Concórdia</h5>
-						<h6 class="white-text">Curso Técnico em Informática</h6>
+					<h5 class="white-text">Instituto Federal Catarinense Campus Concórdia</h5>
+					<h6 class="white-text">Curso Técnico em Informática para Internet</h6>
 				</div>
 			</div>
 			<div class="footer-copyright">
@@ -41,3 +43,15 @@ export default {
 	name: 'app'
 }
 </script>
+
+<style scoped>
+	body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+  }
+
+  main {
+    flex: 1 0 auto;
+  }
+</style>
