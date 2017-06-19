@@ -53,5 +53,11 @@ export default {
 		materia4: 'Redes I'
     }
   },
+  mounted: function() {
+        $('.collapsible').collapsible();
+    },
+    updated: function() {
+        $('.collapsible').collapsible();
+    }
 }
 </script>
