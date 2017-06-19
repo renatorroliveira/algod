@@ -2,7 +2,7 @@
 	<div class="row">
 		<div class="col m6 offset-m3">
 	    	<form class="card-panel z-depth-2" v-on:submit="register($event)">
-	    		<h2 class="center">Cadastre-se</h2>
+	    		<h2 class="center">Cadastro</h2>
 
 	    		<div class="input-field">
 					<input id="fullname" name="fullname" v-model="fullname" type="text" class="validate" required />

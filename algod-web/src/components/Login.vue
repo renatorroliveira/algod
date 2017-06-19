@@ -2,7 +2,6 @@
 	<div class="row">
 		<div class="col m6 offset-m3">
 	    	<form class="card-panel z-depth-2" v-on:submit="login($event)">
-	    		<h2 class="center">Faça seu Login</h2>
 
 	    		<div class="input-field">
 					<input id="email" name="email" v-model="email" type="email" class="validate" required />

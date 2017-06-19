@@ -6,25 +6,26 @@
 					<img src="./assets/logo-50px.png" style="display:block; width: auto; margin:10px auto;" />
 				</a>
 				<div>
-					<div><a href="#/login">Entrar</a></div>
-					<div><a href="#/register">Cadastre-se</a></div>
 					<div><a href="#/disciplina">Disciplina</a></div>
 					<div><a href="#/curso">Cursos</a></div>
 					<div><a href="#/atividade">Atividade</a></div>
 				</div>
 			</div>
+
 			<footer class="page-footer">
 				<div class="center-align">
-					<h6 class="white-text">Instituto Federal Catarinense Campus Concórdia</h6>
-					<b class="white-text">Curso Técnico em Informática para Internet</b>
+					<p style="font-size:12px;" class="white-text">Instituto Federal Catarinense Campus Concórdia</p>
+					<b style="font-size:16px;" class="white-text">Curso Técnico em Informática para Internet</b>
 				</div>
+
 				<div class="footer-copyright">
 					<div class="center-align">
 						<span>© 2017 Copyright</span>
 					</div>
 				</div>
 			</footer>
-		</div>
+
+	</div>
 		<main class="container" style="margin: 20px auto;">
 			<router-view></router-view>
 		</main>
