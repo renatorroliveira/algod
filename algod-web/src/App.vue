@@ -1,40 +1,33 @@
 <template>
 	<div id="app">
-		<nav>
-			<div class="nav-wrapper container">
-				<a href="#/" class="brand-logo">
-					<img src="./assets/logo-50px.png" style="height: 50px; margin: 10px auto;" />
+		<div id="navbar" class="blue-grey darken-3">
+			<div id="navbar-content">
+				<a href="#/">
+					<img src="./assets/logo-50px.png" style="display:block; width: auto; margin:10px auto;" />
 				</a>
-				<ul id="nav-mobile" class="right hide-on-med-and-down">
-					<li><a href="#/login">Entrar</a></li>
-					<li><a href="#/register">Cadastre-se</a></li>
-					<li><a href="#/disciplina">Disciplina</a></li>
-					<li><a href="#/curso">Cursos</a></li>
-					<li><a href="#/atividade">Atividade</a></li>
-				</ul>
+				<div>
+					<div><a href="#/login">Entrar</a></div>
+					<div><a href="#/register">Cadastre-se</a></div>
+					<div><a href="#/disciplina">Disciplina</a></div>
+					<div><a href="#/curso">Cursos</a></div>
+					<div><a href="#/atividade">Atividade</a></div>
+				</div>
 			</div>
-		</nav>
-
-	<div class="blue-grey darken-3" style="height: 5px; margin: 5px auto;"></div>
-
-		<div class="container" style="margin: 20px auto;">
-			<router-view></router-view>
+			<footer class="page-footer">
+				<div class="center-align">
+					<h6 class="white-text">Instituto Federal Catarinense Campus Concórdia</h6>
+					<b class="white-text">Curso Técnico em Informática para Internet</b>
+				</div>
+				<div class="footer-copyright">
+					<div class="center-align">
+						<span>© 2017 Copyright</span>
+					</div>
+				</div>
+			</footer>
 		</div>
-
-		<footer class="page-footer">
-			<div class="container center-align">
-				<div class="row">
-					<h5 class="white-text">Instituto Federal Catarinense Campus Concórdia</h5>
-					<h6 class="white-text">Curso Técnico em Informática para Internet</h6>
-				</div>
-			</div>
-			<div class="footer-copyright">
-				<div class="container center-align">
-					<h6>© 2017 Copyright</h6>
-				</div>
-			</div>
-		</footer>
-
+		<main class="container" style="margin: 20px auto;">
+			<router-view></router-view>
+		</main>
 	</div>
 </template>
 
@@ -45,13 +38,25 @@ export default {
 </script>
 
 <style scoped>
-	body {
+#app {
     display: flex;
     min-height: 100vh;
-    flex-direction: column;
-  }
+    flex-direction: row;
+}
 
-  main {
-    flex: 1 0 auto;
-  }
+#navbar {
+	min-width: 200px;
+	flex: 4;
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
+#navbar-content {
+	padding: 15px;
+	flex: 1 0 auto;
+}
+main {
+	flex: 16;
+	padding: 20px;
+}
 </style>
