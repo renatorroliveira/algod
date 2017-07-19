@@ -21,10 +21,10 @@
 <script>
 export default {
   name: 'curso',
-  data () {
+  data() {
     return {
-      atividade: ''
-    }
+      atividade: '',
+    };
   },
-}
+};
 </script>
