@@ -1,41 +1,36 @@
 <template>
-  <div class="row">
-  <div class="col m6 offset-m3">
-  <form class="card-panel z-depth-2" v-on:submit="register($event)">
-  <h2 class="center">Cadastro</h2>
-
-  <div class="input-field">
-  <input id="fullname" name="fullname" v-model="fullname" type="text" class="validate" required />
-  <label for="fullname">Nome completo</label>
-  </div>
-  <div class="input-field">
-  <input id="nickname" name="nickname" v-model="nickname" type="text" class="validate" required />
-  <label for="nickname">Apelido (nome curto)</label>
-  </div>
-  <div class="input-field">
-  <input id="email" name="email" v-model="email" type="email" class="validate" required />
-  <label for="email">E-mail</label>
-  </div>
-  <div class="input-field">
-  <input id="password" name="password" v-model="password" type="password" class="validate" required />
-  <label for="password">Senha</label>
-  </div>
-  <div class="input-field">
-  <input id="passwordconfirm" name="passwordconfirm" v-model="passwordconfirm" type="password" class="validate" required />
-  <label for="passwordconfirm">Confirme a senha</label>
-  </div>
-  <div class="row valign-wrapper">
-  <div class="input-field col s4">
-  <input value="Cadastrar" type="submit" class="btn" />
-  </div>
-  <div class="col s8 right-align">
-  <div><a href="#/login">Já tem uma conta? Faça o login.</a></div>
-  <div><a href="#/forgot-password">Esqueceu sua senha?</a></div>
-  </div>
-  </div>
-  </form>
-  </div>
-  </div>
+  <v-container fluid>
+    <v-layout row wrap>
+      <v-flex xs12 md6 offset-md3>
+        <v-card>
+          
+          <v-card-text>
+            <h1 class="title">Search for new keywords using a phrase, website or category</h1>
+            <h2 class="subheading mb-5">Enter one or more of the following</h2>
+            <v-text-field
+              label="Your product or service"
+              value="Grocery delivery"
+              hint="For example, flowers or used cars"
+              persistent-hint
+            ></v-text-field>
+            <v-text-field
+              label="Your landing page"
+              hint="www.example.com/page"
+              persistent-hint
+            ></v-text-field>
+            <v-select
+              label="Your product category"
+              hint="Enter or select a product category"
+              persistent-hint
+              :items="options"
+              v-model="select"
+            ></v-select>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+    </v-layout>
+  </v-container>
+  
 </template>
 
 <script>
@@ -48,6 +43,21 @@ export default {
       passwordconfirm: '',
       fullname: '',
       nickname: '',
+      select: [],
+      options: [
+        {
+          value: 1,
+          text: 'Option 1',
+        },
+        {
+          value: 2,
+          text: 'Option 2',
+        },
+        {
+          value: 3,
+          text: 'Option 3',
+        },
+      ],
     };
   },
   methods: {

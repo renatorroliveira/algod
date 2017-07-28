@@ -2,7 +2,7 @@
   <div>
     <v-parallax src="/static/base-ifc-wallpaper.png" class="mb-5">
       <v-layout column align-center justify-center>
-        <h1 class="white--text">Algorithm God 2</h1>
+        <h1 class="white--text">ALGORITHM GOD II</h1>
         <h5 class="white--text">Uma nova experiência no ensino da programação de computadores</h5>
         <v-btn primary large class="elevation-5">Comece agora</v-btn>
       </v-layout>
@@ -11,7 +11,7 @@
     <v-container class="my-5">
       <v-layout row justify-space-around>
         <v-flex xs12 sm10 md8 lg6 xl4>
-          <v-card>
+          <v-card class="grey lighten-2">
             <v-card-title>
               <p class="body-2 text-xs-center">
                 Bem vindo ao Algod. Nesse site você vai ter acesso a suas grades curriculares,

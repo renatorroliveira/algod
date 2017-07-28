@@ -1,5 +1,5 @@
 <template>
-  <v-app fill-height>
+  <v-app fill-height class="blue-grey lighten-3">
     <v-navigation-drawer dark persistent enable-resize-watcher
       :miniVariant="miniVariant"
       v-model="drawer">
@@ -36,7 +36,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-toolbar fixed>
+    <v-toolbar fixed dark>
       <v-toolbar-side-icon @click.native.stop="drawer = !drawer" light></v-toolbar-side-icon>
       <v-toolbar-title>{{$route.name}}</v-toolbar-title>
       <v-spacer></v-spacer>

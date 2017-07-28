@@ -6,8 +6,8 @@ import Login from '@/components/user/Login';
 import Register from '@/components/user/Register';
 
 import Atividade from '@/components/Atividade';
-import Disciplina from '@/components/Disciplina';
-import Curso from '@/components/Curso';
+import SalaDeAula from '@/components/SalaDeAula';
+import Curso from '@/components/Cursos';
 
 Vue.use(Router);
 
@@ -26,15 +26,20 @@ export default new Router({
     component: Register,
   }, {
     path: '/activity',
-    name: 'Atividade',
+    name: 'Atividades',
     component: Atividade,
   }, {
     path: '/classroom',
-    name: 'Sala de Aulo',
-    component: Curso,
+    name: 'Sala de Aula',
+    component: SalaDeAula,
   }, {
     path: '/courses',
-    name: 'Curso',
-    component: Disciplina,
-  }],
+    name: 'Cursos',
+    component: Curso,
+  }, //{
+    //path: '/forgot-password',
+    //name: 'Esqueceu sua senha?',
+    //component: ForgotPassword,
+  //}
+  ],
 });
