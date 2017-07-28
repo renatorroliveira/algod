@@ -3,34 +3,49 @@
     <v-layout row wrap>
       <v-flex xs12 md6 offset-md3>
         <v-card>
-          
           <v-card-text>
-            <h1 class="title">Search for new keywords using a phrase, website or category</h1>
-            <h2 class="subheading mb-5">Enter one or more of the following</h2>
             <v-text-field
-              label="Your product or service"
-              value="Grocery delivery"
-              hint="For example, flowers or used cars"
-              persistent-hint
-            ></v-text-field>
-            <v-text-field
-              label="Your landing page"
-              hint="www.example.com/page"
-              persistent-hint
-            ></v-text-field>
-            <v-select
-              label="Your product category"
-              hint="Enter or select a product category"
-              persistent-hint
-              :items="options"
-              v-model="select"
-            ></v-select>
+                label="Nome"
+                v-model="fullname"
+                persistent-hint
+              ></v-text-field>
+              <v-text-field
+                label="Apelido"
+                v-model="nickname"
+                persistent-hint
+              ></v-text-field>
+              <v-text-field
+                label="Matrícula"
+                v-model="matricula"
+                persistent-hint
+              ></v-text-field>
+              <v-text-field
+                label="Email"
+                v-model="email"
+                persistent-hint
+              ></v-text-field>
+              <v-text-field
+                label="Digite sua senha"
+                v-model="password"
+                :append-icon="btnToggle ? 'visibility' : 'visibility_off'"
+                :append-icon-cb="() => (btnToggle = !btnToggle)"
+                :type="btnToggle ? 'text' : 'password'">
+              </v-text-field>
+              <v-text-field
+                label="Confirme sua senha"
+                v-model="passwordconfirm"
+                :append-icon="btnToggle2 ? 'visibility' : 'visibility_off'"
+                :append-icon-cb="() => (btnToggle2 = !btnToggle2)"
+                :type="btnToggle2 ? 'text' : 'password'">
+              </v-text-field>
+            <div>
+              <v-btn class="blue-grey" dark>Login</v-btn>
+            </div>
           </v-card-text>
         </v-card>
       </v-flex>
     </v-layout>
   </v-container>
-  
 </template>
 
 <script>
@@ -40,22 +55,25 @@ export default {
     return {
       email: '',
       password: '',
+      matricula: '',
       passwordconfirm: '',
       fullname: '',
       nickname: '',
+      btnToggle: false,
+      btnToggle2: false,
       select: [],
       options: [
         {
           value: 1,
-          text: 'Option 1',
+          text: '1F',
         },
         {
           value: 2,
-          text: 'Option 2',
+          text: '2F',
         },
         {
           value: 3,
-          text: 'Option 3',
+          text: '3F',
         },
       ],
     };
