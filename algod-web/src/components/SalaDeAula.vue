@@ -14,11 +14,12 @@
             <v-layout row wrap>
               <v-flex xs6><br>
                 <v-card>
-                  <v-card-text v-for="i in 5">Atividade {{i}} 
-                    <v-checkbox 
-                      v-model="marker" 
-                      color="green" 
-                      v-bind:value="i" 
+                  <v-card-text v-for="i in 5" :key="i">
+                    Atividade {{i}}
+                    <v-checkbox
+                      v-model="marker"
+                      color="green"
+                      v-bind:value="i"
                       hide-details>
                     </v-checkbox>
                   </v-card-text>
