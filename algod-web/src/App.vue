@@ -50,9 +50,15 @@
 </template>
 
 <script>
+  import UserSession from './store/UserSession';
+
   export default {
+    created() {
+
+    },
     data() {
       return {
+        logged: UserSession.get('logged'),
         drawer: true,
         items: [{
           icon: 'web',
