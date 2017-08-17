@@ -6,17 +6,14 @@ import Login from '@/components/user/Login';
 import Register from '@/components/user/Register';
 
 import Atividade from '@/components/Atividade';
-import SalaDeAula from '@/components/SalaDeAula';
 import Curso from '@/components/Cursos';
+import MainLayout from '@/components/MainLayout';
+import SalaDeAula from '@/components/SalaDeAula';
 
 Vue.use(Router);
 
 export default new Router({
   routes: [{
-    path: '/',
-    name: 'Bem-vindo',
-    component: Welcome,
-  }, {
     path: '/login',
     name: 'Login',
     component: Login,
@@ -25,21 +22,25 @@ export default new Router({
     name: 'Cadastre-se',
     component: Register,
   }, {
-    path: '/activity',
-    name: 'Atividades',
-    component: Atividade,
-  }, {
-    path: '/classroom',
-    name: 'Sala de Aula',
-    component: SalaDeAula,
-  }, {
-    path: '/courses',
-    name: 'Cursos',
-    component: Curso,
-  }, //{
-    //path: '/forgot-password',
-    //name: 'Esqueceu sua senha?',
-    //component: ForgotPassword,
-  //}
-  ],
+    path: '/',
+    name: 'Bem-vindo',
+    component: MainLayout,
+    children: [{
+      path: '',
+      name: 'Bem-vindo',
+      component: Welcome,
+    }, {
+      path: 'activity',
+      name: 'Atividades',
+      component: Atividade,
+    }, {
+      path: 'classroom',
+      name: 'Sala de Aula',
+      component: SalaDeAula,
+    }, {
+      path: 'courses',
+      name: 'Cursos',
+      component: Curso,
+    }],
+  }],
 });
