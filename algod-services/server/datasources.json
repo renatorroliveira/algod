@@ -7,7 +7,7 @@
     "host": "localhost",
     "port": 3306,
     "url": "mysql://root@localhost/algod_db",
-    "database": "algod",
+    "database": "algod_db",
     "password": "",
     "name": "mysqlDs",
     "user": "root",

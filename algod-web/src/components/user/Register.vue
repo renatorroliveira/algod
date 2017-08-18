@@ -1,22 +1,20 @@
 <template>
   <v-container fluid>
     <v-layout row wrap>
-      <v-flex xs12 md6 offset-md3>
+      <v-flex xs12 sm6 offset-sm3 md4 offset-md4>
+        <img src="../../assets/logoAGdarken.png" style="width: 200px; margin: 20px auto; display: block;" />
+        <h5 class="headline text-xs-center">Crie sua conta</h5>
         <v-card>
           <v-card-text>
-            <v-text-field
+            <form v-on:submit="register($event)">
+              <v-text-field
                 label="Nome"
-                v-model="fullname"
+                v-model="name"
                 persistent-hint
               ></v-text-field>
               <v-text-field
-                label="Apelido"
-                v-model="nickname"
-                persistent-hint
-              ></v-text-field>
-              <v-text-field
-                label="Matrícula"
-                v-model="matricula"
+                label="Sobrenome"
+                v-model="surname"
                 persistent-hint
               ></v-text-field>
               <v-text-field
@@ -38,10 +36,15 @@
                 :append-icon-cb="() => (btnToggle2 = !btnToggle2)"
                 :type="btnToggle2 ? 'text' : 'password'">
               </v-text-field>
-            <div>
-              <v-btn class="blue-grey" dark>Login</v-btn>
-            </div>
+              <div class="text-xs-right">
+                <v-btn type="submit" primary>Registrar</v-btn>
+              </div>
+            </form>
           </v-card-text>
+          <v-card-actions>
+            <router-link class="btn mx-3" to="/login">Faça login</router-link>
+            <router-link class="btn mx-3" to="/forgot-password">Esqueceu sua senha?</router-link>
+          </v-card-actions>
         </v-card>
       </v-flex>
     </v-layout>
@@ -49,41 +52,50 @@
 </template>
 
 <script>
+import Toastr from 'toastr';
+import UserStore from '@/store/User';
+
 export default {
   name: 'registration',
   data() {
     return {
       email: '',
       password: '',
-      matricula: '',
       passwordconfirm: '',
-      fullname: '',
-      nickname: '',
+      name: '',
+      surname: '',
       btnToggle: false,
       btnToggle2: false,
       select: [],
-      options: [
-        {
-          value: 1,
-          text: '1F',
-        },
-        {
-          value: 2,
-          text: '2F',
-        },
-        {
-          value: 3,
-          text: '3F',
-        },
-      ],
+      submitting: false,
     };
+  },
+  created() {
+    const me = this;
+    UserStore.on(UserStore.ACTION_REGISTER, (userData) => {
+      console.log(userData);
+      me.$router.push('/login');
+    }, me);
+  },
+  beforeDestroy() {
+    UserStore.off(null, null, this);
   },
   methods: {
     register(event) {
       event.preventDefault();
-      // Faria o cadastro com AJAX
-      console.log(this.email);
-      console.log(this.password);
+      if (this.password !== this.passwordconfirm) {
+        Toastr.error('As senhas digitadas não são iguais.');
+      } else {
+        UserStore.dispatch({
+          action: UserStore.ACTION_REGISTER,
+          data: {
+            name: this.name,
+            surname: this.surname,
+            email: this.email,
+            password: this.password,
+          },
+        });
+      }
     },
   },
 };

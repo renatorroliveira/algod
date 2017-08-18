@@ -14,7 +14,8 @@
     ]
   },
   "User": {
-    "dataSource": "db"
+    "dataSource": "db",
+    "public": false
   },
   "AccessToken": {
     "dataSource": "db",
@@ -40,7 +41,11 @@
     "public": true
   },
   "Domain": {
-    "dataSource": "db",
+    "dataSource": "mysqlDs",
+    "public": true
+  },
+  "AlgodUser": {
+    "dataSource": "mysqlDs",
     "public": true
   }
 }

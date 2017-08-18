@@ -1,14 +1,16 @@
-import _ from 'underscore';
+import 'toastr/build/toastr.css';
+import Toastr from 'toastr';
 import Backbone from 'backbone';
 import Config from './Config';
+import UserSession from './UserSession';
 
 const Model = Backbone.Model.extend({
-  parse(response, opts) {
+  parse(response) {
     if (response.data) {
       return response.data;
     }
     return response;
-  }
+  },
 });
 
 const Store = Backbone.Collection.extend({
@@ -35,9 +37,12 @@ const Store = Backbone.Collection.extend({
   initialize() {
     this.on('error', this.handleRequestErrors, this);
     this.on('fail', (msg) => {
-      //Toastr.remove();
-      //Toastr.error(msg);
-      //this.context.toastr.addAlertError(msg);
+      if (msg.error) {
+        Toastr.error(msg.error.message);
+      } else {
+        Toastr.error('Um erro inesperado ocorreu.');
+        console.error(msg);
+      }
     }, this);
   },
   parse(response) {
@@ -52,46 +57,38 @@ const Store = Backbone.Collection.extend({
         resp = JSON.parse(opts.responseText);
       } catch (err) {
         resp = {
-          //message: 'Unexpected server error '+opts.status+' '+opts.statusText+': '+opts.responseText
-          message: 'O servidor não conseguiu processar sua solicitação. Tente novamente mais tarde. Se o erro persistir contate o suporte.'
+          message: 'O servidor não conseguiu processar sua solicitação.',
         };
       }
       this.trigger('fail', resp.message);
-      //this.context.toastr.addAlertError(resp.message);
     } else if (opts.status === 409) {
       // Validation errors
+      let resp;
       try {
-        let resp = JSON.parse(opts.responseText);
+        resp = JSON.parse(opts.responseText);
       } catch (err) {
         resp = {
-          //message: 'Unexpected server error '+opts.status+' '+opts.statusText+': '+opts.responseText
-          message: 'O servidor não pode concluir sua ação devido a um conflito na execução do mesmo. Tente novamente mais tarde. Se o erro persistir contate o suporte.'
+          message: 'O servidor não pode concluir sua ação.',
         };
       }
       this.trigger('fail', resp.message);
-      //this.context.toastr.addAlertError(resp.message);
     } else if (opts.status === 403) {
-      // Probably lost the session
       UserSession.dispatch({
-        action: UserSession.ACTION_LOGOUT
+        action: UserSession.ACTION_LOGOUT,
       });
       this.trigger('fail', 'Não foi possível concluir sua ação. Sua sessão foi encerrada.');
       this.trigger('forbidden');
     } else if (opts.status === 401) {
-      // Probably lost the session
-      //this.trigger('fail', 'Não foi possível concluir sua ação. Refaça o login no sistema e tente novamente. Se o erro persistir contate o suporte.');
       this.trigger('unauthorized');
     } else {
-      //this.trigger('fail', 'Unexpected server error '+opts.status+' '+opts.statusText+': '+opts.responseText);
       this.trigger('fail', 'Não foi possível concluir sua ação. Tente novamente mais tarde. Se o erro persistir contate o suporte.');
-      //this.addAlertError('Unexpected server error '+opts.status+' '+opts.statusText+': '+opts.responseText);
     }
   },
 
 });
 
 export default {
-  BACKEND_URL: Config.baseUrl,
-  Model: Model,
-  Store: Store,
+  baseUrl: Config.baseUrl,
+  Model,
+  Store,
 };

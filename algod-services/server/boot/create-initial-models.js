@@ -1,6 +1,12 @@
 'use strict';
 
 module.exports = function(app) {
+  app.dataSources.mysqlDs.automigrate('AlgodUser', function(err) {
+    if (err) throw err;
+  });
+  app.dataSources.mysqlDs.automigrate('Domain', function(err) {
+    if (err) throw err;
+  });
   app.dataSources.mysqlDs.automigrate('Institution', function(err) {
     if (err) throw err;
 
