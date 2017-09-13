@@ -23,7 +23,7 @@ export default new Router({
     component: Register,
   }, {
     path: '/',
-    name: 'Bem-vindo',
+    name: 'Main',
     component: MainLayout,
     children: [{
       path: '',
@@ -35,7 +35,7 @@ export default new Router({
       component: Atividade,
     }, {
       path: 'classroom',
-      name: 'Sala de Aula',
+      name: 'SalaDeAula',
       component: SalaDeAula,
     }, {
       path: 'courses',

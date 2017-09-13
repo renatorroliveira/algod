@@ -35,7 +35,7 @@
 
 <script>
 export default {
-  name: 'Sala de aula',
+  name: 'Classroom',
   data() {
     return {
       atividade: '',
