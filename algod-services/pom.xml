@@ -1,0 +1,123 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.developerkingdom</groupId>
+	<artifactId>algod</artifactId>
+	<version>1.0.0.Alpha1-SNAPSHOT</version>
+	<packaging>war</packaging>
+
+	<parent>
+		<groupId>br.com.progolden</groupId>
+		<artifactId>webapp-parent</artifactId>
+		<version>1.6</version>
+	</parent>
+
+	<name>Algorithm God</name>
+	<description>Algorithm God</description>
+	<url>http://algod.me//</url>
+	<scm>
+		<connection>scm:git:git@github.com:renatorroliveira/algod.git</connection>
+		<developerConnection>scm:git:git@github.com:renatorroliveira/algod.git</developerConnection>
+		<url>https://github.com/renatorroliveira/algod</url>
+	</scm>
+
+	<licenses>
+		<license>
+			<name>Private EULA</name>
+		</license>
+	</licenses>
+
+	<properties>
+		<version.vraptor.boilerplate>1.1.0-Alpha1</version.vraptor.boilerplate>
+		<dbConfigFile>hibernate.cfg.xml</dbConfigFile>
+		<propertiesfile>dev.properties</propertiesfile>
+	</properties>
+
+	<profiles>
+		<profile>
+			<id>test</id>
+			<properties>
+				<propertiesfile>test.properties</propertiesfile>
+			</properties>
+		</profile>
+		<profile>
+			<id>mirror</id>
+			<properties>
+				<propertiesfile>mirror.properties</propertiesfile>
+			</properties>
+		</profile>
+		<profile>
+			<id>prd</id>
+			<properties>
+				<propertiesfile>prd.properties</propertiesfile>
+			</properties>
+		</profile>
+	</profiles>
+
+
+	<build>
+		<finalName>${project.artifactId}</finalName>
+		<filters>
+			<filter>${propertiesfile}</filter>
+		</filters>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*.xml</include>
+					<include>**/*.properties</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>false</filtering>
+				<excludes>
+					<exclude>**/*.xml</exclude>
+					<exclude>**/*.properties</exclude>
+				</excludes>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+				<version>1.0.0</version>
+				<executions>
+					<!-- Associate the read-project-properties goal with the initialize phase, to read the properties file. -->
+					<execution>
+						<phase>initialize</phase>
+						<goals>
+							<goal>read-project-properties</goal>
+						</goals>
+						<configuration>
+							<files>
+								<file>${propertiesfile}</file>
+							</files>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>br.com.progolden</groupId>
+			<artifactId>vraptor-boilerplate-hibernate</artifactId>
+			<version>${version.vraptor.boilerplate}</version>
+		</dependency>
+		<dependency>
+			<groupId>br.com.progolden</groupId>
+			<artifactId>vraptor-boilerplate-core</artifactId>
+			<version>${version.vraptor.boilerplate}</version>
+		</dependency>
+		<dependency>
+			<groupId>br.com.progolden</groupId>
+			<artifactId>vraptor-boilerplate-utils</artifactId>
+			<version>${version.vraptor.boilerplate}</version>
+		</dependency>
+	</dependencies>
+
+</project>

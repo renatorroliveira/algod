@@ -8,8 +8,7 @@ const UserSession = Backbone.Model.extend({
   ACTION_LOGIN: 'login',
   ACTION_LOGOUT: 'logout',
 
-  BACKEND_URL: Config.baseUrl,
-  url: `${Config.baseUrl}Users`,
+  url: `${Config.baseUrl}/v1/user`,
   dispatch(payload) {
     if (payload.action) {
       const method = this[payload.action];
@@ -23,6 +22,9 @@ const UserSession = Backbone.Model.extend({
     }
   },
   initialize() {
+    if (string(localStorage.deviceId).isEmpty()) {
+      localStorage.deviceId = `${navigator.userAgent}---${(new Date()).getTime()}`;
+    }
     if (!(string(localStorage.token).isEmpty())) {
       $.ajaxSetup({
         headers: {
@@ -63,10 +65,16 @@ const UserSession = Backbone.Model.extend({
     const me = this;
     $.ajax({
       method: 'GET',
-      url: `${me.BACKEND_URL}user/session`,
+      url: `${me.url}/logged`,
       dataType: 'json',
       success(data) {
         if (data.success) {
+          me.putStorage(data.data.token, data.data.user.id);
+          $.ajaxSetup({
+            headers: {
+              Authorization: localStorage.token,
+            },
+          });
           me.set({
             logged: true,
             user: data.data.user,
@@ -129,11 +137,9 @@ const UserSession = Backbone.Model.extend({
     } else {
       $.ajax({
         method: 'POST',
-        url: `${me.BACKEND_URL}user/login`,
+        url: `${me.url}/login`,
         dataType: 'json',
         data: JSON.stringify(params),
-        contentType: 'application/json',
-        processData: false,
         success(data) {
           if (data.success) {
             $.ajaxSetup({

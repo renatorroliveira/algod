@@ -35,6 +35,8 @@
 </template>
 
 <script>
+import UserSession from '@/store/UserSession';
+
 export default {
   name: 'login',
   data() {
@@ -44,11 +46,27 @@ export default {
       btnToggle: false,
     };
   },
+  mounted() {
+    const me = this;
+    UserSession.on('login', () => {
+      me.$router.push({
+        path: '/',
+      });
+    }, me);
+  },
+  beforeDestroy() {
+    UserSession.off(null, null, this);
+  },
   methods: {
     login(event) {
       event.preventDefault();
-      // Faria o login com AJAX
-      console.log(this);
+      UserSession.dispatch({
+        action: UserSession.ACTION_LOGIN,
+        data: {
+          email: this.email,
+          password: this.password,
+        },
+      });
     },
   },
 };

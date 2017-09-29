@@ -1,11 +1,10 @@
 import $ from 'jquery';
 
 $.ajaxSetup({
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  contentType: 'application/json',
+  processData: false,
 });
 
 export default {
-  baseUrl: 'http://localhost:3000/api/',
+  baseUrl: 'http://localhost:8000/api',
 };
