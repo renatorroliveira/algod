@@ -159,6 +159,7 @@ const UserSession = Backbone.Model.extend({
             });
             Toastr.success('Usuário logado');
             me.trigger('login', me);
+            console.log(me.accessLevel);
           } else {
             me.trigger('fail', data.message);
           }

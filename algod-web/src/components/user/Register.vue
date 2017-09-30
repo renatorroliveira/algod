@@ -13,13 +13,14 @@
                 persistent-hint
               ></v-text-field>
               <v-text-field
-                label="Sobrenome"
-                v-model="surname"
+                label="Email"
+                v-model="email"
                 persistent-hint
               ></v-text-field>
               <v-text-field
-                label="Email"
-                v-model="email"
+                id="phone"
+                label="Telefone"
+                v-model="phone"
                 persistent-hint
               ></v-text-field>
               <v-text-field
@@ -63,7 +64,7 @@ export default {
       password: '',
       passwordconfirm: '',
       name: '',
-      surname: '',
+      phone: '',
       btnToggle: false,
       btnToggle2: false,
       select: [],
@@ -90,7 +91,7 @@ export default {
           action: UserStore.ACTION_REGISTER,
           data: {
             name: this.name,
-            surname: this.surname,
+            phone: this.phone,
             email: this.email,
             password: this.password,
           },
