@@ -24,6 +24,17 @@
           </v-list-tile-content>
         </v-list-tile>
 
+        <v-list-tile dark avatar>
+          <v-list-tile-avatar v-on:click="doLogout($event)">
+            <img src="../assets/close.png" alt="Logout icon" />
+          </v-list-tile-avatar>
+          <v-list-tile-content>
+            <v-list-tile-title v-on:click="doLogout($event)">
+              Logout
+            </v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+
         <v-divider class="mt-3"></v-divider>
         <v-list-tile dark @click.native.stop="miniVariant = !miniVariant">
           <v-list-tile-action>
@@ -50,6 +61,7 @@
 </template>
 
 <script>
+  import Toastr from 'toastr';
   import UserSession from '../store/UserSession';
 
   export default {
@@ -77,6 +89,18 @@
         miniVariant: false,
         title: 'Bem-vindo',
       };
+    },
+    methods: {
+      doLogout(event) {
+        event.preventDefault();
+        UserSession.dispatch({
+          action: UserSession.ACTION_LOGOUT,
+        });
+        Toastr.success('Usuário deslogado');
+      },
+    },
+    beforeDestroy() {
+      UserSession.off(null, null, this);
     },
   };
 </script>

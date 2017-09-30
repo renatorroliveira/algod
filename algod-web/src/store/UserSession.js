@@ -1,3 +1,4 @@
+import Toastr from 'toastr';
 import $ from 'jquery';
 import Backbone from 'backbone';
 import string from 'string';
@@ -107,6 +108,7 @@ const UserSession = Backbone.Model.extend({
 
   handleRequestErrors(collection, opts) {
     if (opts.status === 400) {
+      Toastr.error('E-mail ou senha inválidos');
       this.trigger('fail', opts.responseJSON.message);
     } else if (opts.status === 409) {
       // Validation errors
@@ -133,6 +135,7 @@ const UserSession = Backbone.Model.extend({
     }
 
     if (errors.length > 0) {
+      Toastr.error('Por favor, verifique os campos e tente novamente');
       me.trigger('fail', errors);
     } else {
       $.ajax({
@@ -154,6 +157,7 @@ const UserSession = Backbone.Model.extend({
               accessLevel: data.data.accessLevel,
               permissions: data.data.permissions,
             });
+            Toastr.success('Usuário logado');
             me.trigger('login', me);
           } else {
             me.trigger('fail', data.message);
@@ -169,7 +173,7 @@ const UserSession = Backbone.Model.extend({
     const me = this;
     $.ajax({
       method: 'POST',
-      url: `${me.BACKEND_URL}user/logout`,
+      url: `${me.url}/logout`,
       dataType: 'json',
       success() {
         me.set({
@@ -183,7 +187,7 @@ const UserSession = Backbone.Model.extend({
         });
         me.clearStorage();
         me.trigger('logout');
-        location.assign('#/');
+        location.assign('#/login');
       },
       error(opts) {
         me.handleRequestErrors([], opts);

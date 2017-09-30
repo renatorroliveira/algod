@@ -13,6 +13,7 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.boilerplate.NoCache;
+import br.com.caelum.vraptor.boilerplate.util.CryptManager;
 import br.com.caelum.vraptor.boilerplate.util.GeneralUtils;
 
 /**
@@ -29,11 +30,15 @@ public class UserController extends UserControlAbstractController {
 	@NoCache
 	public void register(User user, String deviceId) {
 		try {
-			LOGGER.infof("Chamou");
-			this.fail("Falta implementar");
+			if (user != null) {
+				user.setDeleted(false);
+				user.setActive(true);
+				user = this.bs.register(user);
+				this.success(user);
+			}
 		} catch (Throwable e) {
-			LOGGER.error("Erro no login.", e);
-			this.fail("Ocorreu um erro inesperado: " + e.getMessage());
+			LOGGER.error("Unexpected runtime error", e);
+			this.fail("E-mail do usuário já foi cadastrado!");
 		}
 	}
 

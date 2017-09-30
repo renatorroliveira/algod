@@ -20,7 +20,7 @@ import javax.persistence.TemporalType;
 @Entity(name = UserRecoverRequest.TABLE)
 @Table(name = UserRecoverRequest.TABLE)
 public class UserRecoverRequest implements Serializable {
-	public static final String TABLE = "nilo_user_recover_req";
+	public static final String TABLE = "algod_user_recover_req";
 	private static final long serialVersionUID = 1L;
 	
 	@Id

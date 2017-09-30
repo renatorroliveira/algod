@@ -20,7 +20,7 @@ import br.com.caelum.vraptor.serialization.SkipSerialization;
 @Entity(name = User.TABLE)
 @Table(name = User.TABLE)
 public class User extends SimpleLogicalDeletableEntity {
-	public static final String TABLE = "nilo_users";
+	public static final String TABLE = "algod_users";
 	private static final long serialVersionUID = 1L;
 
 	@Column(nullable=false, unique=true, length=255)

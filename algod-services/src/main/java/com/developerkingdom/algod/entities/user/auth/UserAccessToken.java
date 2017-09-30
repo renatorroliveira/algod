@@ -22,7 +22,7 @@ import com.developerkingdom.algod.entities.user.User;
 @Entity(name = UserAccessToken.TABLE)
 @Table(name = UserAccessToken.TABLE)
 public class UserAccessToken implements Serializable {
-	public static final String TABLE = "nilo_user_access_token";
+	public static final String TABLE = "algod_user_access_token";
 	private static final long serialVersionUID = 1L;
 	
 	@Id

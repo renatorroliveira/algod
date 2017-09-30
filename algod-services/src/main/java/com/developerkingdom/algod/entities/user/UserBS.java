@@ -28,7 +28,17 @@ public class UserBS extends HibernateBusiness {
 
 	@Inject private UserSession session;
 	// private static final int PAGESIZE = 20;
+	
+	public User register(User user) {
+		
+		user.setId(null);
+		user.setPassword(CryptManager.passwordHash(user.getPassword()));
 
+		this.persist(user);
+
+		return user;
+	}
+	
 	/**
 	 * Autenticar o usuário que está efetuando login e salva na sessão de usuário.
 	 * 
