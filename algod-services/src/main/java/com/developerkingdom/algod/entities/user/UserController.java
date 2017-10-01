@@ -116,7 +116,7 @@ public class UserController extends UserControlAbstractController {
 				} else {
 					UserRecoverRequest req = this.bs.requestRecover(user);
 
-					String url = "http://localhost:8000/" + "#/forgot-password/reset/" + req.getToken();
+					String url = "http://localhost:8000/" + "#/forgot-password/" + req.getToken();
 					// TODO Enviar e-mail de recuperação
 					LOGGER.info(req.getToken());
 					LOGGER.infof("URL de recuperação: %s", url);
@@ -129,7 +129,7 @@ public class UserController extends UserControlAbstractController {
 		}
 	}
 
-	@Get("/recover-password/{token}")
+	@Post("/recover-password/{token}")
 	@NoCache
 	public void canReset(String token) {
 		try {

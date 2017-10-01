@@ -216,18 +216,27 @@ const UserSession = Backbone.Model.extend({
       },
     });
   },
-  canResetPass(token) {
+  canResetPass(params) {
     const me = this;
+    console.log(JSON.stringify(params));
     $.ajax({
-      method: 'GET',
-      url: `${me.url}/recover-password/${token}`,
+      method: 'POST',
+      url: `${me.url}/recover-password/${params.token}`,
       dataType: 'json',
-      success() {
-        me.trigger('canResetPass', me);
-        Toastr.success('Pode resetar a senha');
+      data: JSON.stringify(params),
+      success(data) {
+        if (data.success) {
+          me.set({
+            ValidToken: true,
+          });
+          me.trigger('canResetPass', me);
+        }
       },
       error(args) {
         me.handleRequestErrors([], args);
+        me.set({
+          ValidToken: null,
+        });
         Toastr.error('Token inválido');
       },
     });

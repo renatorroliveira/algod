@@ -6,11 +6,12 @@
        <h5 class="headline text-xs-center">Confirme no e-mail</h5>
        <v-card>
          <v-card-text>
-           <h5>Por favor, confirme o link enviado em seu e-mail</h5>
+           <h5 class="text-xs-center green--text">Por favor, confirme o link enviado em seu e-mail</h5>
          </v-card-text>
          <v-card-actions>
-           <router-link class="btn mx-3" to="/register">Cadastre-se</router-link>
-           <router-link class="btn mx-3" to="/login">Fazer login</router-link>
+           <router-link class="btn mx-2" to="/register">Cadastre-se</router-link>
+           <router-link class="btn mx-2" to="/login">Fazer login</router-link>
+           <router-link class="btn mx-2" to="/forgot-password">Recuperar senha</router-link>
          </v-card-actions>
        </v-card>
      </v-flex>
@@ -22,14 +23,11 @@
   /* eslint linebreak-style: ["error", "windows"] */
 
   export default {
-    name: 'Recover-password-kk',
+    name: 'Tela-de-alerta',
 
     data() {
       return {
       };
-    },
-    mounted() {
-      console.log(this.$router);
     },
   };
 </script>
