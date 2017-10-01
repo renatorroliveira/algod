@@ -1,3 +1,4 @@
+/* eslint no-console: "warn" */
 import Toastr from 'toastr';
 import $ from 'jquery';
 import Backbone from 'backbone';
@@ -8,6 +9,9 @@ const UserSession = Backbone.Model.extend({
   ACTION_REFRESH: 'refreshStatus',
   ACTION_LOGIN: 'login',
   ACTION_LOGOUT: 'logout',
+  ACTION_RECOVER_PASSWORD: 'recoverPass',
+  ACTION_VALIDATE_TOKEN: 'canResetPass',
+  ACTION_NEW_PASSWORD: 'newPassword',
 
   url: `${Config.baseUrl}/v1/user`,
   dispatch(payload) {
@@ -108,7 +112,6 @@ const UserSession = Backbone.Model.extend({
 
   handleRequestErrors(collection, opts) {
     if (opts.status === 400) {
-      Toastr.error('E-mail ou senha inválidos');
       this.trigger('fail', opts.responseJSON.message);
     } else if (opts.status === 409) {
       // Validation errors
@@ -159,12 +162,12 @@ const UserSession = Backbone.Model.extend({
             });
             Toastr.success('Usuário logado');
             me.trigger('login', me);
-            console.log(me.accessLevel);
           } else {
             me.trigger('fail', data.message);
           }
         },
         error(opts) {
+          Toastr.error('E-mail ou senha inválidos');
           me.handleRequestErrors([], opts);
         },
       });
@@ -192,6 +195,59 @@ const UserSession = Backbone.Model.extend({
       },
       error(opts) {
         me.handleRequestErrors([], opts);
+      },
+    });
+  },
+  recoverPass(email) {
+    const me = this;
+    $.ajax({
+      method: 'POST',
+      url: `${me.url}/recover-password`,
+      dataType: 'json',
+      data: JSON.stringify(email),
+      success() {
+        me.trigger('recoverPass', me);
+        location.assign('#/forgot-password/confirm');
+        Toastr.success('Um endereço de confirmação foi enviado para seu email');
+      },
+      error(opts) {
+        me.handleRequestErrors([], opts);
+        Toastr.error('Esse e-mail não está cadastrado');
+      },
+    });
+  },
+  canResetPass(token) {
+    const me = this;
+    $.ajax({
+      method: 'GET',
+      url: `${me.url}/recover-password/${token}`,
+      dataType: 'json',
+      success() {
+        me.trigger('canResetPass', me);
+        Toastr.success('Pode resetar a senha');
+      },
+      error(args) {
+        me.handleRequestErrors([], args);
+        Toastr.error('Token inválido');
+      },
+    });
+  },
+  newPassword(params) {
+    console.log(JSON.stringify(params));
+    const me = this;
+    $.ajax({
+      method: 'POST',
+      url: `${me.url}/reset-password/${params.token}`,
+      dataType: 'json',
+      data: JSON.stringify(params),
+      success() {
+        me.trigger('newPassword');
+        Toastr.success('Senha modificada');
+        location.assign('#/login');
+      },
+      error(opts) {
+        me.handleRequestErrors([], opts);
+        Toastr.error('Token inválido ou expirou');
       },
     });
   },

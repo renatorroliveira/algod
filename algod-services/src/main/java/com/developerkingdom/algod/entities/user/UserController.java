@@ -116,10 +116,11 @@ public class UserController extends UserControlAbstractController {
 				} else {
 					UserRecoverRequest req = this.bs.requestRecover(user);
 
-					String url = SystemConfigs.getConfig("sys.baseurl") + "#/reset-password/" + req.getToken();
+					String url = "http://localhost:8000/" + "#/forgot-password/reset/" + req.getToken();
 					// TODO Enviar e-mail de recuperação
+					LOGGER.info(req.getToken());
 					LOGGER.infof("URL de recuperação: %s", url);
-					this.success(true);
+					this.success(req.getToken());
 				}
 			}
 		} catch (Throwable ex) {
@@ -151,9 +152,12 @@ public class UserController extends UserControlAbstractController {
 		try {
 			if (GeneralUtils.isEmpty(password)) {
 				this.fail("A senha não pode ser vazia.");
+				LOGGER.info("Senha vazia");
 			} else if (this.bs.resetPassword(password, token)) {
+				LOGGER.info("UHULLLL");
 				this.success();
 			} else {
+				LOGGER.info("Token Expirou ou é invalido");
 				this.fail("Token de recuperação inválida ou expirada.");
 			}
 		} catch (Throwable ex) {

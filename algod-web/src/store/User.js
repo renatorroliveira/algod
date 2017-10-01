@@ -1,3 +1,5 @@
+/* eslint no-console: "warn" */
+
 import Toastr from 'toastr';
 import $ from 'jquery';
 import Fluxbone from './Fluxbone';
@@ -14,7 +16,6 @@ const UserStore = Fluxbone.Store.extend({
 
   register(params) {
     const me = this;
-    console.log('registro:', params);
     $.ajax({
       method: 'POST',
       url: `${me.url}/register`,
@@ -27,7 +28,7 @@ const UserStore = Fluxbone.Store.extend({
         me.trigger(me.ACTION_REGISTER, data);
       },
       error(res) {
-        Toastr.error('E-mail já cadastrado');
+        Toastr.error('E-mail ou telefone já cadastrado');
         me.trigger('fail', res.responseJSON);
       },
     });

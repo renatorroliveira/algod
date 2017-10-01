@@ -49,9 +49,7 @@ export default {
   mounted() {
     const me = this;
     UserSession.on('login', () => {
-      me.$router.push({
-        path: '/',
-      });
+      me.$router.push('/');
     }, me);
   },
   beforeDestroy() {

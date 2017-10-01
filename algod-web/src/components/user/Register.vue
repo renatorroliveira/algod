@@ -11,6 +11,7 @@
                 label="Nome"
                 v-model="name"
                 persistent-hint
+                autofocus
               ></v-text-field>
               <v-text-field
                 label="Email"
@@ -53,6 +54,8 @@
 </template>
 
 <script>
+/* eslint no-console: ["error", { allow: ["warn", "error"] }] */
+
 import Toastr from 'toastr';
 import UserStore from '@/store/User';
 
@@ -73,8 +76,7 @@ export default {
   },
   created() {
     const me = this;
-    UserStore.on(UserStore.ACTION_REGISTER, (userData) => {
-      console.log(userData);
+    UserStore.on(UserStore.ACTION_REGISTER, () => {
       me.$router.push('/login');
     }, me);
   },

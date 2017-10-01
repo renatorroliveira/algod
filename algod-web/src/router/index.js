@@ -4,6 +4,9 @@ import Router from 'vue-router';
 import Welcome from '@/components/Welcome';
 import Login from '@/components/user/Login';
 import Register from '@/components/user/Register';
+import ForgotPassword from '@/components/recover/ForgotPassword';
+import ResetPassword from '@/components/recover/ResetPassword';
+import RecoverPassword from '@/components/recover/RecoverPassword';
 
 import Atividade from '@/components/Atividade';
 import Curso from '@/components/Cursos';
@@ -21,6 +24,18 @@ export default new Router({
     path: '/register',
     name: 'Cadastre-se',
     component: Register,
+  }, {
+    path: '/forgot-password',
+    name: 'Recuperar a senha',
+    component: ForgotPassword,
+  }, {
+    path: '/forgot-password/confirm',
+    name: 'Confirmar no email',
+    component: RecoverPassword,
+  }, {
+    path: '/forgot-password/reset/:token',
+    name: 'Nova senha',
+    component: ResetPassword,
   }, {
     path: '/',
     name: 'Main',

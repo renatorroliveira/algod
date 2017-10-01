@@ -1,3 +1,4 @@
+/* eslint no-console: ["error", { allow: ["warn", "error"] }] */
 import 'toastr/build/toastr.css';
 import Toastr from 'toastr';
 import Backbone from 'backbone';
