@@ -12,6 +12,7 @@ const UserSession = Backbone.Model.extend({
   ACTION_RECOVER_PASSWORD: 'recoverPass',
   ACTION_VALIDATE_TOKEN: 'canResetPass',
   ACTION_NEW_PASSWORD: 'newPassword',
+  ACTION_GET_LOGGED_USER: 'getLoggedUser',
 
   url: `${Config.baseUrl}/v1/user`,
   dispatch(payload) {
@@ -195,6 +196,26 @@ const UserSession = Backbone.Model.extend({
       },
       error(opts) {
         me.handleRequestErrors([], opts);
+      },
+    });
+  },
+  getLoggedUser() {
+    const me = this;
+    $.ajax({
+      method: 'GET',
+      url: `${me.url}/logged`,
+      dataType: 'json',
+      success(data) {
+        if (data.success) {
+          console.log(data);
+        } else {
+          console.log('Erro inesperado');
+        }
+        me.trigger('getLoggedUser', me);
+      },
+      error(args) {
+        Toastr.error('Erro inesperado');
+        me.handleRequestErrors([], args);
       },
     });
   },

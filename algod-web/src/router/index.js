@@ -2,8 +2,11 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 import Welcome from '@/components/Welcome';
+
 import Login from '@/components/user/Login';
 import Register from '@/components/user/Register';
+import Profile from '@/components/user/Profile';
+
 import ForgotPassword from '@/components/recover/ForgotPassword';
 import ResetPassword from '@/components/recover/ResetPassword';
 import RecoverPassword from '@/components/recover/RecoverPassword';
@@ -57,6 +60,10 @@ export default new Router({
       path: 'classroom',
       name: 'SalaDeAula',
       component: SalaDeAula,
+    }, {
+      path: '/profile',
+      name: 'Profile',
+      component: Profile,
     }, {
       path: 'courses',
       name: 'Cursos',

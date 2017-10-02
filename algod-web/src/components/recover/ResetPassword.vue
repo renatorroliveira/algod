@@ -5,31 +5,30 @@
        <img src="../../assets/logoAGdarken.png" style="width: 200px; margin: 20px auto; display: block;" />
        <h5 v-if="valid === true" class="headline text-xs-center">Nova senha</h5>
        <v-card>
-         <v-card-text v-if="valid === true">
-           <form v-on:submit="sendPass($event)">
-             <v-text-field
-               label="Nova senha"
-               v-model="password"
-               :append-icon="btnToggle ? 'visibility' : 'visibility_off'"
-               :append-icon-cb="() => (btnToggle = !btnToggle)"
-               :type="btnToggle ? 'text' : 'password'"
-               autofocus>
-             </v-text-field>
-             <v-text-field
-               label="Confirme a senha"
-               v-model="cpassword"
-               :append-icon="btnToggle2 ? 'visibility' : 'visibility_off'"
-               :append-icon-cb="() => (btnToggle2 = !btnToggle2)"
-               :type="btnToggle2 ? 'text' : 'password'">
-             </v-text-field>
-             <div class="text-xs-right">
-               <v-btn type="submit" primary>Mudar senha</v-btn>
-             </div>
-           </form>
-         </v-card-text>
-         <v-card-text v-else>
-           <h5 class="text-xs-center red--text">Token inválido ou expirou</h5>
-         </v-card-text>
+         <div v-if="valid !== null">
+           <v-card-text v-if="valid === true">
+             <form v-on:submit="sendPass($event)">
+               <v-text-field
+                 label="Nova senha"
+                 v-model="password"
+                 :append-icon="btnToggle ? 'visibility' : 'visibility_off'"
+                 :append-icon-cb="() => (btnToggle = !btnToggle)"
+                 :type="btnToggle ? 'text' : 'password'"
+                 autofocus>
+               </v-text-field>
+               <v-text-field
+                 label="Confirme a senha"
+                 v-model="cpassword"
+                 :append-icon="btnToggle2 ? 'visibility' : 'visibility_off'"
+                 :append-icon-cb="() => (btnToggle2 = !btnToggle2)"
+                 :type="btnToggle2 ? 'text' : 'password'">
+               </v-text-field>
+               <div class="text-xs-right">
+                 <v-btn type="submit" primary>Mudar senha</v-btn>
+               </div>
+             </form>
+           </v-card-text>
+         </div>
          <v-card-actions>
            <router-link class="btn mx-2" to="/register">Cadastre-se</router-link>
            <router-link class="btn mx-2" to="/login">Fazer login</router-link>

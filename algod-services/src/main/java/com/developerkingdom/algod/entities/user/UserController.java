@@ -100,7 +100,7 @@ public class UserController extends UserControlAbstractController {
 		}
 	}
 	
-
+	
 	@Post("/recover-password")
 	@Consumes
 	@NoCache

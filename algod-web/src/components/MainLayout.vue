@@ -75,6 +75,10 @@
         drawer: true,
         items: [{
           icon: 'web',
+          title: 'Profile',
+          href: '/profile',
+        }, {
+          icon: 'web',
           title: 'Cursos',
           href: '/courses',
         }, {
