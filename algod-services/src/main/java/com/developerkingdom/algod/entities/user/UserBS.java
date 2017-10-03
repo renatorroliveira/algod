@@ -3,7 +3,16 @@ package com.developerkingdom.algod.entities.user;
 import java.util.Date;
 import java.util.List;
 
+import java.util.Properties;
+
 import javax.enterprise.context.RequestScoped;
+
+import javax.mail.Message;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
 import javax.inject.Inject;
 
 import org.hibernate.Criteria;
@@ -279,7 +288,7 @@ public class UserBS extends HibernateBusiness {
 		req.setExpiration(new Date(System.currentTimeMillis() + 1800000L));
 		req.setToken(CryptManager.digest(Math.random() + "@" + System.currentTimeMillis() + "#" + user.getEmail()));
 		this.dao.persist(req);
-		// TODO Send the recovering email.
+		this.sendTokenEmail(req.getToken(), user.getEmail());
 		return req;
 	}
 
@@ -309,6 +318,43 @@ public class UserBS extends HibernateBusiness {
 		results.setTotal((Long) count.uniqueResult());
 		return results;
 
+	}
+	
+	private void sendTokenEmail(String token, String email) {
+
+		try {
+			Properties properties = System.getProperties();
+			properties.put("mail.smtp.starttls.enable", "true");
+			properties.put("mail.smtp.host", "smtp.gmail.com");
+			properties.put("mail.smtp.user", "Algod-noreply");
+			properties.put("mail.smtp.password", "developerskingdom@algod");
+			properties.put("mail.smtp.port", "587");
+			properties.put("mail.smtp.auth", "true");
+
+			// Get the default Session object.
+			Session session = Session.getDefaultInstance(properties);
+			// Create a default MimeMessage object.
+			MimeMessage message = new MimeMessage(session);
+
+			// Set From: header field of the header.
+			message.setFrom(new InternetAddress("developerskingdom.algod@gmail.com"));
+
+			// Set To: header field of the header.
+			message.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
+
+			// Set Subject: header field
+			message.setSubject("Redefinir senha");
+			message.setText("http://localhost:8000/" + "#/forgot-password/" + token);
+
+			Transport t = session.getTransport("smtp");
+			t.connect("smtp.gmail.com", "developerskingdom.algod@gmail.com", "developerskingdom@algod");
+			t.sendMessage(message, message.getAllRecipients());
+			t.close();
+			LOGGER.infof("Email enviado ao: %s", email);
+		} catch (Exception mex) {
+			LOGGER.info("Erro ao enviar email");
+			mex.printStackTrace();
+		}
 	}
 
 }
