@@ -39,7 +39,6 @@
 </template>
 
 <script>
-  /* eslint linebreak-style: ["error", "windows"] */
   import Toastr from 'toastr';
   import UserSession from '@/store/UserSession';
 

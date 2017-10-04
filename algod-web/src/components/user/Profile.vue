@@ -12,7 +12,6 @@
 </template>
 
 <script>
-/* eslint linebreak-style: ["error", "windows"] */
 import UserSession from '@/store/UserSession';
 
 export default {

@@ -20,7 +20,6 @@
 </template>
 
 <script>
-  /* eslint linebreak-style: ["error", "windows"] */
 
   export default {
     name: 'Tela-de-alerta',
