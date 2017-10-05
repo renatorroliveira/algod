@@ -1,6 +1,10 @@
 import $ from 'jquery';
 
 $.ajaxSetup({
+  xhrFields: {
+    withCredentials: true,
+  },
+  crossDomain: true,
   contentType: 'application/json',
   processData: false,
 });
