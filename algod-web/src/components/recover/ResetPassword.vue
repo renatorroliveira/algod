@@ -39,7 +39,6 @@
 </template>
 
 <script>
-  /* eslint linebreak-style: ["error", "windows"] */
   import Toastr from 'toastr';
   import UserSession from '@/store/UserSession';
 
@@ -50,12 +49,27 @@
       return {
         password: '',
         cpassword: '',
+        valid: null,
         btnToggle: false,
         btnToggle2: false,
       };
     },
 
     mounted() {
+      const me = this;
+      UserSession.dispatch({
+        action: UserSession.ACTION_VALIDATE_TOKEN,
+        data: {
+          token: me.$router.currentRoute.params.token,
+        },
+      });
+      UserSession.on('canResetPass', (response) => {
+        if (response.changed.ValidToken === true) {
+          me.valid = true;
+        } else {
+          me.valid = false;
+        }
+      });
     },
 
     methods: {

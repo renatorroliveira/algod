@@ -12,7 +12,6 @@
 </template>
 
 <script>
-/* eslint linebreak-style: ["error", "windows"] */
 import UserSession from '@/store/UserSession';
 
 export default {
@@ -29,7 +28,6 @@ export default {
     });
     UserSession.on('getLoggedUser', (response) => {
       me.user.push(response.attributes.user);
-      console.log(me.user);
     });
   },
   beforeDestoy() {

@@ -7,10 +7,11 @@ import Login from '@/components/user/Login';
 import Register from '@/components/user/Register';
 import Profile from '@/components/user/Profile';
 
+import InstitutionRegister from '@/components/institution/Register';
+
 import ForgotPassword from '@/components/recover/ForgotPassword';
 import ResetPassword from '@/components/recover/ResetPassword';
 import RecoverPassword from '@/components/recover/RecoverPassword';
-import ValidaToken from '@/components/recover/ValidaToken';
 
 import Atividade from '@/components/Atividade';
 import Curso from '@/components/Cursos';
@@ -37,10 +38,6 @@ export default new Router({
     name: 'Confirmar no email',
     component: RecoverPassword,
   }, {
-    path: '/forgot-password/:token',
-    name: 'Confirmar token',
-    component: ValidaToken,
-  }, {
     path: '/forgot-password/reset/:token',
     name: 'Nova senha',
     component: ResetPassword,
@@ -61,13 +58,17 @@ export default new Router({
       name: 'SalaDeAula',
       component: SalaDeAula,
     }, {
-      path: '/profile',
+      path: 'profile',
       name: 'Profile',
       component: Profile,
     }, {
       path: 'courses',
       name: 'Cursos',
       component: Curso,
+    }, {
+      path: 'new-institution',
+      name: 'New-institution',
+      component: InstitutionRegister,
     }],
   }],
 });

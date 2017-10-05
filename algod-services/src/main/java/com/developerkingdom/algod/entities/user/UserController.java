@@ -5,7 +5,6 @@ import javax.inject.Inject;
 import com.developerkingdom.algod.entities.bean.SessionInfo;
 import com.developerkingdom.algod.entities.user.auth.UserAccessToken;
 import com.developerkingdom.algod.system.UserControlAbstractController;
-import com.developerkingdom.algod.system.config.SystemConfigs;
 
 import br.com.caelum.vraptor.Consumes;
 import br.com.caelum.vraptor.Controller;
@@ -13,7 +12,6 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.boilerplate.NoCache;
-import br.com.caelum.vraptor.boilerplate.util.CryptManager;
 import br.com.caelum.vraptor.boilerplate.util.GeneralUtils;
 
 /**
