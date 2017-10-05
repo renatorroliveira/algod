@@ -8,6 +8,7 @@ import Register from '@/components/user/Register';
 import Profile from '@/components/user/Profile';
 
 import InstitutionRegister from '@/components/institution/Register';
+import ListInstitutions from '@/components/institution/ListInstitutions';
 
 import ForgotPassword from '@/components/recover/ForgotPassword';
 import ResetPassword from '@/components/recover/ResetPassword';
@@ -69,6 +70,10 @@ export default new Router({
       path: 'new-institution',
       name: 'New-institution',
       component: InstitutionRegister,
+    }, {
+      path: 'list-institution',
+      name: 'List-institution',
+      component: ListInstitutions,
     }],
   }],
 });

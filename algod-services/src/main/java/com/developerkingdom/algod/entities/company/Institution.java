@@ -3,11 +3,8 @@ package com.developerkingdom.algod.entities.company;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import br.com.caelum.vraptor.boilerplate.SimpleLogicalDeletableEntity;
-import br.com.caelum.vraptor.serialization.SkipSerialization;
 
 @Entity(name = Institution.TABLE)
 @Table(name = Institution.TABLE)

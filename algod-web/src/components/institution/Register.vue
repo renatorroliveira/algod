@@ -49,7 +49,6 @@
 </template>
 
 <script>
-import Toastr from 'toastr';
 import InstStore from '@/store/Institution';
 
 export default {
@@ -63,12 +62,7 @@ export default {
       baseURL: '',
     };
   },
-  created() {
-    const me = this;
-    InstStore.on(InstStore.ACTION_REGISTER, (response) => {
-      console.log(response);
-      Toastr.success('Instituição adicionada');
-    }, me);
+  mounted() {
   },
   beforeDestroy() {
     InstStore.off(null, null, this);
