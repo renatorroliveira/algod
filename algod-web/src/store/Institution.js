@@ -9,7 +9,7 @@ const InstitutionModel = Fluxbone.Model.extend({
 
 const InstitutionStore = Fluxbone.Store.extend({
   ACTION_REGISTER: 'register',
-  ACTION_LIST_ALL: 'listAll',
+  ACTION_LIST: 'listInsti',
   ACTION_DELETE: 'deleteInstitution',
 
   model: InstitutionModel,
@@ -24,7 +24,7 @@ const InstitutionStore = Fluxbone.Store.extend({
       data: JSON.stringify(params),
       success(data) {
         if (data.success) {
-          me.trigger(data);
+          me.trigger(me.ACTION_REGISTER, data);
           Toastr.success('Nova instituição adicionada');
         } else {
           Toastr.error('Erro inesperado ao criar instituição');
@@ -37,7 +37,7 @@ const InstitutionStore = Fluxbone.Store.extend({
     });
   },
 
-  listAll() {
+  listInsti() {
     const me = this;
     $.ajax({
       method: 'GET',
@@ -45,7 +45,7 @@ const InstitutionStore = Fluxbone.Store.extend({
       dataType: 'json',
       success(data) {
         console.log(data);
-        me.trigger(data, me);
+        me.trigger(me.ACTION_LIST, data);
       },
       error(errs) {
         me.trigger('fail', errs);
@@ -61,9 +61,10 @@ const InstitutionStore = Fluxbone.Store.extend({
       dataType: 'json',
       data: JSON.stringify(params),
       success(data) {
-        me.trigger(data, me);
+        me.trigger(me.ACTION_DELETE, data);
       },
       error(args) {
+        console.log(args);
         me.trigger('fail', args);
       },
     });

@@ -7,6 +7,8 @@
         :headers="headers"
         :items="instList"
         select-all
+        v-bind:pagination.sync="pagination"
+        item-key="name"
         class="elevation-1">
         <template slot="headers" scope="props">
           <tr>
@@ -20,7 +22,7 @@
               </v-checkbox>
             </th>
             <th v-for="header in props.headers" :key="header.text"
-              :class="['column sortable', pagination.descending ? 'desc' : 'asc', header.value === pagination.sortBy ? 'active' : '']"
+              :class="['column sortable', pagination.descending ? 'asc' : 'desc', header.value === pagination.sortBy ? 'active' : '']"
               @click="changeSort(header.value)">
               <v-icon>arrow_upward</v-icon>
               {{ header.text }}
@@ -33,7 +35,7 @@
           </span>
         </template>
         <template slot="items" scope="props">
-          <tr>
+          <tr :active="props.selected" @click="props.selected = !props.selected">
             <td>
               <v-checkbox
               primary
@@ -50,13 +52,14 @@
           </tr>
         </template>
       </v-data-table>
+      <v-btn v-if="selected.length > 0" dark v-on:click="delInstitution($event)">Deletar Institutição</v-btn>
     </v-card-text>
   </v-card>
  </v-container>
 </template>
 
 <script>
-  import InstStore from '@/store/Institution';
+  import InstitutionStore from '@/store/Institution';
 
   export default {
     name: 'Lista-de-institutions',
@@ -64,18 +67,17 @@
     data() {
       return {
         pagination: {
-          sortBy: 'name',
+          sortBy: 'id',
         },
         selected: [],
         instList: [],
         headers: [{
           text: 'ID',
           align: 'left',
-          sortable: false,
-          value: 'name',
+          value: 'id',
         }, {
           text: 'Nome',
-          value: 'nome',
+          value: 'name',
           align: 'left',
         }, {
           text: 'Description',
@@ -97,27 +99,29 @@
       };
     },
 
-    created() {
+    updated() {
       console.log(this.selected);
+    },
+    created() {
       const me = this;
-      InstStore.dispatch({
-        action: InstStore.ACTION_LIST_ALL,
+      InstitutionStore.dispatch({
+        action: InstitutionStore.ACTION_LIST,
       });
-      InstStore.on('listAll', (data) => {
+      InstitutionStore.on('listInsti', (data) => {
         me.instList = data.data;
         console.log(me.instList);
       }, me);
     },
 
     beforeDestroy() {
-      InstStore.off(null, null, this);
+      InstitutionStore.off(null, null, this);
     },
     methods: {
       toggleAll() {
         if (this.selected.length) {
           this.selected = [];
         } else {
-          this.selected = this.items.slice();
+          this.selected = this.instList.slice();
         }
       },
       changeSort(column) {
@@ -126,6 +130,17 @@
         } else {
           this.pagination.sortBy = column;
           this.pagination.descending = false;
+        }
+      },
+      delInstitution(event) {
+        event.preventDefault();
+        alert('dsadas');
+        const me = this;
+        if (this.selected.length > 0) {
+          InstitutionStore.dispatch({
+            action: InstitutionStore.ACTION_DELETE,
+            data: this.selected,
+          }, me);
         }
       },
     },
