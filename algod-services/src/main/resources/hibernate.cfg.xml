@@ -45,7 +45,7 @@
 
 
   		<mapping class="com.developerkingdom.algod.entities.user.User"/>
-  		<mapping class="com.developerkingdom.algod.entities.institution.Institution"/>
+  		<mapping class="com.developerkingdom.algod.entities.company.Institution"/>
   		<mapping class="com.developerkingdom.algod.entities.user.UserRecoverRequest"/>
   		<mapping class="com.developerkingdom.algod.entities.user.auth.UserAccessToken"/>
 		<!--

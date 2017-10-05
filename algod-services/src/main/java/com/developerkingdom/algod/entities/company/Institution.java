@@ -1,4 +1,4 @@
-package com.developerkingdom.algod.entities.institution;
+package com.developerkingdom.algod.entities.company;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
