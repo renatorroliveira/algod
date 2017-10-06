@@ -1,5 +1,5 @@
 <template>
-  <v-app fill-height class="blue-grey lighten-3">
+  <v-app fill-height class="blue-grey lighten-3" v-if="!loading">
     <v-navigation-drawer dark persistent enable-resize-watcher
       :miniVariant="miniVariant"
       v-model="drawer">
@@ -58,6 +58,7 @@
     </main>
 
   </v-app>
+  <div v-else></div>
 </template>
 
 <script>
@@ -65,13 +66,21 @@
   import UserSession from '../store/UserSession';
 
   export default {
-    created() {
-      if (!UserSession.get('logged')) {
-        this.$router.push('/login');
+    mounted() {
+      if (!UserSession.get('loading') && !UserSession.get('logged')) {
+        this.$router.push('/auth/login');
       }
+      const me = this;
+      UserSession.on('loaded', () => {
+        if (!UserSession.get('logged')) {
+          me.$router.push('/auth/login');
+        }
+        me.loading = false;
+      }, me);
     },
     data() {
       return {
+        loading: UserSession.get('loading'),
         drawer: true,
         items: [{
           icon: 'web',

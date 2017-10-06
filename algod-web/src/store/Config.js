@@ -10,5 +10,5 @@ $.ajaxSetup({
 });
 
 export default {
-  baseUrl: 'http://localhost:8000/api',
+  baseUrl: 'http://localhost:8000/algod/api',
 };

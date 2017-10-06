@@ -28,8 +28,8 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/api/**': {
-        target: 'http://localhost:8080/algod',
+      '/algod/api/**': {
+        target: 'http://localhost:8080',
         secure: false,
       },
     },

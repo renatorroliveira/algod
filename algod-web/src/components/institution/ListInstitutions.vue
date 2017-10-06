@@ -52,7 +52,7 @@
           </tr>
         </template>
       </v-data-table>
-      <v-btn v-if="selected.length > 0" dark v-on:click="delInstitution($event)">Deletar Institutição</v-btn>
+      <v-btn v-if="selected.length > 0" dark @click.native=="delInstitution($event)">Deletar Institutição</v-btn>
     </v-card-text>
   </v-card>
  </v-container>

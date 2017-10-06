@@ -16,35 +16,40 @@ import RecoverPassword from '@/components/recover/RecoverPassword';
 
 import Atividade from '@/components/Atividade';
 import Curso from '@/components/Cursos';
-import MainLayout from '@/components/MainLayout';
 import SalaDeAula from '@/components/SalaDeAula';
+
+import AuthLayout from '@/components/AuthLayout';
+import MainLayout from '@/components/MainLayout';
 
 Vue.use(Router);
 
 export default new Router({
   routes: [{
-    path: '/login',
-    name: 'Login',
-    component: Login,
-  }, {
-    path: '/register',
-    name: 'Cadastre-se',
-    component: Register,
-  }, {
-    path: '/forgot-password',
-    name: 'Recuperar a senha',
-    component: ForgotPassword,
-  }, {
-    path: '/forgot-password/confirm',
-    name: 'Confirmar no email',
-    component: RecoverPassword,
-  }, {
-    path: '/forgot-password/reset/:token',
-    name: 'Nova senha',
-    component: ResetPassword,
+    path: '/auth',
+    component: AuthLayout,
+    children: [{
+      path: 'login',
+      name: 'Login',
+      component: Login,
+    }, {
+      path: 'register',
+      name: 'Cadastre-se',
+      component: Register,
+    }, {
+      path: 'forgot-password',
+      name: 'Recuperar a senha',
+      component: ForgotPassword,
+    }, {
+      path: 'forgot-password/confirm',
+      name: 'Confirmar no email',
+      component: RecoverPassword,
+    }, {
+      path: 'forgot-password/reset/:token',
+      name: 'Nova senha',
+      component: ResetPassword,
+    }],
   }, {
     path: '/',
-    name: 'Main',
     component: MainLayout,
     children: [{
       path: '',
