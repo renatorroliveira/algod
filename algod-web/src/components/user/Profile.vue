@@ -6,6 +6,7 @@
       <h5>Email: {{user[0].email}}</h5>
       <h5>Telefone: {{user[0].phone}}</h5>
       <h5>Criation date: {{user[0].creation}}</h5>
+      <h5>Access Level: {{user[0].accessLevel}}</h5>
     </v-card-text>
   </v-card>
  </v-container>
@@ -28,7 +29,6 @@ export default {
     });
     UserSession.on('getLoggedUser', (response) => {
       me.user.push(response.attributes.user);
-      console.log(me.user);
     });
   },
   beforeDestoy() {

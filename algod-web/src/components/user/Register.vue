@@ -54,8 +54,6 @@
 </template>
 
 <script>
-/* eslint no-console: ["error", { allow: ["warn", "error"] }] */
-
 import Toastr from 'toastr';
 import UserStore from '@/store/User';
 

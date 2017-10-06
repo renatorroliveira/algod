@@ -208,18 +208,6 @@ public class UserBS extends HibernateBusiness {
 	}
 
 	/**
-	 * Busca usuário pelo cpf.
-	 * 
-	 * @param cpf
-	 *            Cpf para buscar o usuário.
-	 * @return User Usuário que contém o cpf.
-	 */
-	public User existsByCpf(String cpf) {
-		Criteria criteria = this.dao.newCriteria(User.class).add(Restrictions.eq("cpf", cpf));
-		return (User) criteria.uniqueResult();
-	}
-
-	/**
 	 * Buscar usuário pelo celular.
 	 * 
 	 * @param cellphone

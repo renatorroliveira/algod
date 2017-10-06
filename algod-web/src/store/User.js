@@ -1,5 +1,3 @@
-/* eslint no-console: "warn" */
-
 import Toastr from 'toastr';
 import $ from 'jquery';
 import Fluxbone from './Fluxbone';
