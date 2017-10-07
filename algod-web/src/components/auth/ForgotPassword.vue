@@ -37,6 +37,10 @@
     },
 
     mounted() {
+      const me = this;
+      UserSession.on(UserSession.ACTION_RECOVER_PASSWORD, () => {
+        me.$router.push('/auth/forgot-password/confirm');
+      }, me);
     },
 
     beforeDestroy() {

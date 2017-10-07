@@ -71,6 +71,7 @@ export default {
   created() {
     const me = this;
     UserStore.on(UserStore.ACTION_REGISTER, () => {
+      Toastr.success('Conta criada com sucesso');
       me.$router.push('/auth/login');
     }, me);
   },

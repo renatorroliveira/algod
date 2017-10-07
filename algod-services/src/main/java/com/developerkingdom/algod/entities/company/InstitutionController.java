@@ -4,11 +4,13 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import com.developerkingdom.algod.entities.user.authz.AccessLevels;
+import com.developerkingdom.algod.entities.user.authz.Permissioned;
+import com.developerkingdom.algod.entities.user.authz.permission.ManageUsersPermission;
 import com.developerkingdom.algod.system.UserControlAbstractController;
 
 import br.com.caelum.vraptor.Consumes;
 import br.com.caelum.vraptor.Controller;
-import br.com.caelum.vraptor.Delete;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
@@ -22,7 +24,7 @@ public class InstitutionController extends UserControlAbstractController {
 	
 	@Post("/register")
 	@Consumes
-//	@Permissioned(value = AccessLevels.SYSTEM_ADMIN, permissions = { ManageUsersPermission.class })
+	@Permissioned(value = AccessLevels.SYSTEM_ADMIN, permissions = { ManageUsersPermission.class })
 	public void newInstitution(Institution inst) {
 		try {
 			if (inst != null) {
@@ -49,13 +51,13 @@ public class InstitutionController extends UserControlAbstractController {
 			this.fail(ex.getMessage());
 		}
 	}
-	
+
 	@Post("/delete")
 	@Consumes
-	public void deleteInstitution(Institution inst, long id) {
+	public void deleteInstitution(Institution insti) {
 		try {
-			if (inst != null) {
-				inst = this.bs.deleteInstitution(id);
+			if (insti != null) {
+				Institution inst = this.bs.deleteInstitution(insti.getId());
 				this.success(inst);
 			}
 		} catch (Throwable ex) {

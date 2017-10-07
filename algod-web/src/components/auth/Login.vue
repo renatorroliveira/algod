@@ -31,6 +31,7 @@
 </template>
 
 <script>
+import Toastr from 'toastr';
 import UserSession from '@/store/UserSession';
 
 export default {
@@ -45,6 +46,7 @@ export default {
   mounted() {
     const me = this;
     UserSession.on('login', () => {
+      Toastr.success('Usuário logado');
       me.$router.push('/');
     }, me);
   },

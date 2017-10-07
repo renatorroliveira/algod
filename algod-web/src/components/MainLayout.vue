@@ -24,6 +24,15 @@
           </v-list-tile-content>
         </v-list-tile>
 
+        <v-list-tile dark to="/list">
+            <v-list-tile-action>
+              <v-icon dark>business</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>Instituições</v-list-tile-title>
+            </v-list-tile-content>
+        </v-list-tile>
+
         <v-list-tile dark avatar>
           <v-list-tile-avatar v-on:click="doLogout($event)">
             <img src="../assets/close.png" alt="Logout icon" />

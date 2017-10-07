@@ -3,16 +3,16 @@ import Router from 'vue-router';
 
 import Welcome from '@/components/Welcome';
 
-import Login from '@/components/user/Login';
-import Register from '@/components/user/Register';
 import Profile from '@/components/user/Profile';
 
-import InstitutionRegister from '@/components/institution/Register';
+import NewInstitution from '@/components/institution/Register';
 import ListInstitutions from '@/components/institution/ListInstitutions';
 
-import ForgotPassword from '@/components/recover/ForgotPassword';
-import ResetPassword from '@/components/recover/ResetPassword';
-import RecoverPassword from '@/components/recover/RecoverPassword';
+import Login from '@/components/auth/Login';
+import Register from '@/components/auth/Register';
+import ForgotPassword from '@/components/auth/ForgotPassword';
+import ResetPassword from '@/components/auth/ResetPassword';
+import RecoverPassword from '@/components/auth/RecoverPassword';
 
 import Atividade from '@/components/Atividade';
 import Curso from '@/components/Cursos';
@@ -72,13 +72,13 @@ export default new Router({
       name: 'Cursos',
       component: Curso,
     }, {
-      path: 'new-institution',
-      name: 'New-institution',
-      component: InstitutionRegister,
-    }, {
-      path: 'list-institution',
-      name: 'List-institution',
+      path: 'list',
+      name: 'List-institutions',
       component: ListInstitutions,
+    }, {
+      path: 'add',
+      name: 'add-institution',
+      component: NewInstitution,
     }],
   }],
 });

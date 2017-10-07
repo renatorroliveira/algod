@@ -26,12 +26,11 @@ public class InstitutionBS extends HibernateBusiness {
 	}
 	
 	public Institution deleteInstitution(long id) {
-		Criteria criteria = this.dao.newCriteria(Institution.class);
-		criteria.add(Restrictions.or(Restrictions.eq("id", id)));
-		
+		Criteria criteria = this.dao.newCriteria(Institution.class)
+				.add(Restrictions.eq("id", id));
 		Institution inst = (Institution) criteria.uniqueResult();
 		inst.setDeleted(true);
-		
+		this.dao.persist(inst);
 		return inst;
 	}
 }

@@ -8,7 +8,7 @@ import br.com.caelum.vraptor.boilerplate.SimpleLogicalDeletableEntity;
 
 @Entity(name = Institution.TABLE)
 @Table(name = Institution.TABLE)
-public class Institution extends SimpleLogicalDeletableEntity{
+public class Institution extends SimpleLogicalDeletableEntity {
 	public static final String TABLE = "algod_institutions";
 	private static final long serialVersionUID = 1L;
 	

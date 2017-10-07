@@ -52,13 +52,15 @@
           </tr>
         </template>
       </v-data-table>
-      <v-btn v-if="selected.length > 0" dark @click.native=="delInstitution($event)">Deletar Institutição</v-btn>
+      <v-btn dark to="/add">Adicionar instituição</v-btn>
+      <v-btn v-if="selected.length > 0" dark @click.native="delInstitution($event)">Deletar Institutição</v-btn>
     </v-card-text>
   </v-card>
  </v-container>
 </template>
 
 <script>
+  import Toastr from 'toastr';
   import InstitutionStore from '@/store/Institution';
 
   export default {
@@ -99,17 +101,21 @@
       };
     },
 
-    updated() {
-      console.log(this.selected);
-    },
     created() {
       const me = this;
       InstitutionStore.dispatch({
         action: InstitutionStore.ACTION_LIST,
       });
+      InstitutionStore.on(InstitutionStore.ACTION_DELETE, () => {
+        Toastr.success('Instituição removida');
+        location.assign('#/list');
+      }, me);
       InstitutionStore.on('listInsti', (data) => {
-        me.instList = data.data;
-        console.log(me.instList);
+        for (let i = 0; i < data.data.length; i += 1) {
+          if (data.data[i].deleted === false) {
+            me.instList.push(data.data[i]);
+          }
+        }
       }, me);
     },
 
@@ -134,13 +140,14 @@
       },
       delInstitution(event) {
         event.preventDefault();
-        alert('dsadas');
         const me = this;
-        if (this.selected.length > 0) {
+        if (this.selected.length === 1) {
           InstitutionStore.dispatch({
             action: InstitutionStore.ACTION_DELETE,
-            data: this.selected,
+            data: this.selected[0],
           }, me);
+        } else {
+          Toastr.error('Selecione um por vez');
         }
       },
     },

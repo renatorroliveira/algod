@@ -204,6 +204,7 @@ public class UserBS extends HibernateBusiness {
 	 */
 	public User existsByEmail(String email) {
 		Criteria criteria = this.dao.newCriteria(User.class).add(Restrictions.eq("email", email));
+		LOGGER.info((User) criteria.uniqueResult());
 		return (User) criteria.uniqueResult();
 	}
 
@@ -215,7 +216,8 @@ public class UserBS extends HibernateBusiness {
 	 * @return User Usuário que contém o celular.
 	 */
 	public User existsByCellphone(String cellphone) {
-		Criteria criteria = this.dao.newCriteria(User.class).add(Restrictions.eq("cellphone", cellphone));
+		Criteria criteria = this.dao.newCriteria(User.class).add(Restrictions.eq("phone", cellphone));
+		LOGGER.info((User) criteria.uniqueResult());
 		return (User) criteria.uniqueResult();
 	}
 
@@ -332,7 +334,7 @@ public class UserBS extends HibernateBusiness {
 
 			// Set Subject: header field
 			message.setSubject("Redefinir senha");
-			message.setText("http://localhost:8000/" + "#/forgot-password/" + token);
+			message.setText("http://localhost:8000/" + "#/auth/forgot-password/reset/" + token);
 
 			Transport t = session.getTransport("smtp");
 			t.connect("smtp.gmail.com", "developerskingdom.algod@gmail.com", "developerskingdom@algod");

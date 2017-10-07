@@ -28,15 +28,25 @@ public class UserController extends UserControlAbstractController {
 	@NoCache
 	public void register(User user, String deviceId) {
 		try {
-			if (user != null) {
-				user.setDeleted(false);
-				user.setActive(true);
-				user = this.bs.register(user);
-				this.success(user);
+			if (this.bs.existsByCellphone(user.getPhone()) == null) {
+				if (this.bs.existsByEmail(user.getEmail()) == null) {
+					if (user != null) {
+						user.setDeleted(false);
+						user.setActive(true);
+						user = this.bs.register(user);
+						this.success(user);
+					}
+				} else {
+					LOGGER.error("E-mail já cadastrado.");
+					this.fail("E-mail já cadastrado.");
+				}
+			} else {
+				LOGGER.error("Telefone já cadastrado.");
+				this.fail("Telefone já cadastrado.");
 			}
 		} catch (Throwable e) {
-			LOGGER.error("Unexpected runtime error", e);
-			this.fail("E-mail do usuário já foi cadastrado!");
+			LOGGER.error("Erro no registro.", e);
+			this.fail("Ocorreu um erro inesperado: " + e.getMessage());
 		}
 	}
 
@@ -62,7 +72,6 @@ public class UserController extends UserControlAbstractController {
 	@NoCache
 	public void logoutAjax() {
 		try {
-			// Ajax logout
 			this.userSession.logout();
 			this.success();
 		} catch (Throwable e) {
@@ -113,10 +122,7 @@ public class UserController extends UserControlAbstractController {
 					this.fail("Este usuário foi bloqueado. Entre em contato com o administrador do sistema.");
 				} else {
 					UserRecoverRequest req = this.bs.requestRecover(user);
-
 					String url = "http://localhost:8000/" + "#/forgot-password/" + req.getToken();
-					// TODO Enviar e-mail de recuperação
-					LOGGER.info(req.getToken());
 					LOGGER.infof("URL de recuperação: %s", url);
 					this.success(req.getToken());
 				}
@@ -152,7 +158,6 @@ public class UserController extends UserControlAbstractController {
 				this.fail("A senha não pode ser vazia.");
 				LOGGER.info("Senha vazia");
 			} else if (this.bs.resetPassword(password, token)) {
-				LOGGER.info("UHULLLL");
 				this.success();
 			} else {
 				LOGGER.info("Token Expirou ou é invalido");
@@ -164,17 +169,6 @@ public class UserController extends UserControlAbstractController {
 		}
 	}
 
-//
-//	/**
-//	 * Salvar um usuário
-//	 * 
-//	 * @param name
-//	 *            Nome do usuário.
-//	 * @param email
-//	 *            Email do usuário.
-//	 * @param accessLevel
-//	 *            Nível de acesso do usuário.
-//	 */
 //	@Post("/api/user")
 //	@Consumes
 //	@NoCache

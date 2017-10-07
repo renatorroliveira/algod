@@ -1,4 +1,3 @@
-import Toastr from 'toastr';
 import $ from 'jquery';
 import Backbone from 'backbone';
 import string from 'string';
@@ -138,7 +137,6 @@ const UserSession = Backbone.Model.extend({
     }
 
     if (errors.length > 0) {
-      Toastr.error('Por favor, verifique os campos e tente novamente');
       me.trigger('fail', errors);
     } else {
       $.ajax({
@@ -160,14 +158,12 @@ const UserSession = Backbone.Model.extend({
               accessLevel: data.data.accessLevel,
               permissions: data.data.permissions,
             });
-            Toastr.success('Usuário logado');
             me.trigger('login', me);
           } else {
             me.trigger('fail', data.message);
           }
         },
         error(opts) {
-          Toastr.error('E-mail ou senha inválidos');
           me.handleRequestErrors([], opts);
         },
       });
@@ -190,8 +186,8 @@ const UserSession = Backbone.Model.extend({
           },
         });
         me.clearStorage();
+        location.assign('#/auth/login');
         me.trigger('logout');
-        location.assign('#/login');
       },
       error(opts) {
         me.handleRequestErrors([], opts);
@@ -205,15 +201,9 @@ const UserSession = Backbone.Model.extend({
       url: `${me.url}/logged`,
       dataType: 'json',
       success(data) {
-        if (data.success) {
-          console.log(data);
-        } else {
-          console.log('Erro inesperado');
-        }
-        me.trigger('getLoggedUser', me);
+        me.trigger('getLoggedUser', data);
       },
       error(args) {
-        Toastr.error('Erro inesperado');
         me.handleRequestErrors([], args);
       },
     });
@@ -227,18 +217,14 @@ const UserSession = Backbone.Model.extend({
       data: JSON.stringify(email),
       success() {
         me.trigger('recoverPass', me);
-        location.assign('#/forgot-password/confirm');
-        Toastr.success('Um endereço de confirmação foi enviado para seu email');
       },
       error(opts) {
         me.handleRequestErrors([], opts);
-        Toastr.error('Esse e-mail não está cadastrado');
       },
     });
   },
   canResetPass(params) {
     const me = this;
-    console.log(JSON.stringify(params));
     $.ajax({
       method: 'POST',
       url: `${me.url}/recover-password/${params.token}`,
@@ -249,7 +235,7 @@ const UserSession = Backbone.Model.extend({
           me.set({
             ValidToken: true,
           });
-          me.trigger('canResetPass', me);
+          me.trigger(me.ACTION_VALIDATE_TOKEN);
         }
       },
       error(args) {
@@ -257,12 +243,10 @@ const UserSession = Backbone.Model.extend({
         me.set({
           ValidToken: null,
         });
-        Toastr.error('Token inválido');
       },
     });
   },
   newPassword(params) {
-    console.log(JSON.stringify(params));
     const me = this;
     $.ajax({
       method: 'POST',
@@ -270,13 +254,10 @@ const UserSession = Backbone.Model.extend({
       dataType: 'json',
       data: JSON.stringify(params),
       success() {
-        me.trigger('newPassword');
-        Toastr.success('Senha modificada');
-        location.assign('#/login');
+        me.trigger(me.ACTION_NEW_PASSWORD);
       },
       error(opts) {
         me.handleRequestErrors([], opts);
-        Toastr.error('Token inválido ou expirou');
       },
     });
   },

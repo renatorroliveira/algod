@@ -1,4 +1,3 @@
-import Toastr from 'toastr';
 import $ from 'jquery';
 import Fluxbone from './Fluxbone';
 import Config from './Config';
@@ -23,16 +22,10 @@ const InstitutionStore = Fluxbone.Store.extend({
       dataType: 'json',
       data: JSON.stringify(params),
       success(data) {
-        if (data.success) {
-          me.trigger(me.ACTION_REGISTER, data);
-          Toastr.success('Nova instituição adicionada');
-        } else {
-          Toastr.error('Erro inesperado ao criar instituição');
-        }
+        me.trigger(me.ACTION_REGISTER, data);
       },
       error(args) {
         me.trigger('fail', `Erro inesperado: ${args}`);
-        Toastr.error(args);
       },
     });
   },
@@ -44,7 +37,6 @@ const InstitutionStore = Fluxbone.Store.extend({
       url: `${me.url}/listAll`,
       dataType: 'json',
       success(data) {
-        console.log(data);
         me.trigger(me.ACTION_LIST, data);
       },
       error(errs) {
@@ -64,7 +56,6 @@ const InstitutionStore = Fluxbone.Store.extend({
         me.trigger(me.ACTION_DELETE, data);
       },
       error(args) {
-        console.log(args);
         me.trigger('fail', args);
       },
     });
