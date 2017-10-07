@@ -43,12 +43,12 @@
               :input-value="props.selected"
               ></v-checkbox>
             </td>
-            <td class="text-xs">{{ props.item.id }}</td>
-            <td class="text-xs">{{ props.item.name }}</td>
-            <td class="text-xs">{{ props.item.description }}</td>
-            <td class="text-xs">{{ props.item.host }}</td>
-            <td class="text-xs">{{ props.item.site }}</td>
-            <td class="text-xs">{{ props.item.baseUrl }}</td>
+            <td class="text-xs-center">{{ props.item.id }}</td>
+            <td class="text-xs-center">{{ props.item.name }}</td>
+            <td class="text-xs-center">{{ props.item.description }}</td>
+            <td class="text-xs-center">{{ props.item.host }}</td>
+            <td class="text-xs-center">{{ props.item.site }}</td>
+            <td class="text-xs-center">{{ props.item.baseUrl }}</td>
           </tr>
         </template>
       </v-data-table>
@@ -108,7 +108,6 @@
       });
       InstitutionStore.on(InstitutionStore.ACTION_DELETE, () => {
         Toastr.success('Instituição removida');
-        location.assign('#/list');
       }, me);
       InstitutionStore.on('listInsti', (data) => {
         for (let i = 0; i < data.data.length; i += 1) {

@@ -24,7 +24,7 @@
           </v-list-tile-content>
         </v-list-tile>
 
-        <v-list-tile dark to="/list">
+        <v-list-tile v-if="access === 100" dark to="/list">
             <v-list-tile-action>
               <v-icon dark>business</v-icon>
             </v-list-tile-action>
@@ -91,6 +91,7 @@
       return {
         loading: UserSession.get('loading'),
         drawer: true,
+        access: UserSession.get('accessLevel'),
         items: [{
           icon: 'web',
           title: 'Profile',

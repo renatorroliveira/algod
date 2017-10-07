@@ -57,8 +57,8 @@ public class InstitutionController extends UserControlAbstractController {
 	public void deleteInstitution(Institution insti) {
 		try {
 			if (insti != null) {
-				Institution inst = this.bs.deleteInstitution(insti.getId());
-				this.success(inst);
+				insti = this.bs.deleteInstitution(insti.getId());
+				this.success(insti);
 			}
 		} catch (Throwable ex) {
 			LOGGER.error("Unexpected error", ex);
