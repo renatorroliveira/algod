@@ -10,7 +10,7 @@ const UserSession = Backbone.Model.extend({
   ACTION_RECOVER_PASSWORD: 'recoverPass',
   ACTION_VALIDATE_TOKEN: 'canResetPass',
   ACTION_NEW_PASSWORD: 'newPassword',
-  ACTION_GET_LOGGED_USER: 'getLoggedUser',
+  ACTION_PICTURE: 'changePic',
 
   url: `${Config.baseUrl}/v1/user`,
   dispatch(payload) {
@@ -194,14 +194,15 @@ const UserSession = Backbone.Model.extend({
       },
     });
   },
-  getLoggedUser() {
+  changePic(params) {
     const me = this;
     $.ajax({
-      method: 'GET',
-      url: `${me.url}/logged`,
+      method: 'POST',
+      url: `${me.url}/picture`,
       dataType: 'json',
+      data: JSON.stringify(params),
       success(data) {
-        me.trigger('getLoggedUser', data);
+        me.trigger('changePic', data);
       },
       error(args) {
         me.handleRequestErrors([], args);

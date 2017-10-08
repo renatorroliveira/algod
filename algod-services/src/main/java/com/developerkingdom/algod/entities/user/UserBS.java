@@ -204,7 +204,6 @@ public class UserBS extends HibernateBusiness {
 	 */
 	public User existsByEmail(String email) {
 		Criteria criteria = this.dao.newCriteria(User.class).add(Restrictions.eq("email", email));
-		LOGGER.info((User) criteria.uniqueResult());
 		return (User) criteria.uniqueResult();
 	}
 
@@ -217,7 +216,6 @@ public class UserBS extends HibernateBusiness {
 	 */
 	public User existsByCellphone(String cellphone) {
 		Criteria criteria = this.dao.newCriteria(User.class).add(Restrictions.eq("phone", cellphone));
-		LOGGER.info((User) criteria.uniqueResult());
 		return (User) criteria.uniqueResult();
 	}
 

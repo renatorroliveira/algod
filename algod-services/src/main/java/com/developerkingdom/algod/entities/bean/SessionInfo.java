@@ -20,10 +20,12 @@ public class SessionInfo implements Serializable {
 	private long ttl;
 	private List<String> permissions;
 	private int accessLevel;
+	private String picture;
 	
 	public SessionInfo(UserSession session) {
 		UserAccessToken accessToken = session.getToken();
 		this.user = accessToken.getUser();
+		this.setPicture(this.user.getPicture());
 		this.token = accessToken.getToken();
 		this.ttl = (accessToken.getTtl()*1000L) - (System.currentTimeMillis()-accessToken.getCreation().getTime());
 		this.permissions = session.getPermissions();
@@ -64,6 +66,14 @@ public class SessionInfo implements Serializable {
 
 	public void setAccessLevel(int accessLevel) {
 		this.accessLevel = accessLevel;
+	}
+
+	public String getPicture() {
+		return picture;
+	}
+
+	public void setPicture(String picture) {
+		this.picture = picture;
 	}
 	
 	

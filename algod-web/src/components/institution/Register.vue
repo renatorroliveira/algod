@@ -1,22 +1,17 @@
 <template>
-  <v-container fluid>
+  <main>
+  <v-container>
     <v-layout row wrap>
-      <v-flex xs12 sm6 offset-sm3 md4 offset-md4>
-        <img src="../../assets/logoAGdarken.png" style="width: 200px; margin: 20px auto; display: block;" />
-        <h5 class="headline text-xs-center">Adicionar instituição</h5>
+      <v-flex xs8 offset-xs2>
         <v-card>
           <v-card-text>
+            <h5 class="headline text-xs-center">Adicionar instituição</h5>
             <form v-on:submit="register($event)">
               <v-text-field
                 label="Nome"
                 v-model="name"
                 persistent-hint
                 autofocus
-              ></v-text-field>
-              <v-text-field
-                label="Descrição"
-                v-model="desc"
-                persistent-hint
               ></v-text-field>
               <v-text-field
                 label="Site"
@@ -33,19 +28,25 @@
                 v-model="baseURL"
                 persistent-hint
               ></v-text-field>
+              <v-text-field
+                label="Descrição"
+                v-model="desc"
+                multi-line
+                persistent-hint
+              ></v-text-field>
               <div class="text-xs-right">
                 <v-btn type="submit" primary>Registrar</v-btn>
               </div>
             </form>
           </v-card-text>
+          <v-btn dark class="btn mx-3" to="/list">Lista de instituições</v-btn>
           <v-card-actions>
-            <router-link class="btn mx-3" to="/login">Faça login</router-link>
-            <router-link class="btn mx-3" to="/forgot-password">Esqueceu sua senha?</router-link>
           </v-card-actions>
         </v-card>
       </v-flex>
     </v-layout>
   </v-container>
+</main>
 </template>
 
 <script>

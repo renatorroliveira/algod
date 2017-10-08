@@ -11,20 +11,40 @@ const UserStore = Fluxbone.Store.extend({
   model: UserModel,
   url: `${Fluxbone.baseUrl}/v1/user`,
 
+  handleRequestErrors(collection, opts) {
+    if (opts.status === 400) {
+      this.trigger('fail', opts.responseJSON.message);
+    } else if (opts.status === 409) {
+      // Validation errors
+      let resp = {};
+      try {
+        resp = JSON.parse(opts.responseText);
+      } catch (err) {
+        resp = {
+          message: `Unexpected server error ${opts.status} ${opts.statusText}: ${opts.responseText}`,
+        };
+      }
+      this.trigger('fail', resp.message);
+    } else {
+      this.trigger('fail', `Unexpected server error ${opts.status} ${opts.statusText}: ${opts.responseJSON.message}`);
+    }
+  },
+
   register(params) {
     const me = this;
     $.ajax({
       method: 'POST',
       url: `${me.url}/register`,
+      dataType: 'json',
       data: JSON.stringify({
         user: params,
         deviceId: localStorage.deviceId,
       }),
       success(data) {
-        me.trigger(me.ACTION_REGISTER, data);
+        me.trigger('register', data);
       },
-      error(res) {
-        me.trigger('fail', res);
+      error(opts) {
+        me.handleRequestErrors([], opts);
       },
     });
   },

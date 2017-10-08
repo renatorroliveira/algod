@@ -24,7 +24,7 @@
           </v-list-tile-content>
         </v-list-tile>
 
-        <v-list-tile v-if="access === 100" dark to="/list">
+        <v-list-tile v-if="access === 100 && !loading" dark to="/list">
             <v-list-tile-action>
               <v-icon dark>business</v-icon>
             </v-list-tile-action>
@@ -33,12 +33,12 @@
             </v-list-tile-content>
         </v-list-tile>
 
-        <v-list-tile dark avatar>
-          <v-list-tile-avatar v-on:click="doLogout($event)">
+        <v-list-tile dark avatar @click.native="doLogout($event)">
+          <v-list-tile-avatar>
             <img src="../assets/close.png" alt="Logout icon" />
           </v-list-tile-avatar>
           <v-list-tile-content>
-            <v-list-tile-title v-on:click="doLogout($event)">
+            <v-list-tile-title>
               Logout
             </v-list-tile-title>
           </v-list-tile-content>
@@ -76,14 +76,18 @@
 
   export default {
     mounted() {
+      const me = this;
+      UserSession.on('logout', () => {
+        Toastr.success('Usuário deslogado');
+      }, me);
       if (!UserSession.get('loading') && !UserSession.get('logged')) {
         this.$router.push('/auth/login');
       }
-      const me = this;
       UserSession.on('loaded', () => {
         if (!UserSession.get('logged')) {
           me.$router.push('/auth/login');
         }
+        me.access = UserSession.get('accessLevel');
         me.loading = false;
       }, me);
     },
@@ -119,7 +123,6 @@
         UserSession.dispatch({
           action: UserSession.ACTION_LOGOUT,
         });
-        Toastr.success('Usuário deslogado');
       },
     },
     beforeDestroy() {

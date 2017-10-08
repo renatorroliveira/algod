@@ -45,6 +45,9 @@ export default {
   },
   mounted() {
     const me = this;
+    UserSession.on('fail', (res) => {
+      Toastr.error(res);
+    }, me);
     UserSession.on('login', () => {
       Toastr.success('Usuário logado');
       me.$router.push('/');
@@ -56,13 +59,20 @@ export default {
   methods: {
     login(event) {
       event.preventDefault();
-      UserSession.dispatch({
-        action: UserSession.ACTION_LOGIN,
-        data: {
-          email: this.email,
-          password: this.password,
-        },
-      });
+      if (this.email === '') {
+        Toastr.error('E-mail não pode ser vazio');
+      }
+      if (this.password === '') {
+        Toastr.error('Senha não pode ser vazia');
+      } else {
+        UserSession.dispatch({
+          action: UserSession.ACTION_LOGIN,
+          data: {
+            email: this.email,
+            password: this.password,
+          },
+        });
+      }
     },
   },
 };

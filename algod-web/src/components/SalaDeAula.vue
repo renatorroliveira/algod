@@ -3,10 +3,12 @@
     <v-layout row justify-space-around>
       <v-flex xs12 sm10 md8 lg6>
         <v-card class="elevation-2">
-          <v-card-title><h5>{{ nomedocurso }}</h5></v-card-title>
-            <div style="border: 2px solid black; margin: 10px;">
-              <v-card-text><h5>Novidades</h5></v-card-text>
-            </div><br>
+          <v-card-title>
+            <h5>{{ nomedocurso }}</h5>
+          </v-card-title>
+          <div style="border: 2px solid black; margin: 10px;">
+            <v-card-text><h5>Novidades</h5></v-card-text>
+          </div><br>
         </v-card>
         <v-card>
           <v-card-title><h5>Atividades</h5></v-card-title>
@@ -45,14 +47,3 @@ export default {
   },
 };
 </script>
-
-<style type="text/css">
-   #example-1 {
-    color: #fff;
-    text-align: center;
-  }
-
-  #example-1 .flex {
-    margin-bottom: 16px;
-  }
-</style>

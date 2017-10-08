@@ -37,11 +37,9 @@ public class UserController extends UserControlAbstractController {
 						this.success(user);
 					}
 				} else {
-					LOGGER.error("E-mail já cadastrado.");
 					this.fail("E-mail já cadastrado.");
 				}
 			} else {
-				LOGGER.error("Telefone já cadastrado.");
 				this.fail("Telefone já cadastrado.");
 			}
 		} catch (Throwable e) {
@@ -55,7 +53,7 @@ public class UserController extends UserControlAbstractController {
 	@NoCache
 	public void login(String email, String password, String deviceId) {
 		try {
-			LOGGER.warnf("Tried with '%s' and '%s', id: %s.", email, password, deviceId);
+			LOGGER.warnf("Tried with '%s' and '%s', deviceId: %s.", email, password, deviceId);
 			UserAccessToken token = this.bs.authenticate(email, password, deviceId);
 			if (token != null) {
 				this.success(new SessionInfo(this.userSession));
@@ -122,7 +120,7 @@ public class UserController extends UserControlAbstractController {
 					this.fail("Este usuário foi bloqueado. Entre em contato com o administrador do sistema.");
 				} else {
 					UserRecoverRequest req = this.bs.requestRecover(user);
-					String url = "http://localhost:8000/" + "#/forgot-password/" + req.getToken();
+					String url = "http://localhost:8000/" + "#/auth/forgot-password/reset/" + req.getToken();
 					LOGGER.infof("URL de recuperação: %s", url);
 					this.success(req.getToken());
 				}
@@ -166,6 +164,26 @@ public class UserController extends UserControlAbstractController {
 		} catch (Throwable ex) {
 			LOGGER.errorf(ex, "Unexpected error occurred.");
 			this.fail(ex.getMessage());
+		}
+	}
+	
+	@Post("/picture")
+	@Consumes
+	@NoCache
+	public void updatePictureUser(User user, String url) {
+		try {
+			User existent = this.bs.exists(this.userSession.getUser().getId(), User.class);
+			if (url == null) {
+				this.fail("Imagem Inválida.");
+			} else {
+				existent.setPicture(url);
+				this.bs.persist(existent);
+				this.success(existent);
+			}
+
+		} catch (Throwable e) {
+			LOGGER.error("Erro no login.", e);
+			this.fail("Ocorreu um erro inesperado: " + e.getMessage());
 		}
 	}
 
@@ -323,27 +341,7 @@ public class UserController extends UserControlAbstractController {
 //	 *            Url que contém a foto de perfil do usuário.
 //	 * @return User Usuário com a foto de perfil atualizada.
 //	 */
-//	@Post("/api/user/picture")
-//	@Consumes
-//	@NoCache
-//	@Permissioned
-//	public void updatePictureUser(User user, String url) {
-//
-//		try {
-//			User existent = this.bs.exists(this.userSession.getUser().getId(), User.class);
-//			if (url == null) {
-//				this.fail("Imagem Inválida.");
-//			} else {
-//				existent.setPicture(url);
-//				this.bs.persist(existent);
-//				this.success(existent);
-//			}
-//
-//		} catch (Throwable e) {
-//			LOGGER.error("Erro no login.", e);
-//			this.fail("Ocorreu um erro inesperado: " + e.getMessage());
-//		}
-//	}
+
 //
 //	/**
 //	 * Usuário do tipo administrador realiza update na foto de perfil de um

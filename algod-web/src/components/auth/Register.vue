@@ -70,7 +70,11 @@ export default {
   },
   created() {
     const me = this;
-    UserStore.on(UserStore.ACTION_REGISTER, () => {
+    UserStore.on('fail', (res) => {
+      console.log(res);
+      Toastr.error(res);
+    }, me);
+    UserStore.on('register', () => {
       Toastr.success('Conta criada com sucesso');
       me.$router.push('/auth/login');
     }, me);

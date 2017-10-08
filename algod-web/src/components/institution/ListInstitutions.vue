@@ -52,8 +52,9 @@
           </tr>
         </template>
       </v-data-table>
+      <br>
       <v-btn dark to="/add">Adicionar instituição</v-btn>
-      <v-btn v-if="selected.length > 0" dark @click.native="delInstitution($event)">Deletar Institutição</v-btn>
+      <v-btn v-if="selected.length === 1" dark @click.native="delInstitution($event)">Deletar Institutição</v-btn>
     </v-card-text>
   </v-card>
  </v-container>

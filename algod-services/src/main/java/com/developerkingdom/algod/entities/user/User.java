@@ -40,7 +40,7 @@ public class User extends SimpleLogicalDeletableEntity {
 	private String department;
 	
 	@Column(nullable=true, length=255)
-	private String picture;
+	private String picture = "https://goo.gl/61J21v";
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable=false)

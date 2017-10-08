@@ -40,7 +40,6 @@ const Store = Backbone.Collection.extend({
       if (msg.error) {
         Toastr.error(msg.error.message);
       } else {
-        Toastr.error('Um erro inesperado ocorreu.');
         console.error(msg);
       }
     }, this);

@@ -54,6 +54,7 @@ public class InstitutionController extends UserControlAbstractController {
 
 	@Post("/delete")
 	@Consumes
+	@Permissioned(value = AccessLevels.SYSTEM_ADMIN, permissions = { ManageUsersPermission.class })
 	public void deleteInstitution(Institution insti) {
 		try {
 			if (insti != null) {
