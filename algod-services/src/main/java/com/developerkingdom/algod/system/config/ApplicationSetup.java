@@ -4,6 +4,8 @@ import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.ejb.Startup;
 import javax.enterprise.context.ApplicationScoped;
@@ -19,6 +21,7 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.jboss.logging.Logger;
 
+import com.developerkingdom.algod.entities.discipline.DisciplineCategory;
 import com.developerkingdom.algod.entities.user.User;
 import com.developerkingdom.algod.entities.user.authz.AccessLevels;
 
@@ -80,7 +83,26 @@ public class ApplicationSetup {
 			user.setAccessLevel(AccessLevels.SYSTEM_ADMIN.getLevel());
 			dao.persist(user);
 		}
-
+		
+		List<String> names = new LinkedList<String>();
+		names.add("Programming");
+		names.add("Web development");
+		names.add("Software development for Mobile");
+			
+		for (int i = 0; i < names.size(); i++) {
+			Criteria crit = dao.newCriteria(DisciplineCategory.class)
+					.add(Restrictions.eq("name", names.get(i)));
+			DisciplineCategory category = (DisciplineCategory) crit.uniqueResult();
+			if (category == null) {
+				category = new DisciplineCategory();
+				category.setName(names.get(i));
+				category.setId(null);
+				dao.persist(category);
+			}
+			
+		}
+		
+		
 		
 		LOG.info("Application setup completed.");
 		mngr.closeSession();

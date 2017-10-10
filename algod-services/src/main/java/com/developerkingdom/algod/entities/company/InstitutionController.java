@@ -42,6 +42,7 @@ public class InstitutionController extends UserControlAbstractController {
 	
 	@Get("/listAll")
 	@Consumes
+	@Permissioned(value = AccessLevels.SYSTEM_ADMIN, permissions = { ManageUsersPermission.class })
 	public void listInstitutions() {
 		try {
 			List<Institution> inst = this.bs.listInstitutions();

@@ -5,8 +5,11 @@ import Welcome from '@/components/Welcome';
 
 import Profile from '@/components/user/Profile';
 
-import NewInstitution from '@/components/institution/Register';
+import NewInstitution from '@/components/institution/AddInstitution';
 import ListInstitutions from '@/components/institution/ListInstitutions';
+
+import ListDisciplines from '@/components/disciplines/ListDisciplines';
+import NewDiscipline from '@/components/disciplines/AddDiscipline';
 
 import Login from '@/components/auth/Login';
 import Register from '@/components/auth/Register';
@@ -72,13 +75,21 @@ export default new Router({
       name: 'Cursos',
       component: Curso,
     }, {
-      path: 'list',
-      name: 'List-institutions',
+      path: 'institution/list',
+      name: 'List of institutions',
       component: ListInstitutions,
     }, {
-      path: 'add',
-      name: 'add-institution',
+      path: 'institution/add',
+      name: 'Add Institution',
       component: NewInstitution,
+    }, {
+      path: 'discipline/list',
+      name: 'List of Disciplines',
+      component: ListDisciplines,
+    }, {
+      path: 'discipline/add',
+      name: 'Add Discipline',
+      component: NewDiscipline,
     }],
   }],
 });

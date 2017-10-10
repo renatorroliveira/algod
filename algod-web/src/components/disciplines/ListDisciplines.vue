@@ -5,7 +5,7 @@
       <v-data-table
         v-model="selected"
         :headers="headers"
-        :items="instList"
+        :items="discList"
         select-all
         v-bind:pagination.sync="pagination"
         item-key="name"
@@ -45,16 +45,14 @@
             </td>
             <td class="text-xs-center">{{ props.item.id }}</td>
             <td class="text-xs-center">{{ props.item.name }}</td>
-            <td class="text-xs-center">{{ props.item.description }}</td>
-            <td class="text-xs-center">{{ props.item.host }}</td>
-            <td class="text-xs-center">{{ props.item.site }}</td>
-            <td class="text-xs-center">{{ props.item.baseUrl }}</td>
+            <td class="text-xs-center">{{ props.item.category.name }}</td>
+            <td class="text-xs-center">{{ props.item.institution.name }}</td>
           </tr>
         </template>
       </v-data-table>
       <br>
-      <v-btn dark to="/institution/add">Adicionar instituição</v-btn>
-      <v-btn v-if="selected.length === 1" dark @click.native="delInstitution($event)">Deletar Institutição</v-btn>
+      <v-btn dark to="/discipline/add">Adicionar Disciplina</v-btn>
+      <v-btn v-if="selected.length === 1" dark @click.native="delDiscipline($event)">Deletar Disciplina</v-btn>
     </v-card-text>
   </v-card>
  </v-container>
@@ -62,10 +60,10 @@
 
 <script>
   import Toastr from 'toastr';
-  import InstitutionStore from '@/store/Institution';
+  import DisciplineStore from '@/store/Discipline';
 
   export default {
-    name: 'Lista-de-institutions',
+    name: 'Lista-de-Discipline',
 
     data() {
       return {
@@ -73,7 +71,7 @@
           sortBy: 'id',
         },
         selected: [],
-        instList: [],
+        discList: [],
         headers: [{
           text: 'ID',
           align: 'left',
@@ -83,20 +81,12 @@
           value: 'name',
           align: 'left',
         }, {
-          text: 'Description',
+          text: 'category_name',
           value: 'desc',
           align: 'left',
         }, {
-          text: 'Host',
+          text: 'institution_name',
           value: 'host',
-          align: 'left',
-        }, {
-          text: 'Site',
-          value: 'Site',
-          align: 'left',
-        }, {
-          text: 'Base URL',
-          value: 'Base url',
           align: 'left',
         }],
       };
@@ -104,23 +94,23 @@
 
     created() {
       const me = this;
-      InstitutionStore.dispatch({
-        action: InstitutionStore.ACTION_LIST,
+      DisciplineStore.dispatch({
+        action: DisciplineStore.ACTION_LIST_ALL,
       });
-      InstitutionStore.on(InstitutionStore.ACTION_DELETE, () => {
-        Toastr.success('Instituição removida');
+      DisciplineStore.on(DisciplineStore.ACTION_DELETE, () => {
+        Toastr.success('Disciplina removida');
       }, me);
-      InstitutionStore.on('listInsti', (data) => {
+      DisciplineStore.on(DisciplineStore.ACTION_LIST_ALL, (data) => {
         for (let i = 0; i < data.data.length; i += 1) {
           if (data.data[i].deleted === false) {
-            me.instList.push(data.data[i]);
+            me.discList.push(data.data[i]);
           }
         }
       }, me);
     },
 
     beforeDestroy() {
-      InstitutionStore.off(null, null, this);
+      DisciplineStore.off(null, null, this);
     },
     methods: {
       toggleAll() {
@@ -138,12 +128,12 @@
           this.pagination.descending = false;
         }
       },
-      delInstitution(event) {
+      delDiscipline(event) {
         event.preventDefault();
         const me = this;
         if (this.selected.length === 1) {
-          InstitutionStore.dispatch({
-            action: InstitutionStore.ACTION_DELETE,
+          DisciplineStore.dispatch({
+            action: DisciplineStore.ACTION_DELETE,
             data: this.selected[0],
           }, me);
         } else {

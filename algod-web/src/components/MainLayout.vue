@@ -24,12 +24,21 @@
           </v-list-tile-content>
         </v-list-tile>
 
-        <v-list-tile v-if="access === 100 && !loading" dark to="/list">
+        <v-list-tile v-if="access === 100 && !loading" dark to="/institution/list">
             <v-list-tile-action>
               <v-icon dark>business</v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
               <v-list-tile-title>Instituições</v-list-tile-title>
+            </v-list-tile-content>
+        </v-list-tile>
+
+        <v-list-tile v-if="access === 100 && !loading" dark to="/discipline/list">
+            <v-list-tile-action>
+              <v-icon dark>business</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>Discipline</v-list-tile-title>
             </v-list-tile-content>
         </v-list-tile>
 

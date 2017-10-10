@@ -15,7 +15,7 @@ public class InstitutionBS extends HibernateBusiness {
 	public Institution newInstitution(Institution inst) {
 		inst.setId(null);
 		inst.setDeleted(false);
-		this.persist(inst);
+		this.dao.persist(inst);
 		
 		return inst;
 	}

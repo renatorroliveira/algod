@@ -39,7 +39,7 @@
               </div>
             </form>
           </v-card-text>
-          <v-btn dark class="btn mx-3" to="/list">Lista de instituições</v-btn>
+          <v-btn dark class="btn mx-3" to="/institution/list">Lista de instituições</v-btn>
           <v-card-actions>
           </v-card-actions>
         </v-card>
@@ -68,7 +68,7 @@ export default {
     const me = this;
     InstStore.on(InstStore.ACTION_REGISTER, () => {
       Toastr.success('Instituição adicionada');
-      me.$router.push('/list');
+      me.$router.push('/institution/list');
     }, me);
   },
   beforeDestroy() {
