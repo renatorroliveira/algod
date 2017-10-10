@@ -15,14 +15,14 @@
               ></v-text-field>
               <v-select
                 v-bind:items="categorys"
-                v-model="e1"
+                :key="e1"
                 label="Categoria da discplina"
                 single-line
                 bottom
               ></v-select>
               <v-select
                 v-bind:items="institutions"
-                v-model="e2"
+                :key="e2"
                 label="Institution"
                 single-line
                 bottom
@@ -52,8 +52,8 @@ export default {
   data() {
     return {
       name: '',
-      e1: '',
-      e2: '',
+      e1: null,
+      e2: null,
       categorys: [],
       institutions: [],
     };
@@ -97,9 +97,15 @@ export default {
       DisciplineStore.dispatch({
         action: DisciplineStore.ACTION_ADD,
         data: {
-          name: this.name,
-          categoryId: this.e1.id,
-          institutionId: this.e2.id,
+          discipline: {
+            name: this.name,
+          },
+          category: {
+            id: this.e1.id,
+          },
+          institution: {
+            id: this.e2.id,
+          },
         },
       });
     },

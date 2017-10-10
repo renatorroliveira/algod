@@ -23,16 +23,10 @@ public class DisciplineController extends UserControlAbstractController {
 	
 	@Post("/create")
 	@Consumes
-//	@Permissioned(value = AccessLevels.SYSTEM_ADMIN, permissions = { ManageUsersPermission.class })
-	public void create(String name, long categoryId, long institutionId) {
+	@Permissioned(value = AccessLevels.SYSTEM_ADMIN, permissions = { ManageUsersPermission.class })
+	public void create(Discipline discipline, DisciplineCategory category, Institution institution) {
 		try {
-			DisciplineCategory category = this.bs.searchCategoryById(categoryId);
-			Institution institution = this.bs.searchInstitutionById(institutionId);
-			if (category == null) this.fail("Categoria inválida");
-			if (institution == null) this.fail("Institution inválida");
-			if (name != null) {
-				Discipline discipline = new Discipline();
-				discipline.setName(name);
+			if (discipline != null) {
 				discipline.setCategory(category);
 				discipline.setInstitution(institution);
 				discipline = this.bs.create(discipline);
