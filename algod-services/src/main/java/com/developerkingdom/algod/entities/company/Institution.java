@@ -12,21 +12,15 @@ public class Institution extends SimpleLogicalDeletableEntity {
 	public static final String TABLE = "algod_institutions";
 	private static final long serialVersionUID = 1L;
 	
-	@Column(nullable=false, length=255)
-	String name;
+	@Column(nullable=false, length=128, unique=true)
+	private String name;
 	
-	@Column(nullable=false, length=255)
-	String description;
+	@Column(nullable=true, length=4000)
+	private String description;
 	
-	@Column(nullable=false, length=255)
-	String site;
+	@Column(nullable=true, length=128)
+	private String site;
 	
-	@Column(nullable=false, unique=true, length=255)
-	String host;
-	
-	@Column(nullable=false, length=255)
-	String baseUrl;
-
 	public String getName() {
 		return name;
 	}
@@ -50,22 +44,5 @@ public class Institution extends SimpleLogicalDeletableEntity {
 	public void setSite(String site) {
 		this.site = site;
 	}
-
-	public String getHost() {
-		return host;
-	}
-
-	public void setHost(String host) {
-		this.host = host;
-	}
-
-	public String getBaseUrl() {
-		return baseUrl;
-	}
-
-	public void setBaseUrl(String baseUrl) {
-		this.baseUrl = baseUrl;
-	}
-	
 	
 }

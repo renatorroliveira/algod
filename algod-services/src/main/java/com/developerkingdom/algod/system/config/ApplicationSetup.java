@@ -21,6 +21,8 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.jboss.logging.Logger;
 
+import com.developerkingdom.algod.entities.company.Institution;
+import com.developerkingdom.algod.entities.company.InstitutionDomain;
 import com.developerkingdom.algod.entities.discipline.DisciplineCategory;
 import com.developerkingdom.algod.entities.user.User;
 import com.developerkingdom.algod.entities.user.authz.AccessLevels;
@@ -37,6 +39,8 @@ public class ApplicationSetup {
 
 	private static final Logger LOG = Logger.getLogger(ApplicationSetup.class);
 
+	private static final String INSTITUTION_NAME = "Instituto Federal Catarinense - Campus Concórdia";
+	
 	protected ApplicationSetup() {
 	}
 
@@ -84,6 +88,30 @@ public class ApplicationSetup {
 			dao.persist(user);
 		}
 		
+		// Local institution
+		criteria = dao.newCriteria(Institution.class)
+				.add(Restrictions.eq("name", INSTITUTION_NAME));
+		Institution institution = (Institution) criteria.uniqueResult();
+		if (institution == null) {
+			institution = new Institution();
+			institution.setDescription(null);
+			institution.setName(INSTITUTION_NAME);
+			institution.setSite("http://localhost:8000/");
+			dao.persist(institution);
+		}
+
+		// Local institution domain
+		criteria = dao.newCriteria(InstitutionDomain.class)
+				.add(Restrictions.eq("host", "localhost:8000"));
+		InstitutionDomain domain = (InstitutionDomain) criteria.uniqueResult();
+		if (domain == null) {
+			domain = new InstitutionDomain();
+			domain.setBaseUrl("http://localhost:8000/");
+			domain.setHost("localhost:8000");
+			domain.setInstitution(institution);
+			dao.persist(domain);
+		}
+		
 		List<String> names = new LinkedList<String>();
 		names.add("Programming");
 		names.add("Web development");
@@ -97,6 +125,7 @@ public class ApplicationSetup {
 				category = new DisciplineCategory();
 				category.setName(names.get(i));
 				category.setId(null);
+				category.setInstitution(institution);
 				dao.persist(category);
 			}
 			

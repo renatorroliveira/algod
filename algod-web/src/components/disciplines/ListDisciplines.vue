@@ -10,7 +10,7 @@
         v-bind:pagination.sync="pagination"
         item-key="name"
         class="elevation-1">
-        <template slot="headers" scope="props">
+        <template slot="headers" slot-scope="props">
           <tr>
             <th>
               <v-checkbox
@@ -29,12 +29,12 @@
             </th>
           </tr>
         </template>
-        <template slot="headerCell" scope="props">
+        <template slot="headerCell" slot-scope="props">
           <span v-tooltip:bottom="{ 'html': props.header.text }">
             {{ props.header.text }}
           </span>
         </template>
-        <template slot="items" scope="props">
+        <template slot="items" slot-scope="props">
           <tr :active="props.selected" @click="props.selected = !props.selected">
             <td>
               <v-checkbox
@@ -93,20 +93,19 @@
     },
 
     created() {
-      const me = this;
       DisciplineStore.dispatch({
         action: DisciplineStore.ACTION_LIST_ALL,
       });
       DisciplineStore.on(DisciplineStore.ACTION_DELETE, () => {
         Toastr.success('Disciplina removida');
-      }, me);
+      }, this);
       DisciplineStore.on(DisciplineStore.ACTION_LIST_ALL, (data) => {
         for (let i = 0; i < data.data.length; i += 1) {
           if (data.data[i].deleted === false) {
-            me.discList.push(data.data[i]);
+            this.discList.push(data.data[i]);
           }
         }
-      }, me);
+      }, this);
     },
 
     beforeDestroy() {

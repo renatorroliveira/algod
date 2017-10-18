@@ -9,6 +9,7 @@ import javax.persistence.Table;
 import com.developerkingdom.algod.entities.company.Institution;
 
 import br.com.caelum.vraptor.boilerplate.SimpleLogicalDeletableEntity;
+import br.com.caelum.vraptor.serialization.SkipSerialization;
 
 @Entity(name = Discipline.TABLE)
 @Table(name = Discipline.TABLE)
@@ -18,11 +19,20 @@ public class Discipline extends SimpleLogicalDeletableEntity {
 	
 	@Column(nullable=false, length=255)
 	private String name;
+
+	@Column(nullable=false, length=64, unique=true)
+	private String shortName;
 	
-	@ManyToOne(targetEntity=DisciplineCategory.class, fetch=FetchType.EAGER, optional=false)
+	@Column(nullable=true, length=64)
+	private String accessKey;
+	
+	private boolean closed = false;
+	
+	@ManyToOne(fetch=FetchType.EAGER, optional=true)
 	private DisciplineCategory category;
 	
-	@ManyToOne(targetEntity=Institution.class, fetch=FetchType.EAGER, optional=false)
+	@ManyToOne(fetch=FetchType.LAZY, optional=false)
+	@SkipSerialization
 	private Institution institution;
 
 	public String getName() {
@@ -47,5 +57,29 @@ public class Discipline extends SimpleLogicalDeletableEntity {
 
 	public void setInstitution(Institution institution) {
 		this.institution = institution;
+	}
+
+	public String getAccessKey() {
+		return accessKey;
+	}
+
+	public void setAccessKey(String accessKey) {
+		this.accessKey = accessKey;
+	}
+
+	public boolean isClosed() {
+		return closed;
+	}
+
+	public void setClosed(boolean closed) {
+		this.closed = closed;
+	}
+
+	public String getShortName() {
+		return shortName;
+	}
+
+	public void setShortName(String shortName) {
+		this.shortName = shortName;
 	}
 }

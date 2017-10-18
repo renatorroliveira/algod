@@ -10,7 +10,7 @@
         v-bind:pagination.sync="pagination"
         item-key="name"
         class="elevation-1">
-        <template slot="headers" scope="props">
+        <template slot="headers" slot-scope="props">
           <tr>
             <th>
               <v-checkbox
@@ -29,12 +29,12 @@
             </th>
           </tr>
         </template>
-        <template slot="headerCell" scope="props">
+        <template slot="headerCell" slot-scope="props">
           <span v-tooltip:bottom="{ 'html': props.header.text }">
             {{ props.header.text }}
           </span>
         </template>
-        <template slot="items" scope="props">
+        <template slot="items" slot-scope="props">
           <tr :active="props.selected" @click="props.selected = !props.selected">
             <td>
               <v-checkbox

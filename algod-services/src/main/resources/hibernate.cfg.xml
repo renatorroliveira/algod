@@ -43,13 +43,13 @@
 		<property name="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
 
 
-
-  		<mapping class="com.developerkingdom.algod.entities.user.User"/>
-  		<mapping class="com.developerkingdom.algod.entities.company.Institution"/>
-  		<mapping class="com.developerkingdom.algod.entities.discipline.Discipline"/>
-  		<mapping class="com.developerkingdom.algod.entities.discipline.DisciplineCategory"/>
-  		<mapping class="com.developerkingdom.algod.entities.user.UserRecoverRequest"/>
-  		<mapping class="com.developerkingdom.algod.entities.user.auth.UserAccessToken"/>
+  		<mapping class="com.developerkingdom.algod.entities.company.Institution" />
+  		<mapping class="com.developerkingdom.algod.entities.company.InstitutionDomain" />
+  		<mapping class="com.developerkingdom.algod.entities.discipline.Discipline" />
+  		<mapping class="com.developerkingdom.algod.entities.discipline.DisciplineCategory" />
+  		<mapping class="com.developerkingdom.algod.entities.user.User" />
+  		<mapping class="com.developerkingdom.algod.entities.user.UserRecoverRequest" />
+  		<mapping class="com.developerkingdom.algod.entities.user.auth.UserAccessToken" />
 		<!--
   		<mapping class="org.forpdi.core.user.authz.Role"/>
   		<mapping class="org.forpdi.core.user.authz.RolePermission"/>
