@@ -37,13 +37,13 @@
             :type="btnToggle2 ? 'text' : 'password'">
           </v-text-field>
           <div class="text-xs-right">
-            <v-btn type="submit" primary>Registrar</v-btn>
+            <v-btn type="submit" color="primary">Registrar</v-btn>
           </div>
         </form>
       </v-card-text>
       <v-card-actions>
-        <router-link class="btn mx-3" to="/auth/login">Faça login</router-link>
-        <router-link class="btn mx-3" to="/auth/forgot-password">Esqueceu sua senha?</router-link>
+        <router-link class="btn mx-3 black--text" to="/auth/login">Faça login</router-link>
+        <router-link class="btn mx-3 black--text" to="/auth/forgot-password">Esqueceu sua senha?</router-link>
       </v-card-actions>
     </v-card>
   </main>

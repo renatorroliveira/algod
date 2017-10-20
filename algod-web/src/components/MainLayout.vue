@@ -1,5 +1,12 @@
 <template>
-  <v-app fill-height class="blue-grey lighten-5" v-if="!loading">
+  <v-app toolbar--fixed toolbar style="overflow: hidden" fill-height class="blue-grey lighten-5" v-if="!loading">
+
+    <v-toolbar absolute dark>
+      <v-toolbar-side-icon @click.native.stop="drawer = !drawer" light></v-toolbar-side-icon>
+      <v-toolbar-title>{{$route.name}}</v-toolbar-title>
+      <v-spacer></v-spacer>
+    </v-toolbar>
+
     <v-navigation-drawer dark persistent enable-resize-watcher
       :miniVariant="miniVariant"
       v-model="drawer">
@@ -25,9 +32,7 @@
             <v-list-tile-content dark>
               <v-list-tile-title dark v-text="item.title"></v-list-tile-title>
             </v-list-tile-content>
-            <v-list-action dark>
-              <v-icon dark>keyboard_arrow_down</v-icon>
-            </v-list-action>
+            <v-icon v-if="!miniVariant" dark>keyboard_arrow_down</v-icon>
           </v-list-tile>
           <v-list-tile dark v-for="(child, j) in item.children" :key="j" :to="child.href">
             <v-list-tile-content dark>
@@ -38,7 +43,7 @@
 
         <v-list-tile dark avatar v-on:click="doLogout($event)">
           <v-list-tile-avatar>
-            <v-icon dark>power_settings_new</v-icon>
+            &nbsp;<v-icon dark>power_settings_new</v-icon>
           </v-list-tile-avatar>
           <v-list-tile-content>
             <v-list-tile-title>
@@ -49,28 +54,26 @@
 
         <v-divider class="mt-3"></v-divider>
 
-        <v-list-tile avatar dark @click.native.stop="miniVariant = !miniVariant">
+        <v-list-tile avatar dark v-on:click="miniVariant = !miniVariant">
           <v-list-tile-avatar>
-            <v-icon dark v-html="miniVariant ? 'chevron_right' : 'chevron_left'"></v-icon>
+            <v-icon dark v-html="miniVariant ? 'chevron_right' : 'chevron_left'">miniVariant</v-icon>
           </v-list-tile-avatar>
           <v-list-tile-content>
-            Recolher menu
+            <v-list-tile-title>
+              Recolher menu
+            </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
 
-    <v-toolbar fixed dark>
-      <v-toolbar-side-icon @click.native.stop="drawer = !drawer" light></v-toolbar-side-icon>
-      <v-toolbar-title>{{$route.name}}</v-toolbar-title>
-      <v-spacer></v-spacer>
-    </v-toolbar>
-
     <main>
-      <router-view></router-view>
+      <v-container>
+        <router-view></router-view>
+      </v-container>
     </main>
-
   </v-app>
+
   <div v-else></div>
 </template>
 

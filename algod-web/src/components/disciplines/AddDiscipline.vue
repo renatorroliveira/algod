@@ -2,7 +2,7 @@
   <main>
   <v-container>
     <v-layout row wrap>
-      <v-flex xs8 offset-xs2>
+      <v-flex xs8 offset-xs4>
         <v-card>
           <v-card-text>
             <h5 class="headline text-xs-center">Adicionar disciplina</h5>

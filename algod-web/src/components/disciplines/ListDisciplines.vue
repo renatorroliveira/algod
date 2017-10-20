@@ -1,61 +1,65 @@
 <template>
- <v-container fluid>
-  <v-card>
-    <v-card-text>
-      <v-data-table
-        v-model="selected"
-        :headers="headers"
-        :items="discList"
-        select-all
-        v-bind:pagination.sync="pagination"
-        item-key="name"
-        class="elevation-1">
-        <template slot="headers" slot-scope="props">
-          <tr>
-            <th>
-              <v-checkbox
-                primary
-                hide-details
-                @click.native="toggleAll"
-                :input-value="props.all"
-                :indeterminate="props.indeterminate">
-              </v-checkbox>
-            </th>
-            <th v-for="header in props.headers" :key="header.text"
-              :class="['column sortable', pagination.descending ? 'asc' : 'desc', header.value === pagination.sortBy ? 'active' : '']"
-              @click="changeSort(header.value)">
-              <v-icon>arrow_upward</v-icon>
-              {{ header.text }}
-            </th>
-          </tr>
-        </template>
-        <template slot="headerCell" slot-scope="props">
-          <span v-tooltip:bottom="{ 'html': props.header.text }">
-            {{ props.header.text }}
-          </span>
-        </template>
-        <template slot="items" slot-scope="props">
-          <tr :active="props.selected" @click="props.selected = !props.selected">
-            <td>
-              <v-checkbox
-              primary
-              hide-details
-              :input-value="props.selected"
-              ></v-checkbox>
-            </td>
-            <td class="text-xs-center">{{ props.item.id }}</td>
-            <td class="text-xs-center">{{ props.item.name }}</td>
-            <td class="text-xs-center">{{ props.item.category.name }}</td>
-            <td class="text-xs-center">{{ props.item.institution.name }}</td>
-          </tr>
-        </template>
-      </v-data-table>
-      <br>
-      <v-btn dark to="/discipline/add">Adicionar Disciplina</v-btn>
-      <v-btn v-if="selected.length === 1" dark @click.native="delDiscipline($event)">Deletar Disciplina</v-btn>
-    </v-card-text>
-  </v-card>
- </v-container>
+ <v-container>
+   <v-layout row wrap>
+     <v-flex xs10 offset-xs2>
+       <v-card>
+         <v-card-text>
+           <v-data-table
+              v-model="selected"
+              :headers="headers"
+              :items="discList"
+              select-all
+              v-bind:pagination.sync="pagination"
+              item-key="name"
+              class="elevation-1">
+              <template slot="headers" slot-scope="props">
+                <tr>
+                  <th>
+                    <v-checkbox
+                      primary
+                      hide-details
+                      @click.native="toggleAll"
+                      :input-value="props.all"
+                      :indeterminate="props.indeterminate">
+                    </v-checkbox>
+                  </th>
+                  <th v-for="header in props.headers" :key="header.text"
+                    :class="['column sortable', pagination.descending ? 'asc' : 'desc', header.value === pagination.sortBy ? 'active' : '']"
+                    @click="changeSort(header.value)">
+                    <v-icon>arrow_upward</v-icon>
+                    {{ header.text }}
+                  </th>
+                </tr>
+              </template>
+              <template slot="headerCell" slot-scope="props">
+                <span v-tooltip:bottom="{ 'html': props.header.text }">
+                  {{ props.header.text }}
+                </span>
+              </template>
+              <template slot="items" slot-scope="props">
+                <tr :active="props.selected" @click="props.selected = !props.selected">
+                  <td>
+                    <v-checkbox
+                      primary
+                      hide-details
+                      :input-value="props.selected">
+                    </v-checkbox>
+                  </td>
+                  <td class="text-xs-center">{{ props.item.id }}</td>
+                  <td class="text-xs-center">{{ props.item.name }}</td>
+                  <td class="text-xs-center">{{ props.item.category.name }}</td>
+                  <td class="text-xs-center">{{ props.item.institution.name }}</td>
+                </tr>
+              </template>
+            </v-data-table>
+            <br>
+            <v-btn dark to="/discipline/add">Adicionar Disciplina</v-btn>
+            <v-btn v-if="selected.length === 1" dark @click.native="delDiscipline($event)">Deletar Disciplina</v-btn>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>

@@ -4,6 +4,7 @@
    <h5 class="headline text-xs-center">Recuperar senha</h5>
    <v-card>
      <v-card-text>
+       <h5 class="text-xs-center">insira seu e-mail para seguir as instruções de recuperação de senha.</h5>
        <form v-on:submit="recover($event)">
          <v-text-field
            label="Email"
@@ -11,13 +12,13 @@
            autofocus>
          </v-text-field>
          <div class="text-xs-right">
-           <v-btn type="submit" primary>Enviar e-mail</v-btn>
+           <v-btn type="submit" color="primary">Enviar e-mail</v-btn>
          </div>
        </form>
      </v-card-text>
      <v-card-actions>
-       <router-link class="btn mx-3" to="/auth/register">Cadastre-se</router-link>
-       <router-link class="btn mx-3" to="/auth/login">Fazer login</router-link>
+       <router-link class="btn mx-3 black--text" to="/auth/register">Cadastre-se</router-link>
+       <router-link class="btn mx-3 black--text" to="/auth/login">Fazer login</router-link>
      </v-card-actions>
    </v-card>
  </main>
@@ -36,13 +37,6 @@
       };
     },
 
-    mounted() {
-      const me = this;
-      UserSession.on(UserSession.ACTION_RECOVER_PASSWORD, () => {
-        me.$router.push('/auth/forgot-password/confirm');
-      }, me);
-    },
-
     beforeDestroy() {
       UserSession.off(null, null, this);
     },
@@ -56,6 +50,7 @@
             email: this.email,
           },
         });
+        this.$router.push('/auth/forgot-password/confirm');
       },
     },
   };
