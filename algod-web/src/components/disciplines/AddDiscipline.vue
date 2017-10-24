@@ -1,45 +1,39 @@
 <template>
-  <main>
-  <v-container>
-    <v-layout row wrap>
-      <v-flex xs8 offset-xs4>
-        <v-card>
-          <v-card-text>
-            <h5 class="headline text-xs-center">Adicionar disciplina</h5>
-            <form v-on:submit="add($event)">
-              <v-text-field
-                label="Nome"
-                v-model="name"
-                persistent-hint
-                autofocus
-              ></v-text-field>
-              <v-select
-                v-bind:items="categorys"
-                :key="e1"
-                label="Categoria da discplina"
-                single-line
-                bottom
-              ></v-select>
-              <v-select
-                v-bind:items="institutions"
-                :key="e2"
-                label="Institution"
-                single-line
-                bottom
-              ></v-select>
-              <div class="text-xs-right">
-                <v-btn type="submit" primary>Registrar</v-btn>
-              </div>
-            </form>
-          </v-card-text>
-          <v-btn dark class="btn mx-3" to="/discipline/list">Lista de Disciplines</v-btn>
-          <v-card-actions>
-          </v-card-actions>
-        </v-card>
-      </v-flex>
-    </v-layout>
-  </v-container>
-</main>
+  <v-flex sm8 md6>
+    <v-card>
+      <v-card-text>
+        <h5 class="headline text-xs-center">Adicionar disciplina</h5>
+        <form v-on:submit="add($event)">
+          <v-text-field
+            label="Nome"
+            v-model="name"
+            persistent-hint
+            autofocus
+          ></v-text-field>
+          <v-select
+            v-bind:items="categorys"
+            :key="e1"
+            label="Categoria da discplina"
+            single-line
+            bottom
+          ></v-select>
+          <v-select
+            v-bind:items="institutions"
+            :key="e2"
+            label="Institution"
+            single-line
+            bottom
+          ></v-select>
+          <div class="text-xs-right">
+            <v-btn type="submit" secondary>Registrar</v-btn>
+          </div>
+        </form>
+      </v-card-text>
+      <v-btn class="btn mx-3" to="/discipline/list">Lista de Disciplines</v-btn>
+      <v-card-actions>
+      </v-card-actions>
+    </v-card>
+  </v-flex>
 </template>
 
 <script>

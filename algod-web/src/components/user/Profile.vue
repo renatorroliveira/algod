@@ -1,34 +1,30 @@
 <template>
-  <v-container>
-    <v-layout row wrap>
-      <v-flex xs8 offset-xs4>
-        <v-card>
-          <v-card-text>
-            <img id="profile_picture" class="center" :src="user.picture">
-            <h5>Nome: {{user.name}}</h5>
-            <h5>Email: {{user.email}}</h5>
-            <h5>Telefone: {{user.phone}}</h5>
-            <h5>Criation date: {{user.creation}}</h5>
-            <h5>Access Level: {{user.accessLevel}}</h5>
-            <h5>Active: {{user.active}}</h5>
-            <h5>Deleted: {{user.deleted}}</h5>
-            <v-btn dark @click.native="toggle = !toggle" v-model="toggle">Change pic</v-btn>
-            <form v-on:submit="changePic($event)" v-if="toggle">
-              <v-text-field
-                label="Url"
-                v-model="url"
-                persistent-hint
-                autofocus
-              ></v-text-field>
-              <div class="text-xs-right">
-                <v-btn type="submit" color="primary">Mudar foto</v-btn>
-              </div>
-            </form>
-          </v-card-text>
-        </v-card>
-      </v-flex>
-    </v-layout>
-  </v-container>
+  <v-flex sm8 md6>
+    <v-card>
+      <v-card-text>
+        <img id="profile_picture" class="center" :src="user.picture">
+        <div class="body-2">Nome: {{user.name}}</div>
+        <div class="body-2">Email: {{user.email}}</div>
+        <div class="body-2">Telefone: {{user.phone}}</div>
+        <div class="body-2">Criation date: {{user.creation}}</div>
+        <div class="body-2">Access Level: {{user.accessLevel}}</div>
+        <div class="body-2">Active: {{user.active}}</div>
+        <div class="body-2">Deleted: {{user.deleted}}</div>
+        <v-btn dark @click.native="toggle = !toggle" v-model="toggle">Change pic</v-btn>
+        <form v-on:submit="changePic($event)" v-if="toggle">
+          <v-text-field
+            label="Url"
+            v-model="url"
+            persistent-hint
+            autofocus
+          ></v-text-field>
+          <div class="text-xs-right">
+            <v-btn type="submit" color="primary">Mudar foto</v-btn>
+          </div>
+        </form>
+      </v-card-text>
+    </v-card>
+  </v-flex>
 </template>
 
 <script>

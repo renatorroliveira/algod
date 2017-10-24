@@ -1,15 +1,14 @@
 <template>
-  <v-app toolbar--fixed toolbar style="overflow: hidden" fill-height class="blue-grey lighten-5" v-if="!loading">
+  <v-app v-if="!loading">
 
-    <v-toolbar absolute dark>
-      <v-toolbar-side-icon @click.native.stop="drawer = !drawer" light></v-toolbar-side-icon>
-      <v-toolbar-title>{{$route.name}}</v-toolbar-title>
-      <v-spacer></v-spacer>
-    </v-toolbar>
-
-    <v-navigation-drawer dark persistent enable-resize-watcher
-      :miniVariant="miniVariant"
-      v-model="drawer">
+    <v-navigation-drawer
+    dark
+      clipped
+      persistent
+      v-model="drawer"
+      enable-resize-watcher
+      app
+    >
       <v-list>
         <v-list-tile dark avatar to="/">
           <v-list-tile-avatar>
@@ -52,28 +51,29 @@
           </v-list-tile-content>
         </v-list-tile>
 
-        <v-divider class="mt-3"></v-divider>
-
-        <v-list-tile avatar dark v-on:click="miniVariant = !miniVariant">
-          <v-list-tile-avatar>
-            <v-icon dark v-html="miniVariant ? 'chevron_right' : 'chevron_left'">miniVariant</v-icon>
-          </v-list-tile-avatar>
-          <v-list-tile-content>
-            <v-list-tile-title>
-              Recolher menu
-            </v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
       </v-list>
     </v-navigation-drawer>
 
-    <main>
-      <v-container>
-        <router-view></router-view>
-      </v-container>
-    </main>
-  </v-app>
+    <v-toolbar app fixed clipped-left dark>
+      <v-toolbar-side-icon @click.native.stop="drawer = !drawer"></v-toolbar-side-icon>
+      <v-toolbar-title>{{$route.name}}</v-toolbar-title>
+      <v-spacer></v-spacer>
+    </v-toolbar>
 
+    <main class="grey lighten-4">
+      <v-content>
+        <v-container fluid>
+          <v-layout justify-center align-center>
+            <router-view></router-view>
+          </v-layout>
+        </v-container>
+      </v-content>
+    </main>
+
+    <v-footer app>
+      <span>&copy; 2017</span>
+    </v-footer>
+  </v-app>
   <div v-else></div>
 </template>
 
@@ -125,7 +125,6 @@
             href: '/discipline/list',
           }],
         }],
-        miniVariant: false,
         title: 'Bem-vindo',
       };
     },
