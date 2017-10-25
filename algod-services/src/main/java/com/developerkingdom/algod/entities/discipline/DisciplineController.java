@@ -5,6 +5,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import com.developerkingdom.algod.entities.company.Institution;
+import com.developerkingdom.algod.entities.user.User;
 import com.developerkingdom.algod.entities.user.authz.AccessLevels;
 import com.developerkingdom.algod.entities.user.authz.Permissioned;
 import com.developerkingdom.algod.entities.user.authz.permission.ManageUsersPermission;
@@ -80,6 +81,33 @@ public class DisciplineController extends UserControlAbstractController {
 		} catch (Exception e) {
 			LOGGER.errorf("Erro: %s", e.getMessage());
 			this.fail("Erro inesperado");
+		}
+	}
+	
+	@Post("/discipline/subscribe")
+	@Consumes
+	public void subscribe(User user, Discipline discipline, String keyPass) {
+		try {
+			if (user != null && discipline != null) {
+				DisciplineUsers disciplineUsers = new DisciplineUsers();
+				disciplineUsers = this.bs.subscribe(disciplineUsers, user, discipline, keyPass);
+				this.success(disciplineUsers);
+			}
+		} catch (Exception e) {
+			this.fail(e.getMessage());
+		}
+	}
+	
+	@Post("/discipline/unsubscribe")
+	@Consumes
+	public void unsubscribe(DisciplineUsers disciplineUsers, User user, Discipline discipline) {
+		try {
+			if (disciplineUsers != null && user != null && discipline != null) {
+				disciplineUsers = this.bs.unsubscribe(disciplineUsers, user, discipline);
+				this.success(disciplineUsers);
+			}
+		} catch (Exception e) {
+			this.fail(e.getMessage());
 		}
 	}
 }

@@ -31,7 +31,7 @@
             <v-list-tile-content dark>
               <v-list-tile-title dark v-text="item.title"></v-list-tile-title>
             </v-list-tile-content>
-            <v-icon v-if="!miniVariant" dark>keyboard_arrow_down</v-icon>
+            <v-icon dark>keyboard_arrow_down</v-icon>
           </v-list-tile>
           <v-list-tile dark v-for="(child, j) in item.children" :key="j" :to="child.href">
             <v-list-tile-content dark>
@@ -94,6 +94,7 @@
         }
         this.user = UserSession.get('user');
         this.loading = false;
+        this.accessLevel = this.user.accessLevel;
       }, this);
       UserSession.on('logout', () => {
         Toastr.success('Usuário deslogado');
@@ -107,12 +108,13 @@
         loading: UserSession.get('loading'),
         drawer: true,
         user: UserSession.get('user'),
+        accessLevel: 0,
         items: [{
           icon: 'supervisor_account',
           title: 'Usuários',
           children: [{
             title: 'Perfil',
-            href: '/profile',
+            href: '/user/profile',
           }],
         }, {
           icon: 'settings',

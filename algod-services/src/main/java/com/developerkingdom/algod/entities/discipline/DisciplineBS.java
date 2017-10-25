@@ -8,6 +8,7 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 
 import com.developerkingdom.algod.entities.company.Institution;
+import com.developerkingdom.algod.entities.user.User;
 
 import br.com.caelum.vraptor.boilerplate.HibernateBusiness;
 
@@ -54,5 +55,27 @@ public class DisciplineBS extends HibernateBusiness {
 		Criteria criteria = this.dao.newCriteria(Institution.class)
 				.add(Restrictions.eq("id", id));
 		return (Institution) criteria.uniqueResult();
+	}
+	
+	public DisciplineUsers subscribe(DisciplineUsers disciplineUsers, User user, Discipline discipline, String acessKey) {
+		Criteria criteria = this.dao.newCriteria(Discipline.class)
+				.add(Restrictions)
+		disciplineUsers.setDiscipline(discipline);
+		disciplineUsers.setUser(user);
+		disciplineUsers.setRole(user.getAccessLevel());
+		this.dao.persist(disciplineUsers);
+		
+		return disciplineUsers;
+	}
+	
+	public DisciplineUsers unsubscribe(DisciplineUsers disciplineUsers, User user, Discipline discipline) {
+		Criteria criteria = this.dao.newCriteria(DisciplineUsers.class)
+			.add(Restrictions.eq("user", user))
+			.add(Restrictions.eq("discipline", discipline));
+		disciplineUsers = (DisciplineUsers) criteria.uniqueResult();
+		disciplineUsers.setDeleted(true);
+		this.dao.persist(disciplineUsers);
+		
+		return disciplineUsers;
 	}
 }
