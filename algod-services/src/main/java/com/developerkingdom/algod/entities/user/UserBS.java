@@ -41,7 +41,7 @@ public class UserBS extends HibernateBusiness {
 		user.setId(null);
 		user.setPassword(CryptManager.passwordHash(user.getPassword()));
 
-		this.persist(user);
+		this.dao.persist(user);
 
 		return user;
 	}

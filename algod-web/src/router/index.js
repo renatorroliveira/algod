@@ -65,11 +65,11 @@ export default new Router({
       component: Atividade,
     }, {
       path: 'classroom',
-      name: 'SalaDeAula',
+      name: 'Sala de aula',
       component: SalaDeAula,
     }, {
       path: 'user/profile',
-      name: 'Profile',
+      name: 'Perfil',
       component: Profile,
     }, {
       path: 'user/list',
@@ -81,19 +81,19 @@ export default new Router({
       component: Curso,
     }, {
       path: 'institution/list',
-      name: 'List of institutions',
+      name: 'Lista de instituições',
       component: ListInstitutions,
     }, {
       path: 'institution/add',
-      name: 'Add Institution',
+      name: 'Adicionar instituição',
       component: NewInstitution,
     }, {
       path: 'discipline/list',
-      name: 'List of Disciplines',
+      name: 'Lista de disciplinas',
       component: ListDisciplines,
     }, {
       path: 'discipline/add',
-      name: 'Add Discipline',
+      name: 'Adicionar disciplina',
       component: NewDiscipline,
     }],
   }],

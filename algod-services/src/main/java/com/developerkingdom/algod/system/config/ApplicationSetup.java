@@ -55,7 +55,7 @@ public class ApplicationSetup {
 		CryptManager.updateKey(SystemConfigs.getConfig("crypt.key"));
 		CryptManager.updateSalt("-!0Ao8", "4Pq@1-");
 
-		EmailUtils.setDefaultFrom("noreply@nilopecanha.org", "Plataforma Nilo Peçanha");
+		EmailUtils.setDefaultFrom("noreply@algod.org", "Plataforma AlGod");
 		EmailUtils.setSmtpSettings(
 			SystemConfigs.getConfig("smtp.host"),
 			Integer.parseInt(SystemConfigs.getConfig("smtp.port")),
@@ -130,8 +130,6 @@ public class ApplicationSetup {
 			}
 			
 		}
-		
-		
 		
 		LOG.info("Application setup completed.");
 		mngr.closeSession();

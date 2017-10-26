@@ -42,7 +42,6 @@ public class DisciplineController extends UserControlAbstractController {
 	}
 	
 	@Get("/list")
-	@Consumes
 	public void list() {
 		try {
 			List<Discipline> disciplineList = this.bs.list();
@@ -54,8 +53,6 @@ public class DisciplineController extends UserControlAbstractController {
 	}
 	
 	@Get("/category/list")
-	@Consumes
-	@Permissioned(value = AccessLevels.SYSTEM_ADMIN, permissions = { ManageUsersPermission.class })
 	public void listCategory() {
 		try {
 			List<DisciplineCategory> categoryList = this.bs.listCategory();
