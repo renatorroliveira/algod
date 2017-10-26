@@ -28,7 +28,7 @@ public class Discipline extends SimpleLogicalDeletableEntity {
 	
 	private boolean closed = false;
 	
-	@ManyToOne(fetch=FetchType.EAGER, optional=false)
+	@ManyToOne(optional=true)
 	private DisciplineCategory category;
 	
 	@ManyToOne(fetch=FetchType.LAZY, optional=false)

@@ -46,9 +46,7 @@
               <td class="text-xs-center">{{ props.item.id }}</td>
               <td class="text-xs-center">{{ props.item.name }}</td>
               <td class="text-xs-center">{{ props.item.description }}</td>
-              <td class="text-xs-center">{{ props.item.host }}</td>
               <td class="text-xs-center">{{ props.item.site }}</td>
-              <td class="text-xs-center">{{ props.item.baseUrl }}</td>
             </tr>
           </template>
         </v-data-table>
@@ -87,16 +85,8 @@
           value: 'desc',
           align: 'left',
         }, {
-          text: 'Host',
-          value: 'host',
-          align: 'left',
-        }, {
           text: 'Site',
           value: 'Site',
-          align: 'left',
-        }, {
-          text: 'Base URL',
-          value: 'Base url',
           align: 'left',
         }],
       };
