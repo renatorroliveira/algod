@@ -73,7 +73,7 @@ export default new Router({
       component: Profile,
     }, {
       path: 'user/list',
-      name: 'ListUsers',
+      name: 'Lista de usuários',
       component: ListUsers,
     }, {
       path: 'courses',

@@ -51,7 +51,7 @@
           </template>
         </v-data-table>
         <br>
-        <v-btn color="secondary" to="/discipline/add">Adicionar Disciplina</v-btn>
+        <v-btn to="/discipline/add">Adicionar Disciplina</v-btn>
         <v-btn v-if="selected.length === 1" dark v-on:click="delDiscipline($event)">Deletar Disciplina</v-btn>
       </v-card-text>
     </v-card>

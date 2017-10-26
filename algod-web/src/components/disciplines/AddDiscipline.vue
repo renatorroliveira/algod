@@ -25,7 +25,7 @@
             bottom
           ></v-select>
           <div class="text-xs-right">
-            <v-btn type="submit" secondary>Registrar</v-btn>
+            <v-btn type="submit" color="secondary">Registrar</v-btn>
           </div>
         </form>
       </v-card-text>
