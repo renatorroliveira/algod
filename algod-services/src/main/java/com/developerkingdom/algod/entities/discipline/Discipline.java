@@ -9,7 +9,6 @@ import javax.persistence.Table;
 import com.developerkingdom.algod.entities.company.Institution;
 
 import br.com.caelum.vraptor.boilerplate.SimpleLogicalDeletableEntity;
-import br.com.caelum.vraptor.serialization.SkipSerialization;
 
 @Entity(name = Discipline.TABLE)
 @Table(name = Discipline.TABLE)
@@ -31,8 +30,7 @@ public class Discipline extends SimpleLogicalDeletableEntity {
 	@ManyToOne(fetch=FetchType.EAGER, optional=true)
 	private DisciplineCategory category;
 	
-	@ManyToOne(fetch=FetchType.LAZY, optional=false)
-	@SkipSerialization
+	@ManyToOne(fetch=FetchType.EAGER, optional=false)
 	private Institution institution;
 
 	public String getName() {

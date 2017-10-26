@@ -3,13 +3,13 @@
     <v-card>
       <v-card-text>
         <v-data-table
+          v-if="list"
           v-model="selected"
           :headers="headers"
-          :items="discList"
+          :items="list"
           select-all
           v-bind:pagination.sync="pagination"
-          item-key="name"
-          class="elevation-1">
+          item-key="item.id">
           <template slot="headers" slot-scope="props">
             <tr>
               <th>
@@ -71,7 +71,7 @@
           sortBy: 'id',
         },
         selected: [],
-        discList: [],
+        list: [],
         headers: [{
           text: 'ID',
           align: 'left',
@@ -81,11 +81,11 @@
           value: 'name',
           align: 'left',
         }, {
-          text: 'category_name',
+          text: 'Categoria',
           value: 'desc',
           align: 'left',
         }, {
-          text: 'institution_name',
+          text: 'Instituição',
           value: 'host',
           align: 'left',
         }],
@@ -93,33 +93,33 @@
     },
 
     created() {
-      DisciplineStore.dispatch({
-        action: DisciplineStore.ACTION_LIST_ALL,
-      });
       DisciplineStore.on(DisciplineStore.ACTION_DELETE, () => {
+        this.refreshList();
         Toastr.success('Disciplina removida');
-        setTimeout(() => {
-          location.reload();
-        }, 500);
       }, this);
       DisciplineStore.on(DisciplineStore.ACTION_LIST_ALL, (data) => {
-        for (let i = 0; i < data.data.length; i += 1) {
-          if (data.data[i].deleted === false) {
-            this.discList.push(data.data[i]);
-          }
-        }
+        this.list = data.data;
+        console.log(this.list);
       }, this);
+      this.refreshList();
     },
 
     beforeDestroy() {
       DisciplineStore.off(null, null, this);
     },
     methods: {
+      refreshList() {
+        DisciplineStore.dispatch({
+          action: DisciplineStore.ACTION_LIST_ALL,
+        });
+        this.list = null;
+        this.toggleAll();
+      },
       toggleAll() {
         if (this.selected.length) {
           this.selected = [];
-        } else {
-          this.selected = this.instList.slice();
+        } else if (this.list) {
+          this.selected = this.list.slice();
         }
       },
       changeSort(column) {
