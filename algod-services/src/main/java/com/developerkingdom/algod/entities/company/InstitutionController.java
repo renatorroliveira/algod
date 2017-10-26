@@ -34,7 +34,7 @@ public class InstitutionController extends UserControlAbstractController {
 				LOGGER.error("Você nao tem permissao.");
 				this.fail("Você não tem permissão para fazer isso.");
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			LOGGER.errorf("Erro: %s", e.getMessage());
 			this.fail("Host já cadastrado");
 		}

@@ -35,7 +35,7 @@ public class DisciplineController extends UserControlAbstractController {
 			} else {
 				this.fail("Campos incompletos");
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			LOGGER.errorf("Erro: %s", e.getMessage());
 			this.fail(e.getMessage());
 		}
@@ -43,12 +43,12 @@ public class DisciplineController extends UserControlAbstractController {
 	
 	@Get("/list")
 	@Consumes
-	@Permissioned(value = AccessLevels.SYSTEM_ADMIN, permissions = { ManageUsersPermission.class })
+//	@Permissioned(value = AccessLevels.SYSTEM_ADMIN, permissions = { ManageUsersPermission.class })
 	public void list() {
 		try {
 			List<Discipline> disciplineList = this.bs.list();
 			this.success(disciplineList, (long) disciplineList.size());
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			LOGGER.errorf("Erro: %s", e.getMessage());
 			this.fail("Erro inesperado");
 		}
@@ -61,9 +61,9 @@ public class DisciplineController extends UserControlAbstractController {
 		try {
 			List<DisciplineCategory> categoryList = this.bs.listCategory();
 			this.success(categoryList, (long) categoryList.size());
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			LOGGER.errorf("Erro: %s", e.getMessage());
-			this.fail("Erro inesperado");
+			this.fail("Erro inesperado: " + e.getMessage());
 		}
 	}
 	
@@ -78,33 +78,33 @@ public class DisciplineController extends UserControlAbstractController {
 			} else {
 				this.fail("Campos incompletos");
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			LOGGER.errorf("Erro: %s", e.getMessage());
 			this.fail("Erro inesperado");
 		}
 	}
 	
-	@Post("/discipline/subscribe")
+	@Post("/subscribe")
 	@Consumes
 	public void subscribe(User user, Discipline discipline, String keyPass) {
 		try {
 			if (user != null && discipline != null) {
-				DisciplineUsers disciplineUsers = new DisciplineUsers();
-				disciplineUsers = this.bs.subscribe(disciplineUsers, user, discipline, keyPass);
-				this.success(disciplineUsers);
+				DisciplineUser disciplineUser = new DisciplineUser();
+				disciplineUser = this.bs.subscribe(disciplineUser, user, discipline, keyPass);
+				this.success(disciplineUser);
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			this.fail(e.getMessage());
 		}
 	}
 	
-	@Post("/discipline/unsubscribe")
+	@Post("/unsubscribe")
 	@Consumes
-	public void unsubscribe(DisciplineUsers disciplineUsers, User user, Discipline discipline) {
+	public void unsubscribe(DisciplineUser disciplineUser, User user, Discipline discipline) {
 		try {
-			if (disciplineUsers != null && user != null && discipline != null) {
-				disciplineUsers = this.bs.unsubscribe(disciplineUsers, user, discipline);
-				this.success(disciplineUsers);
+			if (disciplineUser != null && user != null && discipline != null) {
+				disciplineUser = this.bs.unsubscribe(disciplineUser, user, discipline);
+				this.success(disciplineUser);
 			}
 		} catch (Exception e) {
 			this.fail(e.getMessage());

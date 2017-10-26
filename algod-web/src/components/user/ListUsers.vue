@@ -5,7 +5,7 @@
         <v-data-table
           v-model="selected"
           :headers="headers"
-          :items="instList"
+          :items="userList"
           select-all
           v-bind:pagination.sync="pagination"
           item-key="name"
@@ -14,7 +14,7 @@
             <tr>
               <th>
                 <v-checkbox
-                  color="black"
+                  primary
                   hide-details
                   @click.native="toggleAll"
                   :input-value="props.all"
@@ -38,34 +38,29 @@
             <tr :active="props.selected" @click="props.selected = !props.selected">
               <td>
                 <v-checkbox
-                  color="black"
+                  primary
                   hide-details
                   :input-value="props.selected">
                 </v-checkbox>
               </td>
               <td class="text-xs-center">{{ props.item.id }}</td>
               <td class="text-xs-center">{{ props.item.name }}</td>
-              <td class="text-xs-center">{{ props.item.description }}</td>
-              <td class="text-xs-center">{{ props.item.host }}</td>
-              <td class="text-xs-center">{{ props.item.site }}</td>
-              <td class="text-xs-center">{{ props.item.baseUrl }}</td>
+              <td class="text-xs-center">{{ props.item.email }}</td>
+              <td class="text-xs-center">{{ props.item.accessLevel }}</td>
+              <td class="text-xs-center">{{ props.item.deleted }}</td>
             </tr>
           </template>
         </v-data-table>
-        <br>
-        <v-btn color="secondary" to="/institution/add">Adicionar instituição</v-btn>
-        <v-btn v-if="selected.length === 1" dark v-on:click="delInstitution($event)">Deletar Institutição</v-btn>
       </v-card-text>
     </v-card>
   </v-flex>
 </template>
 
 <script>
-  import Toastr from 'toastr';
-  import InstitutionStore from '@/store/Institution';
+  import UserSession from '@/store/UserSession';
 
   export default {
-    name: 'Lista-de-institutions',
+    name: 'Lista-de-usuarios',
 
     data() {
       return {
@@ -73,7 +68,7 @@
           sortBy: 'id',
         },
         selected: [],
-        instList: [],
+        userList: [],
         headers: [{
           text: 'ID',
           align: 'left',
@@ -83,54 +78,39 @@
           value: 'name',
           align: 'left',
         }, {
-          text: 'Description',
-          value: 'desc',
+          text: 'E-mail',
+          value: 'email',
           align: 'left',
         }, {
-          text: 'Host',
-          value: 'host',
+          text: 'Access Level',
+          value: 'accessLevel',
           align: 'left',
         }, {
-          text: 'Site',
-          value: 'Site',
-          align: 'left',
-        }, {
-          text: 'Base URL',
-          value: 'Base url',
+          text: 'Deleted',
+          value: 'deleted',
           align: 'left',
         }],
       };
     },
-
     created() {
       const me = this;
-      InstitutionStore.dispatch({
-        action: InstitutionStore.ACTION_LIST,
+      UserSession.dispatch({
+        action: UserSession.ACTION_LIST,
       });
-      InstitutionStore.on(InstitutionStore.ACTION_DELETE, () => {
-        Toastr.success('Instituição removida');
-        setTimeout(() => {
-          location.reload();
-        }, 500);
-      }, this);
-      InstitutionStore.on(InstitutionStore.ACTION_LIST, (data) => {
-        for (let i = 0; i < data.data.length; i += 1) {
-          if (data.data[i].deleted === false) {
-            me.instList.push(data.data[i]);
-          }
-        }
+      UserSession.on(UserSession.ACTION_LIST, (data) => {
+        me.userList = data.data;
       }, this);
     },
 
     beforeDestroy() {
-      InstitutionStore.off(null, null, this);
+      UserSession.off(null, null, this);
     },
     methods: {
       toggleAll() {
         if (this.selected.length) {
           this.selected = [];
         } else {
-          this.selected = this.instList.slice();
+          this.selected = this.userList.slice();
         }
       },
       changeSort(column) {
@@ -139,18 +119,6 @@
         } else {
           this.pagination.sortBy = column;
           this.pagination.descending = false;
-        }
-      },
-      delInstitution(event) {
-        event.preventDefault();
-        const me = this;
-        if (this.selected.length === 1) {
-          InstitutionStore.dispatch({
-            action: InstitutionStore.ACTION_DELETE,
-            data: this.selected[0],
-          }, me);
-        } else {
-          Toastr.error('Selecione somente um por vez');
         }
       },
     },

@@ -10,9 +10,9 @@ import com.developerkingdom.algod.entities.user.User;
 
 import br.com.caelum.vraptor.boilerplate.SimpleLogicalDeletableEntity;
 
-@Entity(name = DisciplineUsers.TABLE)
-@Table(name = DisciplineUsers.TABLE)
-public class DisciplineUsers extends SimpleLogicalDeletableEntity {
+@Entity(name = DisciplineUser.TABLE)
+@Table(name = DisciplineUser.TABLE)
+public class DisciplineUser extends SimpleLogicalDeletableEntity {
 	public static final String TABLE = "algod_discipline_users";
 	private static final long serialVersionUID = 1L;
 	

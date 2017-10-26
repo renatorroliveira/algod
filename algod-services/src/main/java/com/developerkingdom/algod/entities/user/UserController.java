@@ -1,9 +1,14 @@
 package com.developerkingdom.algod.entities.user;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import com.developerkingdom.algod.entities.bean.SessionInfo;
 import com.developerkingdom.algod.entities.user.auth.UserAccessToken;
+import com.developerkingdom.algod.entities.user.authz.AccessLevels;
+import com.developerkingdom.algod.entities.user.authz.Permissioned;
+import com.developerkingdom.algod.entities.user.authz.permission.ManageUsersPermission;
 import com.developerkingdom.algod.system.UserControlAbstractController;
 
 import br.com.caelum.vraptor.Consumes;
@@ -186,7 +191,21 @@ public class UserController extends UserControlAbstractController {
 			this.fail("Ocorreu um erro inesperado: " + e.getMessage());
 		}
 	}
-
+	
+	@Get("/list")
+	@Consumes
+	@NoCache
+	@Permissioned(value = AccessLevels.SYSTEM_ADMIN, permissions = { ManageUsersPermission.class })
+	public void list() {
+		try {
+			List<User> userList = this.bs.listUsers();
+			this.success(userList, (long) userList.size());
+		} catch (Throwable e) {
+			this.fail(e.getMessage());
+		}
+	}
+	
+	
 //	@Post("/api/user")
 //	@Consumes
 //	@NoCache

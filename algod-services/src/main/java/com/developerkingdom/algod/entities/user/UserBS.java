@@ -1,19 +1,17 @@
 package com.developerkingdom.algod.entities.user;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
-
 import java.util.Properties;
 
 import javax.enterprise.context.RequestScoped;
-
+import javax.inject.Inject;
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-
-import javax.inject.Inject;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Disjunction;
@@ -258,7 +256,12 @@ public class UserBS extends HibernateBusiness {
 		results.setTotal((Long) counting.uniqueResult());
 		return results;
 	}
-
+	
+	public List<User> listUsers() {
+		Criteria criteria = this.dao.newCriteria(User.class);
+		return this.dao.findByCriteria(criteria, User.class);
+	}
+	
 	/**
 	 * Requisição do usuário para recuperar a senha.
 	 * 

@@ -10,35 +10,29 @@
       </p>
     </v-flex>
     <v-flex xs12 v-else>
-      <v-card>
+      <v-card v-for="(discipline, i) in disciplines" :key="i">
         <v-card-media
-          src="/static/doc-images/cards/sunshine.jpg"
+          v-if="discipline.img != null"
+          :src="discipline.img"
           height="200px"
         >
         </v-card-media>
         <v-card-title primary-title>
           <div>
-            <div class="headline">Top western road trips</div>
-            <span class="grey--text">1,000 miles of wonder</span>
+            <div class="headline" v-html="discipline.name"></div>
+            <span class="grey--text" v-html="discipline.shortName"></span>
           </div>
         </v-card-title>
         <v-card-actions>
-          <v-btn flat>Share</v-btn>
-          <v-btn flat color="purple">Explore</v-btn>
+          <v-btn flat v-on:click="doSubscribe($event, i);">Subscribe</v-btn>
+          <v-btn flat color="purple" :to="`/discipline/id/:id`">Explore</v-btn>
           <v-spacer></v-spacer>
           <v-btn icon v-on:click="show = !show">
             <v-icon>{{ show ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</v-icon>
           </v-btn>
         </v-card-actions>
         <v-slide-y-transition>
-          <v-card-text v-show="show">
-            I'm a thing. But, like most politicians,
-            he promised more than he could deliver.
-            You won't have time for sleeping, soldier,
-            not with all the bed making you'll be doing.
-            Then we'll go with that data file!
-            Hey, you add a one and two zeros to that or we walk!
-            You're going to do his laundry? I've got to find a way to escape.
+          <v-card-text v-html="discipline.category_id" v-show="show">
           </v-card-text>
         </v-slide-y-transition>
       </v-card>
@@ -48,6 +42,7 @@
 
 <script>
 import UserSession from '@/store/UserSession';
+import DisciplineStore from '@/store/Discipline';
 
 export default {
   name: 'Welcome',
@@ -55,7 +50,25 @@ export default {
     return {
       show: false,
       accessLevel: UserSession.get('user').accessLevel,
+      disciplines: [],
     };
+  },
+  mounted() {
+    const me = this;
+    DisciplineStore.dispatch({
+      action: DisciplineStore.ACTION_LIST_ALL,
+    });
+    DisciplineStore.on(DisciplineStore.ACTION_LIST_ALL, (data) => {
+      for (let i = 0; i < data.data.length; i += 1) {
+        if (data.data[i].deleted === false) {
+          me.disciplines.push(data.data[i]);
+        }
+      }
+      console.log(me.disciplines);
+    }, this);
+  },
+  beforeDestroy() {
+    DisciplineStore.off(null, null, this);
   },
 };
 </script>

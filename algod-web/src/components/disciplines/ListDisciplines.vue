@@ -14,7 +14,7 @@
             <tr>
               <th>
                 <v-checkbox
-                  primary
+                  color="black"
                   hide-details
                   @click.native="toggleAll"
                   :input-value="props.all"
@@ -38,7 +38,7 @@
             <tr :active="props.selected" @click="props.selected = !props.selected">
               <td>
                 <v-checkbox
-                  primary
+                  color="black"
                   hide-details
                   :input-value="props.selected">
                 </v-checkbox>
@@ -51,8 +51,8 @@
           </template>
         </v-data-table>
         <br>
-        <v-btn secondary to="/discipline/add">Adicionar Disciplina</v-btn>
-        <v-btn v-if="selected.length === 1" dark @click.native="delDiscipline($event)">Deletar Disciplina</v-btn>
+        <v-btn color="secondary" to="/discipline/add">Adicionar Disciplina</v-btn>
+        <v-btn v-if="selected.length === 1" dark v-on:click="delDiscipline($event)">Deletar Disciplina</v-btn>
       </v-card-text>
     </v-card>
   </v-flex>
@@ -98,6 +98,9 @@
       });
       DisciplineStore.on(DisciplineStore.ACTION_DELETE, () => {
         Toastr.success('Disciplina removida');
+        setTimeout(() => {
+          location.reload();
+        }, 500);
       }, this);
       DisciplineStore.on(DisciplineStore.ACTION_LIST_ALL, (data) => {
         for (let i = 0; i < data.data.length; i += 1) {

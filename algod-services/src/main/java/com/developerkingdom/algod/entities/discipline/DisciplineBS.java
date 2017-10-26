@@ -9,6 +9,7 @@ import org.hibernate.criterion.Restrictions;
 
 import com.developerkingdom.algod.entities.company.Institution;
 import com.developerkingdom.algod.entities.user.User;
+import com.developerkingdom.algod.entities.discipline.DisciplineUser;
 
 import br.com.caelum.vraptor.boilerplate.HibernateBusiness;
 
@@ -57,25 +58,33 @@ public class DisciplineBS extends HibernateBusiness {
 		return (Institution) criteria.uniqueResult();
 	}
 	
-	public DisciplineUsers subscribe(DisciplineUsers disciplineUsers, User user, Discipline discipline, String acessKey) {
+	public DisciplineUser subscribe(DisciplineUser disciplineUser, User user, Discipline discipline, String accessKey) {
 		Criteria criteria = this.dao.newCriteria(Discipline.class)
-				.add(Restrictions)
-		disciplineUsers.setDiscipline(discipline);
-		disciplineUsers.setUser(user);
-		disciplineUsers.setRole(user.getAccessLevel());
-		this.dao.persist(disciplineUsers);
+				.add(Restrictions.eq("accessKey", accessKey))
+				.add(Restrictions.eq("shortName", discipline.getShortName()));
+		discipline = (Discipline) criteria.uniqueResult();
 		
-		return disciplineUsers;
+		if (discipline != null) {
+			disciplineUser.setDiscipline(discipline);
+			disciplineUser.setUser(user);
+			disciplineUser.setRole(user.getAccessLevel());
+			this.dao.persist(disciplineUser);
+			return disciplineUser;
+		}
+		return null;
 	}
 	
-	public DisciplineUsers unsubscribe(DisciplineUsers disciplineUsers, User user, Discipline discipline) {
-		Criteria criteria = this.dao.newCriteria(DisciplineUsers.class)
+	public DisciplineUser unsubscribe(DisciplineUser disciplineUser, User user, Discipline discipline) {
+		Criteria criteria = this.dao.newCriteria(DisciplineUser.class)
 			.add(Restrictions.eq("user", user))
 			.add(Restrictions.eq("discipline", discipline));
-		disciplineUsers = (DisciplineUsers) criteria.uniqueResult();
-		disciplineUsers.setDeleted(true);
-		this.dao.persist(disciplineUsers);
+		disciplineUser = (DisciplineUser) criteria.uniqueResult();
 		
-		return disciplineUsers;
+		if (disciplineUser != null) {
+			disciplineUser.setDeleted(true);
+			this.dao.persist(disciplineUser);
+			return disciplineUser;
+		}
+		return null;
 	}
 }

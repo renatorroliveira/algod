@@ -23,7 +23,7 @@
 
         <v-divider class="mb-3"></v-divider>
 
-        <v-list-group v-for="(item, i) in items" :key="i">
+        <v-list-group v-for="(item, i) in items" :key="i" v-if="item.access <= accessLevel">
           <v-list-tile dark slot="item">
             <v-list-tile-avatar dark>
               <v-icon dark v-html="item.icon"></v-icon>
@@ -79,7 +79,7 @@
 
 <script>
   import Toastr from 'toastr';
-  import UserSession from '../store/UserSession';
+  import UserSession from '@/store/UserSession';
 
   export default {
     created() {
@@ -93,8 +93,8 @@
           this.$router.push('/auth/login');
         }
         this.user = UserSession.get('user');
-        this.loading = false;
         this.accessLevel = this.user.accessLevel;
+        this.loading = false;
       }, this);
       UserSession.on('logout', () => {
         Toastr.success('Usuário deslogado');
@@ -106,12 +106,13 @@
     data() {
       return {
         loading: UserSession.get('loading'),
+        accessLevel: UserSession.get('accessLevel'),
         drawer: true,
         user: UserSession.get('user'),
-        accessLevel: 0,
         items: [{
           icon: 'supervisor_account',
           title: 'Usuários',
+          access: 0,
           children: [{
             title: 'Perfil',
             href: '/user/profile',
@@ -119,12 +120,16 @@
         }, {
           icon: 'settings',
           title: 'Sistema',
+          access: 100,
           children: [{
             title: 'Instituições',
             href: '/institution/list',
           }, {
             title: 'Disciplinas',
             href: '/discipline/list',
+          }, {
+            title: 'Usuários',
+            href: '/user/list',
           }],
         }],
         title: 'Bem-vindo',

@@ -4,6 +4,7 @@ import Router from 'vue-router';
 import Welcome from '@/components/Welcome';
 
 import Profile from '@/components/user/Profile';
+import ListUsers from '@/components/user/ListUsers';
 
 import NewInstitution from '@/components/institution/AddInstitution';
 import ListInstitutions from '@/components/institution/ListInstitutions';
@@ -70,6 +71,10 @@ export default new Router({
       path: 'user/profile',
       name: 'Profile',
       component: Profile,
+    }, {
+      path: 'user/list',
+      name: 'ListUsers',
+      component: ListUsers,
     }, {
       path: 'courses',
       name: 'Cursos',

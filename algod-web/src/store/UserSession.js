@@ -11,6 +11,7 @@ const UserSession = Backbone.Model.extend({
   ACTION_VALIDATE_TOKEN: 'canResetPass',
   ACTION_NEW_PASSWORD: 'newPassword',
   ACTION_PICTURE: 'changePic',
+  ACTION_LIST: 'listUsers',
 
   url: `${Config.baseUrl}/v1/user`,
   dispatch(payload) {
@@ -256,6 +257,20 @@ const UserSession = Backbone.Model.extend({
       data: JSON.stringify(params),
       success() {
         me.trigger(me.ACTION_NEW_PASSWORD);
+      },
+      error(opts) {
+        me.handleRequestErrors([], opts);
+      },
+    });
+  },
+  listUsers() {
+    const me = this;
+    $.ajax({
+      method: 'GET',
+      url: `${me.url}/list`,
+      dataType: 'json',
+      success(data) {
+        me.trigger(me.ACTION_LIST, data);
       },
       error(opts) {
         me.handleRequestErrors([], opts);
