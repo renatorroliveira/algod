@@ -43,14 +43,13 @@ public class DisciplineController extends UserControlAbstractController {
 	
 	@Get("/list")
 	@Consumes
-//	@Permissioned(value = AccessLevels.SYSTEM_ADMIN, permissions = { ManageUsersPermission.class })
 	public void list() {
 		try {
 			List<Discipline> disciplineList = this.bs.list();
 			this.success(disciplineList, (long) disciplineList.size());
 		} catch (Throwable e) {
 			LOGGER.errorf("Erro: %s", e.getMessage());
-			this.fail("Erro inesperado");
+			this.fail("Erro inesperado: " + e.getMessage());
 		}
 	}
 	
@@ -63,7 +62,7 @@ public class DisciplineController extends UserControlAbstractController {
 			this.success(categoryList, (long) categoryList.size());
 		} catch (Throwable e) {
 			LOGGER.errorf("Erro: %s", e.getMessage());
-			this.fail("Erro inesperado: " + e.getMessage());
+			this.fail("[Error] listCategory(): " + e.getMessage());
 		}
 	}
 	
@@ -86,12 +85,14 @@ public class DisciplineController extends UserControlAbstractController {
 	
 	@Post("/subscribe")
 	@Consumes
-	public void subscribe(User user, Discipline discipline, String keyPass) {
+	public void subscribe(User user, Discipline discipline, String accessKey) {
 		try {
 			if (user != null && discipline != null) {
-				DisciplineUser disciplineUser = new DisciplineUser();
-				disciplineUser = this.bs.subscribe(disciplineUser, user, discipline, keyPass);
-				this.success(disciplineUser);
+				if (!discipline.isClosed()) {
+					DisciplineUser disciplineUser = new DisciplineUser();
+					disciplineUser = this.bs.subscribe(disciplineUser, user, discipline, accessKey);
+					this.success(disciplineUser);
+				}
 			}
 		} catch (Throwable e) {
 			this.fail(e.getMessage());

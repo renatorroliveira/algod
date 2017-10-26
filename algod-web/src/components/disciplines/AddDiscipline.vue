@@ -10,16 +10,26 @@
             persistent-hint
             autofocus
           ></v-text-field>
+          <v-text-field
+            label="Short name"
+            v-model="shortName"
+            persistent-hint
+          ></v-text-field>
+          <v-text-field
+            label="Acess Key"
+            v-model="accessKey"
+            persistent-hint
+          ></v-text-field>
           <v-select
             v-bind:items="categorys"
-            :key="e1"
+            v-model="e1"
             label="Categoria da discplina"
             single-line
             bottom
           ></v-select>
           <v-select
             v-bind:items="institutions"
-            :key="e2"
+            v-model="e2"
             label="Institution"
             single-line
             bottom
@@ -46,6 +56,8 @@ export default {
   data() {
     return {
       name: '',
+      accessKey: '',
+      shortName: '',
       e1: null,
       e2: null,
       categorys: [],
@@ -57,7 +69,7 @@ export default {
     DisciplineStore.on('new', () => {
       Toastr.success('Disciplina adicionada');
       me.$router.push('/discipline/list');
-    }, me);
+    }, this);
     InstitutionStore.dispatch({
       action: InstitutionStore.ACTION_LIST,
     });
@@ -71,7 +83,7 @@ export default {
           id: data.data[i].id,
         });
       }
-    }, me);
+    }, this);
     DisciplineStore.on(DisciplineStore.ACTION_LIST, (data) => {
       for (let i = 0; i < data.data.length; i += 1) {
         me.categorys.push({
@@ -79,7 +91,7 @@ export default {
           id: data.data[i].id,
         });
       }
-    }, me);
+    }, this);
   },
   beforeDestroy() {
     DisciplineStore.off(null, null, this);
@@ -93,9 +105,12 @@ export default {
         data: {
           discipline: {
             name: this.name,
+            accessKey: this.accessKey,
+            shortName: this.shortName,
           },
           category: {
-            id: this.e1.id,
+            // id: this.e1.id,
+            id: 1,
           },
           institution: {
             id: this.e2.id,
