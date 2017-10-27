@@ -9,7 +9,8 @@
           :items="list"
           select-all
           v-bind:pagination.sync="pagination"
-          item-key="item.id">
+          item-key="item.id"
+          class="elevation-1">
           <template slot="headers" slot-scope="props">
             <tr>
               <th>
@@ -63,7 +64,7 @@
   import DisciplineStore from '@/store/Discipline';
 
   export default {
-    name: 'Lista-de-Discipline',
+    name: 'Lista-de-Disciplines',
 
     data() {
       return {
@@ -93,13 +94,12 @@
     },
 
     created() {
-      DisciplineStore.on(DisciplineStore.ACTION_DELETE, () => {
+      DisciplineStore.on('delete', () => {
         this.refreshList();
         Toastr.success('Disciplina removida');
       }, this);
-      DisciplineStore.on(DisciplineStore.ACTION_LIST_ALL, (data) => {
+      DisciplineStore.on('list', (data) => {
         this.list = data.data;
-        console.log(this.list);
       }, this);
       this.refreshList();
     },
@@ -110,7 +110,7 @@
     methods: {
       refreshList() {
         DisciplineStore.dispatch({
-          action: DisciplineStore.ACTION_LIST_ALL,
+          action: DisciplineStore.ACTION_LIST,
         });
         this.list = null;
         this.toggleAll();
@@ -132,12 +132,11 @@
       },
       delDiscipline(event) {
         event.preventDefault();
-        const me = this;
         if (this.selected.length === 1) {
           DisciplineStore.dispatch({
             action: DisciplineStore.ACTION_DELETE,
             data: this.selected[0],
-          }, me);
+          }, this);
         } else {
           Toastr.error('Selecione somente um por vez');
         }

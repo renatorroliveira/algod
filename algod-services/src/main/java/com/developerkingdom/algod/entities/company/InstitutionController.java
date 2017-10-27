@@ -14,6 +14,7 @@ import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
+import br.com.caelum.vraptor.boilerplate.NoCache;
 
 
 @Controller
@@ -23,48 +24,47 @@ public class InstitutionController extends UserControlAbstractController {
 	@Inject private InstitutionBS bs;
 	
 	@Post("/register")
+	@NoCache
 	@Consumes
 	@Permissioned(value = AccessLevels.SYSTEM_ADMIN, permissions = { ManageUsersPermission.class })
-	public void newInstitution(Institution inst) {
+	public void register(Institution inst) {
 		try {
 			if (inst != null) {
-				inst = this.bs.newInstitution(inst);
+				inst = this.bs.register(inst);
 				this.success(inst);
-			} else {
-				LOGGER.error("Você nao tem permissao.");
-				this.fail("Você não tem permissão para fazer isso.");
 			}
 		} catch (Throwable e) {
 			LOGGER.errorf("Erro: %s", e.getMessage());
-			this.fail("Host já cadastrado");
+			this.fail("[Error]: " + e.getMessage());
 		}
 	}
 	
-	@Get("/listAll")
-	@Consumes
+	@Get("/list")
+	@NoCache
 	@Permissioned(value = AccessLevels.SYSTEM_ADMIN, permissions = { ManageUsersPermission.class })
-	public void listInstitutions() {
+	public void list() {
 		try {
 			List<Institution> inst = this.bs.listInstitutions();
 			this.success(inst, (long) inst.size());
-		} catch (Throwable ex) {
-			LOGGER.error("Unexpected error", ex);
-			this.fail(ex.getMessage());
+		} catch (Throwable e) {
+			LOGGER.errorf("Erro: %s", e.getMessage());
+			this.fail("[Error]: " + e.getMessage());
 		}
 	}
 
 	@Post("/delete")
+	@NoCache
 	@Consumes
 	@Permissioned(value = AccessLevels.SYSTEM_ADMIN, permissions = { ManageUsersPermission.class })
-	public void deleteInstitution(Institution insti) {
+	public void delete(Institution institution) {
 		try {
-			if (insti != null) {
-				insti = this.bs.deleteInstitution(insti.getId());
-				this.success(insti);
+			if (institution != null) {
+				institution = this.bs.delete(institution);
+				this.success(institution);
 			}
-		} catch (Throwable ex) {
-			LOGGER.error("Unexpected error", ex);
-			this.fail(ex.getMessage());
+		} catch (Throwable e) {
+			LOGGER.errorf("Erro: %s", e.getMessage());
+			this.fail("[Error]: " + e.getMessage());
 		}
 	}
 }

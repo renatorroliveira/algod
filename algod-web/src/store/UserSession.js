@@ -7,11 +7,10 @@ const UserSession = Backbone.Model.extend({
   ACTION_REFRESH: 'refreshStatus',
   ACTION_LOGIN: 'login',
   ACTION_LOGOUT: 'logout',
-  ACTION_RECOVER_PASSWORD: 'recoverPass',
-  ACTION_VALIDATE_TOKEN: 'canResetPass',
+  ACTION_RECOVER_REQUEST: 'recoverReq',
+  ACTION_VALIDATE_TOKEN: 'tokenValidation',
   ACTION_NEW_PASSWORD: 'newPassword',
-  ACTION_PICTURE: 'changePic',
-  ACTION_LIST: 'listUsers',
+  ACTION_CHANGE_PIC: 'changePicture',
 
   url: `${Config.baseUrl}/v1/user`,
   dispatch(payload) {
@@ -187,7 +186,6 @@ const UserSession = Backbone.Model.extend({
           },
         });
         me.clearStorage();
-        location.assign('#/auth/login');
         me.trigger('logout');
       },
       error(opts) {
@@ -195,7 +193,7 @@ const UserSession = Backbone.Model.extend({
       },
     });
   },
-  changePic(params) {
+  changePicture(params) {
     const me = this;
     $.ajax({
       method: 'POST',
@@ -203,29 +201,29 @@ const UserSession = Backbone.Model.extend({
       dataType: 'json',
       data: JSON.stringify(params),
       success(data) {
-        me.trigger('changePic', data);
+        me.trigger('changePicture', data);
       },
       error(args) {
         me.handleRequestErrors([], args);
       },
     });
   },
-  recoverPass(email) {
+  recoverReq(email) {
     const me = this;
     $.ajax({
       method: 'POST',
       url: `${me.url}/recover-password`,
       dataType: 'json',
       data: JSON.stringify(email),
-      success() {
-        me.trigger('recoverPass', me);
+      success(data) {
+        me.trigger('recoverReq', data);
       },
       error(opts) {
         me.handleRequestErrors([], opts);
       },
     });
   },
-  canResetPass(params) {
+  tokenValidation(params) {
     const me = this;
     $.ajax({
       method: 'POST',
@@ -233,18 +231,10 @@ const UserSession = Backbone.Model.extend({
       dataType: 'json',
       data: JSON.stringify(params),
       success(data) {
-        if (data.success) {
-          me.set({
-            ValidToken: true,
-          });
-          me.trigger(me.ACTION_VALIDATE_TOKEN);
-        }
+        me.trigger('tokenValidation', data);
       },
-      error(args) {
-        me.handleRequestErrors([], args);
-        me.set({
-          ValidToken: null,
-        });
+      error(opts) {
+        me.handleRequestErrors([], opts);
       },
     });
   },
@@ -256,21 +246,7 @@ const UserSession = Backbone.Model.extend({
       dataType: 'json',
       data: JSON.stringify(params),
       success() {
-        me.trigger(me.ACTION_NEW_PASSWORD);
-      },
-      error(opts) {
-        me.handleRequestErrors([], opts);
-      },
-    });
-  },
-  listUsers() {
-    const me = this;
-    $.ajax({
-      method: 'GET',
-      url: `${me.url}/list`,
-      dataType: 'json',
-      success(data) {
-        me.trigger(me.ACTION_LIST, data);
+        me.trigger('newPassword');
       },
       error(opts) {
         me.handleRequestErrors([], opts);

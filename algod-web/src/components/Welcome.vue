@@ -24,17 +24,9 @@
           </div>
         </v-card-title>
         <v-card-actions>
-          <v-btn flat v-on:click="doSubscribe($event, i);">Subscribe</v-btn>
-          <v-btn flat color="purple" :to="`/discipline/id/:id`">Explore</v-btn>
-          <v-spacer></v-spacer>
-          <v-btn icon v-on:click="show = !show">
-            <v-icon>{{ show ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</v-icon>
-          </v-btn>
+          <v-btn flat v-on:click="doSubscribe($event, i+1);">Subscribe</v-btn>
+          <v-btn flat color="purple" :to="`/discipline/${discipline.id}`">Explore</v-btn>
         </v-card-actions>
-        <v-slide-y-transition>
-          <v-card-text v-html="discipline.category_id" v-show="show">
-          </v-card-text>
-        </v-slide-y-transition>
       </v-card>
     </v-flex>
   </v-layout>
@@ -49,26 +41,27 @@ export default {
   data() {
     return {
       show: false,
-      accessLevel: UserSession.get('user').accessLevel,
+      accessLevel: UserSession.get('accessLevel'),
       disciplines: [],
     };
   },
   mounted() {
     const me = this;
     DisciplineStore.dispatch({
-      action: DisciplineStore.ACTION_LIST_ALL,
+      action: DisciplineStore.ACTION_LIST,
     });
-    DisciplineStore.on(DisciplineStore.ACTION_LIST_ALL, (data) => {
-      for (let i = 0; i < data.data.length; i += 1) {
-        if (data.data[i].deleted === false) {
-          me.disciplines.push(data.data[i]);
-        }
-      }
-      console.log(me.disciplines);
+    DisciplineStore.on('list', (data) => {
+      me.disciplines = data.data;
     }, this);
   },
   beforeDestroy() {
     DisciplineStore.off(null, null, this);
+  },
+  methods: {
+    doSubscribe(event, i) {
+      event.preventDefault();
+      console.log(i);
+    },
   },
 };
 </script>

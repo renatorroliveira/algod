@@ -22,7 +22,7 @@
           me.$router.push('/');
         }
         me.loading = false;
-      }, me);
+      }, this);
     },
     data() {
       return {

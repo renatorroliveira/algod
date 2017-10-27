@@ -7,15 +7,16 @@ const DisciplineModel = Fluxbone.Model.extend({
 });
 
 const DisciplineStore = Fluxbone.Store.extend({
-  ACTION_ADD: 'new',
+  ACTION_CREATE: 'create',
   ACTION_LIST: 'list',
+  ACTION_LIST_CATEGORYS: 'listCategorys',
   ACTION_DELETE: 'delete',
-  ACTION_LIST_ALL: 'listAll',
+  ACTION_GET_DISCIPLINE: 'getDiscipline',
 
   model: DisciplineModel,
   url: `${Config.baseUrl}/v1/discipline`,
 
-  new(params) {
+  create(params) {
     const me = this;
     $.ajax({
       method: 'POST',
@@ -23,10 +24,10 @@ const DisciplineStore = Fluxbone.Store.extend({
       dataType: 'json',
       data: JSON.stringify(params),
       success(data) {
-        me.trigger(me.ACTION_ADD, data);
+        me.trigger('create', data);
       },
-      error(args) {
-        me.trigger('fail', args);
+      error(opts) {
+        me.trigger('fail', opts);
       },
     });
   },
@@ -35,25 +36,25 @@ const DisciplineStore = Fluxbone.Store.extend({
     const me = this;
     $.ajax({
       method: 'GET',
-      url: `${me.url}/category/list`,
+      url: `${me.url}/list`,
       dataType: 'json',
       success(data) {
-        me.trigger(me.ACTION_LIST, data);
+        me.trigger('list', data);
       },
-      error(errs) {
-        me.trigger('fail', errs);
+      error(opts) {
+        me.trigger('fail', opts);
       },
     });
   },
 
-  listAll() {
+  listCategorys() {
     const me = this;
     $.ajax({
       method: 'GET',
-      url: `${me.url}/list`,
+      url: `${me.url}/category/list`,
       dataType: 'json',
       success(data) {
-        me.trigger(me.ACTION_LIST_ALL, data);
+        me.trigger('listCategorys', data);
       },
       error(errs) {
         me.trigger('fail', errs);
@@ -69,13 +70,30 @@ const DisciplineStore = Fluxbone.Store.extend({
       dataType: 'json',
       data: JSON.stringify(params),
       success(data) {
-        me.trigger(me.ACTION_DELETE, data);
+        me.trigger('delete', data);
       },
-      error(args) {
-        me.trigger('fail', args);
+      error(opts) {
+        me.trigger('fail', opts);
       },
     });
   },
+
+  getDiscipline(params) {
+    const me = this;
+    $.ajax({
+      method: 'GET',
+      url: `${me.url}/getDiscipline`,
+      dataType: 'json',
+      data: JSON.stringify(params),
+      success(data) {
+        me.trigger('getDiscipline', data);
+      },
+      error(opts) {
+        me.trigger('fail', opts);
+      },
+    });
+  },
+
 });
 
 export default new DisciplineStore();

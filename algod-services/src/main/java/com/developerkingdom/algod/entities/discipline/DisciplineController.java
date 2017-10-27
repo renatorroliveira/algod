@@ -16,6 +16,7 @@ import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
+import br.com.caelum.vraptor.boilerplate.NoCache;
 
 @Controller
 @Path("/api/v1/discipline")
@@ -24,42 +25,43 @@ public class DisciplineController extends UserControlAbstractController {
 	
 	@Post("/create")
 	@Consumes
+	@NoCache
 	@Permissioned(value = AccessLevels.SYSTEM_ADMIN, permissions = { ManageUsersPermission.class })
 	public void create(Discipline discipline, DisciplineCategory category, Institution institution) {
 		try {
 			if (discipline != null) {
-				discipline.setCategory(category);
-				discipline.setInstitution(institution);
-				discipline = this.bs.create(discipline);
+				discipline = this.bs.create(discipline, category, institution);
 				this.success(discipline);
 			} else {
 				this.fail("Campos incompletos");
 			}
 		} catch (Throwable e) {
 			LOGGER.errorf("Erro: %s", e.getMessage());
-			this.fail(e.getMessage());
+			this.fail("[Error]: " + e.getMessage());
 		}
 	}
 	
 	@Get("/list")
+	@NoCache
 	public void list() {
 		try {
 			List<Discipline> disciplineList = this.bs.list();
 			this.success(disciplineList, (long) disciplineList.size());
 		} catch (Throwable e) {
 			LOGGER.errorf("Erro: %s", e.getMessage());
-			this.fail("Erro inesperado: " + e.getMessage());
+			this.fail("[Error]: " + e.getMessage());
 		}
 	}
 	
 	@Get("/category/list")
+	@NoCache
 	public void listCategory() {
 		try {
 			List<DisciplineCategory> categoryList = this.bs.listCategory();
 			this.success(categoryList, (long) categoryList.size());
 		} catch (Throwable e) {
 			LOGGER.errorf("Erro: %s", e.getMessage());
-			this.fail("[Error] listCategory(): " + e.getMessage());
+			this.fail("[Error]: " + e.getMessage());
 		}
 	}
 	
@@ -69,34 +71,37 @@ public class DisciplineController extends UserControlAbstractController {
 	public void delete(Discipline discipline) {
 		try {
 			if (discipline != null) {
-				discipline = this.bs.delete(discipline.getId());
+				discipline = this.bs.delete(discipline);
 				this.success(discipline);
-			} else {
-				this.fail("Campos incompletos");
 			}
 		} catch (Throwable e) {
 			LOGGER.errorf("Erro: %s", e.getMessage());
-			this.fail("Erro inesperado");
+			this.fail("[Error]: " + e.getMessage());
 		}
 	}
 	
 	@Post("/subscribe")
+	@NoCache
 	@Consumes
 	public void subscribe(User user, Discipline discipline, String accessKey) {
 		try {
 			if (user != null && discipline != null) {
 				if (!discipline.isClosed()) {
 					DisciplineUser disciplineUser = new DisciplineUser();
-					disciplineUser = this.bs.subscribe(disciplineUser, user, discipline, accessKey);
+					disciplineUser = this.bs.subscribe(user, discipline, accessKey);
 					this.success(disciplineUser);
+				} else {
+					this.fail("Terminou o tempo de acesso");
 				}
 			}
 		} catch (Throwable e) {
-			this.fail(e.getMessage());
+			LOGGER.errorf("Erro: %s", e.getMessage());
+			this.fail("[Error]: " + e.getMessage());
 		}
 	}
 	
 	@Post("/unsubscribe")
+	@NoCache
 	@Consumes
 	public void unsubscribe(DisciplineUser disciplineUser, User user, Discipline discipline) {
 		try {
@@ -104,8 +109,27 @@ public class DisciplineController extends UserControlAbstractController {
 				disciplineUser = this.bs.unsubscribe(disciplineUser, user, discipline);
 				this.success(disciplineUser);
 			}
+		} catch (Throwable e) {
+			this.fail("[Error]: " + e.getMessage());
+		}
+	}
+	
+	@Get("/getDiscipline")
+	@NoCache
+	public void getDiscipline(Discipline discipline, User user) {
+		try {
+			LOGGER.infof("Id: %s", discipline.getId());
+			if (discipline != null && user != null) {
+				LOGGER.info("Entrou");
+//				boolean subscribed = this.bs.isSubscribed(discipline, user);
+				discipline = this.bs.getDisciplineByShortName(discipline.getId());
+				this.success(discipline);
+			} else {
+				this.fail("User or discipline null");
+			}
 		} catch (Exception e) {
-			this.fail(e.getMessage());
+			LOGGER.error(e);
+			this.fail("[Error]: " + e.getMessage());
 		}
 	}
 }

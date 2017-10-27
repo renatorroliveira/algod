@@ -4,13 +4,14 @@ import Router from 'vue-router';
 import Welcome from '@/components/Welcome';
 
 import Profile from '@/components/user/Profile';
-import ListUsers from '@/components/user/ListUsers';
+import ListUsers from '@/components/user/List';
 
 import NewInstitution from '@/components/institution/AddInstitution';
 import ListInstitutions from '@/components/institution/ListInstitutions';
 
 import ListDisciplines from '@/components/disciplines/ListDisciplines';
 import NewDiscipline from '@/components/disciplines/AddDiscipline';
+import Discipline from '@/components/disciplines/Discipline';
 
 import Login from '@/components/auth/Login';
 import Register from '@/components/auth/Register';
@@ -95,6 +96,10 @@ export default new Router({
       path: 'discipline/add',
       name: 'Adicionar disciplina',
       component: NewDiscipline,
+    }, {
+      path: 'discipline/:shortName',
+      name: 'Disciplina',
+      component: Discipline,
     }],
   }],
 });

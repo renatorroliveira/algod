@@ -93,15 +93,18 @@
           this.$router.push('/auth/login');
         }
         this.user = UserSession.get('user');
-        this.accessLevel = this.user.accessLevel;
+        if (this.user != null) {
+          this.accessLevel = this.user.accessLevel;
+        }
         this.loading = false;
       }, this);
       UserSession.on('logout', () => {
         Toastr.success('Usuário deslogado');
+        this.$router.push('/auth/login');
       }, this);
     },
     updated() {
-      console.log(this.user);
+      // console.log(this.user);
     },
     data() {
       return {

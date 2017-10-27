@@ -16,23 +16,13 @@
             persistent-hint
           ></v-text-field>
           <v-text-field
-            label="Host"
-            v-model="host"
-            persistent-hint
-          ></v-text-field>
-          <v-text-field
-            label="URL base"
-            v-model="baseURL"
-            persistent-hint
-          ></v-text-field>
-          <v-text-field
             label="Descrição"
             v-model="desc"
             multi-line
             persistent-hint
           ></v-text-field>
           <div class="text-xs-right">
-            <v-btn type="submit" secondary>Registrar</v-btn>
+            <v-btn type="submit" color="secondary">Registrar</v-btn>
           </div>
         </form>
       </v-card-text>
@@ -54,13 +44,11 @@ export default {
       name: '',
       desc: '',
       site: '',
-      host: '',
-      baseURL: '',
     };
   },
   mounted() {
     const me = this;
-    InstStore.on(InstStore.ACTION_REGISTER, () => {
+    InstStore.on('register', () => {
       Toastr.success('Instituição adicionada');
       me.$router.push('/institution/list');
     }, me);
@@ -77,8 +65,6 @@ export default {
           name: this.name,
           description: this.desc,
           site: this.site,
-          host: this.host,
-          baseUrl: this.baseURL,
         },
       });
     },

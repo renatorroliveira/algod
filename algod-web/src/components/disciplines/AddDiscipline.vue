@@ -52,7 +52,7 @@ import DisciplineStore from '@/store/Discipline';
 import InstitutionStore from '@/store/Institution';
 
 export default {
-  name: 'New-Discipline',
+  name: 'Create-Discipline',
   data() {
     return {
       name: '',
@@ -65,28 +65,27 @@ export default {
     };
   },
   mounted() {
-    const me = this;
-    DisciplineStore.on('new', () => {
+    DisciplineStore.on('create', () => {
       Toastr.success('Disciplina adicionada');
-      me.$router.push('/discipline/list');
+      this.$router.push('/discipline/list');
     }, this);
     InstitutionStore.dispatch({
       action: InstitutionStore.ACTION_LIST,
     });
     DisciplineStore.dispatch({
-      action: DisciplineStore.ACTION_LIST,
+      action: DisciplineStore.ACTION_LIST_CATEGORYS,
     });
-    InstitutionStore.on(InstitutionStore.ACTION_LIST, (data) => {
+    InstitutionStore.on('list', (data) => {
       for (let i = 0; i < data.data.length; i += 1) {
-        me.institutions.push({
+        this.institutions.push({
           text: data.data[i].name,
           id: data.data[i].id,
         });
       }
     }, this);
-    DisciplineStore.on(DisciplineStore.ACTION_LIST, (data) => {
+    DisciplineStore.on('listCategorys', (data) => {
       for (let i = 0; i < data.data.length; i += 1) {
-        me.categorys.push({
+        this.categorys.push({
           text: data.data[i].name,
           id: data.data[i].id,
         });
@@ -101,7 +100,7 @@ export default {
     add(event) {
       event.preventDefault();
       DisciplineStore.dispatch({
-        action: DisciplineStore.ACTION_ADD,
+        action: DisciplineStore.ACTION_CREATE,
         data: {
           discipline: {
             name: this.name,
@@ -109,8 +108,7 @@ export default {
             shortName: this.shortName,
           },
           category: {
-            // id: this.e1.id,
-            id: 1,
+            id: this.e1.id,
           },
           institution: {
             id: this.e2.id,

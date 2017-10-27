@@ -12,25 +12,22 @@ import br.com.caelum.vraptor.boilerplate.HibernateBusiness;
 @RequestScoped
 public class InstitutionBS extends HibernateBusiness {
 	
-	public Institution newInstitution(Institution inst) {
-		inst.setId(null);
-		inst.setDeleted(false);
+	public Institution register(Institution inst) {
 		this.dao.persist(inst);
 		
 		return inst;
 	}
 	
 	public List<Institution> listInstitutions(){
-		Criteria criteria = this.dao.newCriteria(Institution.class);
+		Criteria criteria = this.dao.newCriteria(Institution.class)
+				.add(Restrictions.eq("deleted", false));
 		return this.dao.findByCriteria(criteria, Institution.class);
 	}
 	
-	public Institution deleteInstitution(long id) {
-		Criteria criteria = this.dao.newCriteria(Institution.class)
-				.add(Restrictions.eq("id", id));
-		Institution inst = (Institution) criteria.uniqueResult();
-		inst.setDeleted(true);
-		this.dao.persist(inst);
-		return inst;
+	public Institution delete(Institution institution) {
+		institution.setDeleted(true);
+		this.dao.persist(institution);
+		
+		return institution;
 	}
 }

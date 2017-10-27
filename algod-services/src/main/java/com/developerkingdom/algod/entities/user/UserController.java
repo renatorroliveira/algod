@@ -193,7 +193,6 @@ public class UserController extends UserControlAbstractController {
 	}
 	
 	@Get("/list")
-	@Consumes
 	@NoCache
 	@Permissioned(value = AccessLevels.SYSTEM_ADMIN, permissions = { ManageUsersPermission.class })
 	public void list() {

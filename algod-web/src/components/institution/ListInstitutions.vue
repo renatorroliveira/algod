@@ -3,9 +3,10 @@
     <v-card>
       <v-card-text>
         <v-data-table
+          v-if="list"
           v-model="selected"
           :headers="headers"
-          :items="instList"
+          :items="list"
           select-all
           v-bind:pagination.sync="pagination"
           item-key="name"
@@ -71,7 +72,7 @@
           sortBy: 'id',
         },
         selected: [],
-        instList: [],
+        list: [],
         headers: [{
           text: 'ID',
           align: 'left',
@@ -93,34 +94,32 @@
     },
 
     created() {
-      const me = this;
-      InstitutionStore.dispatch({
-        action: InstitutionStore.ACTION_LIST,
-      });
-      InstitutionStore.on(InstitutionStore.ACTION_DELETE, () => {
+      InstitutionStore.on('delete', () => {
+        this.refreshList();
         Toastr.success('Instituição removida');
-        setTimeout(() => {
-          location.reload();
-        }, 500);
       }, this);
-      InstitutionStore.on(InstitutionStore.ACTION_LIST, (data) => {
-        for (let i = 0; i < data.data.length; i += 1) {
-          if (data.data[i].deleted === false) {
-            me.instList.push(data.data[i]);
-          }
-        }
+      InstitutionStore.on('list', (data) => {
+        this.list = data.data;
       }, this);
+      this.refreshList();
     },
 
     beforeDestroy() {
       InstitutionStore.off(null, null, this);
     },
     methods: {
+      refreshList() {
+        InstitutionStore.dispatch({
+          action: InstitutionStore.ACTION_LIST,
+        });
+        this.list = null;
+        this.toggleAll();
+      },
       toggleAll() {
         if (this.selected.length) {
           this.selected = [];
-        } else {
-          this.selected = this.instList.slice();
+        } else if (this.list) {
+          this.selected = this.list.slice();
         }
       },
       changeSort(column) {

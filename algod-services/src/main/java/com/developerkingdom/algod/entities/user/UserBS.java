@@ -158,23 +158,21 @@ public class UserBS extends HibernateBusiness {
 		return req;
 	}
 
-
-
 	/**
 	 * Salvar o usuário no banco de dados.
 	 * 
 	 * @param user Usuário a ser salvo.
 	 */
-	public void save(User user) {
-		if (this.existsByEmail(user.getEmail()) != null) {
-			throw new IllegalArgumentException("Já existe um usuários cadastrado com este e-mail.");
-		}
-		user.setPassword(CryptManager.passwordHash(user.getPassword()));
-		user.setActive(true);
-		user.setDeleted(false);
-		user.setCreation(new Date());
-		this.persist(user);
-	}
+//	public void save(User user) {
+//		if (this.existsByEmail(user.getEmail()) != null) {
+//			throw new IllegalArgumentException("Já existe um usuários cadastrado com este e-mail.");
+//		}
+//		user.setPassword(CryptManager.passwordHash(user.getPassword()));
+//		user.setActive(true);
+//		user.setDeleted(false);
+//		user.setCreation(new Date());
+//		this.persist(user);
+//	}
 
 	/**
 	 * Verifica se o usuário está deletado.
@@ -226,18 +224,6 @@ public class UserBS extends HibernateBusiness {
 	 */
 	public User existsByUser(Long idUser) {
 		Criteria criteria = this.dao.newCriteria(User.class).add(Restrictions.eq("id", idUser));
-		return (User) criteria.uniqueResult();
-	}
-
-	/**
-	 * Buscar usuário pelo token de acesso.
-	 * 
-	 * @param token
-	 *            token para buscar usuário.
-	 * @return User Usuário que contém o token.
-	 */
-	public User existsByInviteToken(String token) {
-		Criteria criteria = this.dao.newCriteria(User.class).add(Restrictions.eq("inviteToken", token));
 		return (User) criteria.uniqueResult();
 	}
 
@@ -341,7 +327,7 @@ public class UserBS extends HibernateBusiness {
 			t.connect("smtp.gmail.com", "developerskingdom.algod@gmail.com", "developerskingdom@algod");
 			t.sendMessage(message, message.getAllRecipients());
 			t.close();
-			LOGGER.infof("Email enviado ao: %s", email);
+			LOGGER.infof("Email enviado para: %s", email);
 		} catch (Exception mex) {
 			LOGGER.info("Erro ao enviar email");
 			mex.printStackTrace();

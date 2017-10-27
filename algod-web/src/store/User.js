@@ -7,6 +7,7 @@ const UserModel = Fluxbone.Model.extend({
 
 const UserStore = Fluxbone.Store.extend({
   ACTION_REGISTER: 'register',
+  ACTION_LIST: 'list',
 
   model: UserModel,
   url: `${Fluxbone.baseUrl}/v1/user`,
@@ -48,6 +49,22 @@ const UserStore = Fluxbone.Store.extend({
       },
     });
   },
+
+  list() {
+    const me = this;
+    $.ajax({
+      method: 'GET',
+      url: `${me.url}/list`,
+      dataType: 'json',
+      success(data) {
+        me.trigger('list', data);
+      },
+      error(opts) {
+        me.handleRequestErrors([], opts);
+      },
+    });
+  },
+
 });
 
 export default new UserStore();

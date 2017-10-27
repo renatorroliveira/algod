@@ -3,9 +3,10 @@
     <v-card>
       <v-card-text>
         <v-data-table
+          v-if="list"
           v-model="selected"
           :headers="headers"
-          :items="userList"
+          :items="list"
           select-all
           v-bind:pagination.sync="pagination"
           item-key="name"
@@ -57,7 +58,7 @@
 </template>
 
 <script>
-  import UserSession from '@/store/UserSession';
+  import UserStore from '@/store/User';
 
   export default {
     name: 'Lista-de-usuarios',
@@ -68,7 +69,7 @@
           sortBy: 'id',
         },
         selected: [],
-        userList: [],
+        list: [],
         headers: [{
           text: 'ID',
           align: 'left',
@@ -93,24 +94,23 @@
       };
     },
     created() {
-      const me = this;
-      UserSession.dispatch({
-        action: UserSession.ACTION_LIST,
+      UserStore.dispatch({
+        action: UserStore.ACTION_LIST,
       });
-      UserSession.on(UserSession.ACTION_LIST, (data) => {
-        me.userList = data.data;
+      UserStore.on('list', (data) => {
+        this.list = data.data;
       }, this);
     },
 
     beforeDestroy() {
-      UserSession.off(null, null, this);
+      UserStore.off(null, null, this);
     },
     methods: {
       toggleAll() {
         if (this.selected.length) {
           this.selected = [];
-        } else {
-          this.selected = this.userList.slice();
+        } else if (this.list) {
+          this.selected = this.list.slice();
         }
       },
       changeSort(column) {

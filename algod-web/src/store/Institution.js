@@ -8,8 +8,8 @@ const InstitutionModel = Fluxbone.Model.extend({
 
 const InstitutionStore = Fluxbone.Store.extend({
   ACTION_REGISTER: 'register',
-  ACTION_LIST: 'listInsti',
-  ACTION_DELETE: 'deleteInstitution',
+  ACTION_LIST: 'list',
+  ACTION_DELETE: 'delete',
 
   model: InstitutionModel,
   url: `${Config.baseUrl}/v1/institution`,
@@ -22,30 +22,30 @@ const InstitutionStore = Fluxbone.Store.extend({
       dataType: 'json',
       data: JSON.stringify(params),
       success(data) {
-        me.trigger(me.ACTION_REGISTER, data);
+        me.trigger('register', data);
       },
-      error(args) {
-        me.trigger('fail', `Erro inesperado: ${args}`);
+      error(opts) {
+        me.trigger('fail', opts);
       },
     });
   },
 
-  listInsti() {
+  list() {
     const me = this;
     $.ajax({
       method: 'GET',
-      url: `${me.url}/listAll`,
+      url: `${me.url}/list`,
       dataType: 'json',
       success(data) {
-        me.trigger(me.ACTION_LIST, data);
+        me.trigger('list', data);
       },
-      error(errs) {
-        me.trigger('fail', errs);
+      error(opts) {
+        me.trigger('fail', opts);
       },
     });
   },
 
-  deleteInstitution(params) {
+  delete(params) {
     const me = this;
     $.ajax({
       method: 'POST',
@@ -53,10 +53,10 @@ const InstitutionStore = Fluxbone.Store.extend({
       dataType: 'json',
       data: JSON.stringify(params),
       success(data) {
-        me.trigger(me.ACTION_DELETE, data);
+        me.trigger('delete', data);
       },
-      error(args) {
-        me.trigger('fail', args);
+      error(opts) {
+        me.trigger('fail', opts);
       },
     });
   },
