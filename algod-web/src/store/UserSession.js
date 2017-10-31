@@ -110,7 +110,9 @@ const UserSession = Backbone.Model.extend({
   },
 
   handleRequestErrors(collection, opts) {
-    if (opts.status === 400) {
+    if (opts.status === 504) {
+      this.trigger('fail', opts.statusText);
+    } else if (opts.status === 400) {
       this.trigger('fail', opts.responseJSON.message);
     } else if (opts.status === 409) {
       // Validation errors

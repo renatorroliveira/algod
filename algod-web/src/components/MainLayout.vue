@@ -11,11 +11,11 @@
     >
       <v-list>
         <v-list-tile dark avatar to="/">
-          <v-list-tile-avatar>
+          <v-list-tile-avatar v-if="!!user">
             <img v-if="!!user.picture" :src="user.picture" alt="User" />
             <v-icon v-else dark>account_circle</v-icon>
           </v-list-tile-avatar>
-          <v-list-tile-content>
+          <v-list-tile-content v-if="!!user">
             <div class="body-1 white--text">{{user.name}}</div>
             <div class="caption white--text">{{user.email}}</div>
           </v-list-tile-content>
