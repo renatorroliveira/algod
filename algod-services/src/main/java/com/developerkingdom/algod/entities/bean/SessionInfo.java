@@ -3,6 +3,7 @@ package com.developerkingdom.algod.entities.bean;
 import java.io.Serializable;
 import java.util.List;
 
+import com.developerkingdom.algod.entities.company.InstitutionDomain;
 import com.developerkingdom.algod.entities.user.User;
 import com.developerkingdom.algod.entities.user.auth.UserAccessToken;
 import com.developerkingdom.algod.entities.user.auth.UserSession;
@@ -16,6 +17,7 @@ public class SessionInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private User user;
+	private InstitutionDomain tenant;
 	private String token;
 	private long ttl;
 	private List<String> permissions;
@@ -64,6 +66,14 @@ public class SessionInfo implements Serializable {
 
 	public void setAccessLevel(int accessLevel) {
 		this.accessLevel = accessLevel;
+	}
+
+	public InstitutionDomain getTenant() {
+		return tenant;
+	}
+
+	public void setTenant(InstitutionDomain tenant) {
+		this.tenant = tenant;
 	}
 	
 	

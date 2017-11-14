@@ -4,7 +4,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import com.developerkingdom.algod.entities.Current;
 import com.developerkingdom.algod.entities.bean.SessionInfo;
+import com.developerkingdom.algod.entities.company.InstitutionDomain;
 import com.developerkingdom.algod.entities.user.auth.UserAccessToken;
 import com.developerkingdom.algod.entities.user.authz.AccessLevels;
 import com.developerkingdom.algod.entities.user.authz.Permissioned;
@@ -27,6 +29,7 @@ import br.com.caelum.vraptor.boilerplate.util.GeneralUtils;
 public class UserController extends UserControlAbstractController {
 
 	@Inject private UserBS bs;
+	@Inject @Current private InstitutionDomain currentDomain;
 
 	@Post("/register")
 	@Consumes
@@ -61,7 +64,10 @@ public class UserController extends UserControlAbstractController {
 			LOGGER.warnf("Tried with '%s' and '%s', deviceId: %s.", email, password, deviceId);
 			UserAccessToken token = this.bs.authenticate(email, password, deviceId);
 			if (token != null) {
-				this.success(new SessionInfo(this.userSession));
+				this.userSession.login(token);
+				SessionInfo info = new SessionInfo(this.userSession);
+				info.setTenant(this.currentDomain);
+				this.success(info);
 			} else {
 				this.fail("E-mail e/ou senha inválido(s).");
 			}
@@ -87,23 +93,23 @@ public class UserController extends UserControlAbstractController {
 	@NoCache
 	public void fetchSession() {
 		try {
-			if (this.userSession.isLogged()) {
-				this.success(new SessionInfo(this.userSession));
-			} else {
+			if (!this.userSession.isLogged()) {
 				String auth = this.request.getHeader("Authorization");
 				if (GeneralUtils.isEmpty(auth)) {
 					this.fail("Not logged in.");
 					this.response.addHeader("Access-Control-Allow-Origin", "http://localhost:*");
-				} else {
-					UserAccessToken token = this.bs.exists(auth, UserAccessToken.class);
-					if (token == null) {
-						this.fail("Invalid token.");
-					} else {
-						this.userSession.login(token);
-						this.success(new SessionInfo(this.userSession));
-					}
+					return;
 				}
+				UserAccessToken token = this.bs.exists(auth, UserAccessToken.class);
+				if (token == null) {
+					this.fail("Invalid token.");
+					return;
+				}
+				this.userSession.login(token);
 			}
+			final SessionInfo info = new SessionInfo(this.userSession);
+			info.setTenant(this.currentDomain);
+			this.success(info);
 		} catch (Throwable e) {
 			LOGGER.error("Unexpected runtime error", e);
 			this.fail("Ocorreu um erro inesperado: " + e.getMessage());

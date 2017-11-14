@@ -82,6 +82,7 @@ const UserSession = Backbone.Model.extend({
           me.set({
             logged: true,
             user: data.data.user,
+            tenant: data.data.tenant,
             accessLevel: data.data.accessLevel,
             permissions: data.data.permissions,
           });
@@ -157,6 +158,7 @@ const UserSession = Backbone.Model.extend({
             me.set({
               logged: true,
               user: data.data.user,
+              tenant: data.data.tenant,
               accessLevel: data.data.accessLevel,
               permissions: data.data.permissions,
             });

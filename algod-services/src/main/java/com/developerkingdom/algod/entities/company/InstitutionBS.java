@@ -30,4 +30,10 @@ public class InstitutionBS extends HibernateBusiness {
 		
 		return institution;
 	}
+	
+	public InstitutionDomain retrieveDomain(String host) {
+		Criteria criteria = this.dao.newCriteria(InstitutionDomain.class);
+		criteria.add(Restrictions.eq("host", host));
+		return (InstitutionDomain) criteria.uniqueResult();
+	}
 }
