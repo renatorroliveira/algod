@@ -80,22 +80,46 @@ public class DisciplineController extends UserControlAbstractController {
 		}
 	}
 	
-	@Post("/subscribe")
+	@Get("/{id}/subscription")
+	@NoCache
+	@Permissioned
+	public void retrieveSubscription(Long id) {
+		try {
+			if (id != null) {
+				Discipline discipline = this.bs.exists(id, Discipline.class);
+				if (discipline == null)
+					this.result.notFound();
+				else {
+					this.success(this.bs.isSubscribed(discipline, this.userSession.getUser()));
+				}
+			} else {
+				this.fail("User or discipline null");
+			}
+		} catch (Exception e) {
+			LOGGER.error(e);
+			this.fail("[Error]: " + e.getMessage());
+		}
+	}
+	
+	@Post("/{id}/subscribe")
 	@NoCache
 	@Consumes
-	public void subscribe(User user, Discipline discipline, String accessKey) {
+	@Permissioned
+	public void subscribe(Long id, String accessKey) {
 		try {
-			if (user != null && discipline != null) {
-				if (!discipline.isClosed()) {
-					DisciplineUser disciplineUser = new DisciplineUser();
-					disciplineUser = this.bs.subscribe(user, discipline, accessKey);
-					this.success(disciplineUser);
-				} else {
-					this.fail("Terminou o tempo de acesso");
+			if (id != null) {
+				Discipline discipline = this.bs.exists(id, Discipline.class);
+				if (discipline == null)
+					this.result.notFound();
+				else {
+					this.bs.subscribe(this.userSession.getUser(), discipline, accessKey);
+					this.success(discipline);
 				}
+			} else {
+				this.fail("User or discipline null");
 			}
-		} catch (Throwable e) {
-			LOGGER.errorf("Erro: %s", e.getMessage());
+		} catch (Exception e) {
+			LOGGER.error(e);
 			this.fail("[Error]: " + e.getMessage());
 		}
 	}
@@ -114,16 +138,17 @@ public class DisciplineController extends UserControlAbstractController {
 		}
 	}
 	
-	@Get("/getDiscipline")
+	@Get("/{id}")
 	@NoCache
-	public void getDiscipline(Discipline discipline, User user) {
+	@Permissioned
+	public void retrieve(Long id) {
 		try {
-			LOGGER.infof("Id: %s", discipline.getId());
-			if (discipline != null && user != null) {
-				LOGGER.info("Entrou");
-//				boolean subscribed = this.bs.isSubscribed(discipline, user);
-				discipline = this.bs.getDisciplineByShortName(discipline.getId());
-				this.success(discipline);
+			if (id != null) {
+				Discipline discipline = this.bs.exists(id, Discipline.class);
+				if (discipline == null)
+					this.result.notFound();
+				else
+					this.success(discipline);
 			} else {
 				this.fail("User or discipline null");
 			}

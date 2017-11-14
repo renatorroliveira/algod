@@ -9,7 +9,6 @@ import org.hibernate.criterion.Restrictions;
 
 import com.developerkingdom.algod.entities.company.Institution;
 import com.developerkingdom.algod.entities.user.User;
-import com.developerkingdom.algod.entities.discipline.DisciplineUser;
 
 import br.com.caelum.vraptor.boilerplate.HibernateBusiness;
 
@@ -83,14 +82,10 @@ public class DisciplineBS extends HibernateBusiness {
 		return (Discipline) criteria.uniqueResult();
 	}
 	
-	public boolean isSubscribed(Discipline discipline, User user) {
+	public DisciplineUser isSubscribed(Discipline discipline, User user) {
 		Criteria criteria = this.dao.newCriteria(DisciplineUser.class)
 				.add(Restrictions.eq("user", user))
 				.add(Restrictions.eq("discipline", discipline));
-		DisciplineUser disciplineUser = (DisciplineUser) criteria.uniqueResult();
-		if (disciplineUser != null)
-			return true;
-		
-		return false;
+		return (DisciplineUser) criteria.uniqueResult();
 	}
 }

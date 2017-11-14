@@ -3,6 +3,7 @@
 import Vue from 'vue';
 import Vuetify from 'vuetify';
 
+import 'roboto-no-svg/css/roboto/roboto-fontface.css';
 import 'material-design-icons-iconfont-only/iconfont/material-icons.css';
 import App from './App';
 import router from './router';

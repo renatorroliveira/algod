@@ -12,6 +12,7 @@ const DisciplineStore = Fluxbone.Store.extend({
   ACTION_LIST_CATEGORYS: 'listCategorys',
   ACTION_DELETE: 'delete',
   ACTION_GET_DISCIPLINE: 'getDiscipline',
+  ACTION_GET_SUBSCRIPTION: 'getSubscription',
 
   model: DisciplineModel,
   url: `${Config.baseUrl}/v1/discipline`,
@@ -82,11 +83,25 @@ const DisciplineStore = Fluxbone.Store.extend({
     const me = this;
     $.ajax({
       method: 'GET',
-      url: `${me.url}/getDiscipline`,
+      url: `${me.url}/${params.discipline.id}`,
       dataType: 'json',
-      data: JSON.stringify(params),
       success(data) {
         me.trigger('getDiscipline', data);
+      },
+      error(opts) {
+        me.trigger('fail', opts);
+      },
+    });
+  },
+
+  getSubscription(id) {
+    const me = this;
+    $.ajax({
+      method: 'GET',
+      url: `${me.url}/${id}/subscription`,
+      dataType: 'json',
+      success(response) {
+        me.trigger('getSubscription', response.data);
       },
       error(opts) {
         me.trigger('fail', opts);

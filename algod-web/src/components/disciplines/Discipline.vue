@@ -16,12 +16,11 @@
 
 <script>
   import DisciplineStore from '@/store/Discipline';
-  import UserSession from '@/store/UserSession';
 
   export default {
     data() {
       return {
-        subscribed: false,
+        subscription: null,
         discipline: [],
       };
     },
@@ -29,19 +28,12 @@
       console.log(this.$router.currentRoute.params.shortName);
       const me = this;
       DisciplineStore.dispatch({
-        action: DisciplineStore.ACTION_GET_DISCIPLINE,
-        data: {
-          discipline: {
-            id: me.$router.currentRoute.params.shortName,
-          },
-          user: {
-            id: UserSession.get('user').id,
-          },
-        },
+        action: DisciplineStore.ACTION_GET_SUBSCRIPTION,
+        data: me.$router.currentRoute.params.shortName,
       });
-      DisciplineStore.on('getDiscipline', (data) => {
+      DisciplineStore.on('getSubscription', (data) => {
         console.log(data);
-        me.discipline = data.data;
+        me.subscription = data;
       }, this);
     },
     beforeDestroy() {
