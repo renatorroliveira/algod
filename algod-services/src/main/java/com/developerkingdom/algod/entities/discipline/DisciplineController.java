@@ -148,6 +148,7 @@ public class DisciplineController extends UserControlAbstractController {
 				if (discipline == null)
 					this.result.notFound();
 				else
+					LOGGER.info("ENTROU GET DISCIPLINE");
 					this.success(discipline);
 			} else {
 				this.fail("User or discipline null");

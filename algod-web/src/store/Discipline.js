@@ -79,11 +79,12 @@ const DisciplineStore = Fluxbone.Store.extend({
     });
   },
 
-  getDiscipline(params) {
+  getDiscipline(id) {
+    console.log(`id: ${id}`);
     const me = this;
     $.ajax({
       method: 'GET',
-      url: `${me.url}/${params.discipline.id}`,
+      url: `${me.url}/${id}`,
       dataType: 'json',
       success(data) {
         me.trigger('getDiscipline', data);

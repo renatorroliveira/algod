@@ -48,6 +48,7 @@
               <td class="text-xs-center">{{ props.item.name }}</td>
               <td class="text-xs-center">{{ props.item.category.name }}</td>
               <td class="text-xs-center">{{ props.item.institution.name }}</td>
+              <td class="text-xs-center"><router-link class="btn" :to="`/discipline/${props.item.id}`">Visitar</router-link></td>
             </tr>
           </template>
         </v-data-table>
@@ -75,20 +76,24 @@
         list: [],
         headers: [{
           text: 'ID',
-          align: 'left',
           value: 'id',
+          align: 'left',
         }, {
           text: 'Nome',
           value: 'name',
-          align: 'left',
+          align: 'center',
         }, {
           text: 'Categoria',
           value: 'desc',
-          align: 'left',
+          align: 'center',
         }, {
           text: 'Instituição',
           value: 'host',
-          align: 'left',
+          align: 'center',
+        }, {
+          text: 'Visitar',
+          value: 'visit',
+          align: 'center',
         }],
       };
     },

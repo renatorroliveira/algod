@@ -97,7 +97,7 @@ export default new Router({
       name: 'Adicionar disciplina',
       component: NewDiscipline,
     }, {
-      path: 'discipline/:shortName',
+      path: 'discipline/:id',
       name: 'Disciplina',
       component: Discipline,
     }],
