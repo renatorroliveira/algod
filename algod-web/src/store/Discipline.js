@@ -86,8 +86,8 @@ const DisciplineStore = Fluxbone.Store.extend({
       method: 'GET',
       url: `${me.url}/${id}`,
       dataType: 'json',
-      success(data) {
-        me.trigger('getDiscipline', data);
+      success(response) {
+        me.trigger('getDiscipline', response.data);
       },
       error(opts) {
         me.trigger('fail', opts);

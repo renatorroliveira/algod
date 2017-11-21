@@ -1,17 +1,21 @@
 <template>
   <v-layout column align-center justify-center>
     <v-flex class="text-xs-center">
-      <v-card v-if="subscription === undefined">
+      <v-card v-if="!!subscription">
         <v-card-text>
-          <h1>Algorithm God 2</h1>
-          <h5>Uma nova experiência no ensino da programação de computadores</h5>
+          <h4>{{discipline.name}}</h4>
           <p class="body-2">
-            kk eae men
+            Inscrito
           </p>
         </v-card-text>
       </v-card>
-      <v-card v-else>
-        Inscrito!
+      <v-card v-else-if="!!discipline">
+        <v-card-text>
+          <h4>{{discipline.name}}</h4>
+          <p class="body-2">
+            Inscreva-se
+          </p>
+        </v-card-text>
       </v-card>
     </v-flex>
   </v-layout>
@@ -28,23 +32,25 @@
       };
     },
     created() {
-      console.log(this.$router.currentRoute.params.id);
-      const me = this;
       DisciplineStore.dispatch({
         action: DisciplineStore.ACTION_GET_SUBSCRIPTION,
-        data: me.$router.currentRoute.params.id,
+        data: this.$router.currentRoute.params.id,
       });
-      DisciplineStore.dispatch({
-        atcion: DisciplineStore.ACTION_GET_DISCIPLINE,
-        data: me.$router.currentRoute.params.id,
-      });
+
       DisciplineStore.on('getSubscription', (data) => {
-        console.log(data);
-        me.subscription = data;
+        if (typeof data === 'undefined') {
+          DisciplineStore.dispatch({
+            action: DisciplineStore.ACTION_GET_DISCIPLINE,
+            data: this.$router.currentRoute.params.id,
+          });
+        } else {
+          console.log('Go:', data);
+          this.subscription = data;
+          this.discipline = data.discipline;
+        }
       }, this);
-      DisciplineStore.on('getDiscipline', (dis) => {
-        console.log(dis);
-        me.discipline = dis;
+      DisciplineStore.on('getDiscipline', (data) => {
+        this.discipline = data;
       }, this);
     },
     beforeDestroy() {
