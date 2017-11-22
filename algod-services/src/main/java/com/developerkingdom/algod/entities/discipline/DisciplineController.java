@@ -112,8 +112,11 @@ public class DisciplineController extends UserControlAbstractController {
 				if (discipline == null)
 					this.result.notFound();
 				else {
-					this.bs.subscribe(this.userSession.getUser(), discipline, accessKey);
-					this.success(discipline);
+					DisciplineUser disciplineUser = this.bs.subscribe(this.userSession.getUser(), discipline, accessKey);
+					if (disciplineUser == null)
+						this.fail("Senha inválida");
+					else
+						this.success(disciplineUser);
 				}
 			} else {
 				this.fail("User or discipline null");
@@ -127,10 +130,10 @@ public class DisciplineController extends UserControlAbstractController {
 	@Post("/unsubscribe")
 	@NoCache
 	@Consumes
-	public void unsubscribe(DisciplineUser disciplineUser, User user, Discipline discipline) {
+	public void unsubscribe(Discipline discipline) {
 		try {
-			if (disciplineUser != null && user != null && discipline != null) {
-				disciplineUser = this.bs.unsubscribe(disciplineUser, user, discipline);
+			if (discipline != null) {
+				DisciplineUser disciplineUser = this.bs.unsubscribe(discipline, this.userSession.getUser());
 				this.success(disciplineUser);
 			}
 		} catch (Throwable e) {
