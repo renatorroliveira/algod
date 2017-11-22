@@ -2,40 +2,47 @@
   <v-app v-if="!loading">
 
     <v-navigation-drawer
-    dark
-      clipped
-      persistent
-      v-model="drawer"
-      enable-resize-watcher
       app
+      fixed
+      :clipped="$vuetify.breakpoint.width > 1264"
+      v-model="drawer"
     >
       <v-list>
-        <v-list-tile dark avatar to="/">
-          <v-list-tile-avatar v-if="!!user">
+        <v-list-tile avatar v-if="!!user" to="/user/profile">
+          <v-list-tile-avatar>
             <img v-if="!!user.picture" :src="user.picture" alt="User" />
-            <v-icon v-else dark>account_circle</v-icon>
+            <v-icon v-else>account_circle</v-icon>
           </v-list-tile-avatar>
-          <v-list-tile-content v-if="!!user">
-            <div class="body-1 white--text">{{user.name}}</div>
-            <div class="caption white--text">{{user.email}}</div>
+          <v-list-tile-content class="black--text">
+            <div class="body-1">{{user.name}}</div>
+            <div class="caption">{{user.email}}</div>
           </v-list-tile-content>
         </v-list-tile>
 
         <v-divider class="mb-3"></v-divider>
 
+        <v-list-tile avatar to="/">
+          <v-list-tile-avatar>
+            <v-icon>home</v-icon>
+          </v-list-tile-avatar>
+          <v-list-tile-content class="black--text">
+            <v-list-tile-title>Início</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+
         <v-list-group v-for="(item, i) in items" :key="i" v-if="item.access <= accessLevel">
-          <v-list-tile dark slot="item">
-            <v-list-tile-avatar dark>
-              <v-icon dark v-html="item.icon"></v-icon>
+          <v-list-tile slot="item">
+            <v-list-tile-avatar>
+              <v-icon v-html="item.icon"></v-icon>
             </v-list-tile-avatar>
-            <v-list-tile-content dark>
-              <v-list-tile-title dark v-text="item.title"></v-list-tile-title>
+            <v-list-tile-content>
+              <v-list-tile-title v-text="item.title"></v-list-tile-title>
             </v-list-tile-content>
             <v-icon dark>keyboard_arrow_down</v-icon>
           </v-list-tile>
-          <v-list-tile dark v-for="(child, j) in item.children" :key="j" :to="child.href">
-            <v-list-tile-content dark>
-              <v-list-tile-title dark v-text="child.title"></v-list-tile-title>
+          <v-list-tile v-for="(child, j) in item.children" :key="j" :to="child.href">
+            <v-list-tile-content>
+              <v-list-tile-title v-text="child.title"></v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
         </v-list-group>
@@ -54,22 +61,25 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-toolbar app fixed clipped-left dark>
-      <v-toolbar-side-icon @click.native.stop="drawer = !drawer"></v-toolbar-side-icon>
-      <v-toolbar-title>{{$route.name}}</v-toolbar-title>
-      <v-spacer></v-spacer>
+    <v-toolbar
+      app
+      color="blue-grey darken-3"
+      dark
+      dense
+      fixed
+      clipped-left>
+        <v-toolbar-side-icon v-on:click="drawer = !drawer"></v-toolbar-side-icon>
+        <v-toolbar-title>{{$route.name}}</v-toolbar-title>
+        <v-spacer></v-spacer>
     </v-toolbar>
 
-    <main class="grey lighten-4">
-      <v-content>
-        <v-container fluid>
-          <v-layout justify-center align-center>
-            <router-view></router-view>
-          </v-layout>
-        </v-container>
-      </v-content>
-    </main>
-
+    <v-content class="grey lighten-3">
+      <v-container fluid fill-height>
+        <v-layout justify-center align-center>
+          <router-view></router-view>
+        </v-layout>
+      </v-container>
+    </v-content>
     <v-footer app>
       <span>&copy; 2017</span>
     </v-footer>
@@ -82,30 +92,6 @@
   import UserSession from '@/store/UserSession';
 
   export default {
-    created() {
-      if (!UserSession.get('loading') && !UserSession.get('logged')) {
-        this.$router.push('/auth/login');
-      }
-    },
-    mounted() {
-      UserSession.on('loaded', () => {
-        if (!UserSession.get('logged')) {
-          this.$router.push('/auth/login');
-        }
-        this.user = UserSession.get('user');
-        if (this.user != null) {
-          this.accessLevel = this.user.accessLevel;
-        }
-        this.loading = false;
-      }, this);
-      UserSession.on('logout', () => {
-        Toastr.success('Usuário deslogado');
-        this.$router.push('/auth/login');
-      }, this);
-    },
-    updated() {
-      // console.log(this.user);
-    },
     data() {
       return {
         loading: UserSession.get('loading'),
@@ -137,6 +123,30 @@
         }],
         title: 'Bem-vindo',
       };
+    },
+    created() {
+      if (!UserSession.get('loading') && !UserSession.get('logged')) {
+        this.$router.push('/auth/login');
+      }
+    },
+    mounted() {
+      UserSession.on('loaded', () => {
+        if (!UserSession.get('logged')) {
+          this.$router.push('/auth/login');
+        }
+        this.user = UserSession.get('user');
+        if (this.user != null) {
+          this.accessLevel = this.user.accessLevel;
+        }
+        this.loading = false;
+      }, this);
+      UserSession.on('logout', () => {
+        Toastr.success('Usuário deslogado');
+        this.$router.push('/auth/login');
+      }, this);
+    },
+    updated() {
+      // console.log(this.user);
     },
     methods: {
       doLogout(event) {
