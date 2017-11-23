@@ -1,6 +1,6 @@
 <template>
   <v-flex sm8 md6>
-    <v-card>
+    <v-card v-if="!!user">
       <v-card-text>
         <img id="profile_picture" class="center" :src="user.picture">
         <div class="body-2">Nome: {{user.name}}</div>
@@ -25,6 +25,8 @@
         </form>
       </v-card-text>
     </v-card>
+    <v-card v-else>
+    </v-card>
   </v-flex>
 </template>
 
@@ -42,18 +44,16 @@ export default {
     };
   },
   mounted() {
-    UserSession.on('loaded', () => {
-      UserSession.dispatch({
-        action: UserSession.ACTION_GET_USER,
-        data: this.$router.currentRoute.params.nickname,
-      });
-    }, this);
+    UserSession.dispatch({
+      action: UserSession.ACTION_GET_USER,
+      data: this.$router.currentRoute.params.nickname,
+    });
+
     UserSession.on('changePic', () => {
       Toastr.success('Foto alterada');
     }, this);
     UserSession.on('getUser', (response) => {
-      console.log(response);
-      this.user = response;
+      this.user = response.data;
     }, this);
   },
   beforeDestoy() {

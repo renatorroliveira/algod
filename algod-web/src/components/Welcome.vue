@@ -24,7 +24,6 @@
           </div>
         </v-card-title>
         <v-card-actions>
-          <v-btn flat v-on:click="doSubscribe($event, i+1);">Subscribe</v-btn>
           <v-btn flat color="purple" :to="`/discipline/${discipline.id}`">Explore</v-btn>
         </v-card-actions>
       </v-card>
@@ -56,12 +55,6 @@ export default {
   },
   beforeDestroy() {
     DisciplineStore.off(null, null, this);
-  },
-  methods: {
-    doSubscribe(event, i) {
-      event.preventDefault();
-      console.log(i);
-    },
   },
 };
 </script>

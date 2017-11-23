@@ -262,9 +262,9 @@ const UserSession = Backbone.Model.extend({
   getUser(nickname) {
     const me = this;
     $.ajax({
-      url: `${me.url}/get/${nickname}`,
+      url: `${me.url}/profile/${nickname}`,
       method: 'GET',
-      dataType: 'JSON',
+      dataType: 'json',
       success(data) {
         me.trigger('getUser', data);
       },

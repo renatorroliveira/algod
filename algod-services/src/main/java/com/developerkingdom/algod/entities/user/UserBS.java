@@ -214,6 +214,11 @@ public class UserBS extends HibernateBusiness {
 		Criteria criteria = this.dao.newCriteria(User.class).add(Restrictions.eq("phone", cellphone));
 		return (User) criteria.uniqueResult();
 	}
+	
+	public User existsByNickname(String nick) {
+		Criteria criteria = this.dao.newCriteria(User.class).add(Restrictions.eq("nickname", nick));
+		return (User) criteria.uniqueResult();
+	}
 
 	/**
 	 * Buscar usuário pelo id.

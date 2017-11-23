@@ -94,11 +94,22 @@
   export default {
     data() {
       return {
+        title: 'Bem-vindo',
         loading: UserSession.get('loading'),
         accessLevel: UserSession.get('accessLevel'),
         drawer: true,
         user: UserSession.get('user'),
-        items: [{
+        items: [],
+      };
+    },
+    created() {
+      if (!UserSession.get('loading') && !UserSession.get('logged')) {
+        this.$router.push('/auth/login');
+      }
+    },
+    mounted() {
+      UserSession.on('loaded', () => {
+        this.items.push({
           icon: 'supervisor_account',
           title: 'Usuários',
           access: 0,
@@ -120,17 +131,7 @@
             title: 'Usuários',
             href: '/user/list',
           }],
-        }],
-        title: 'Bem-vindo',
-      };
-    },
-    created() {
-      if (!UserSession.get('loading') && !UserSession.get('logged')) {
-        this.$router.push('/auth/login');
-      }
-    },
-    mounted() {
-      UserSession.on('loaded', () => {
+        });
         if (!UserSession.get('logged')) {
           this.$router.push('/auth/login');
         }

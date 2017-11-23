@@ -210,11 +210,11 @@ public class UserController extends UserControlAbstractController {
 		}
 	}
 	
-	@Get("/get/{nickname}")
+	@Get("/profile/{nickname}")
 	@NoCache
 	public void getUser(String nickname) {
 		try {
-			User user = this.bs.exists(nickname, User.class);
+			User user = this.bs.existsByNickname(nickname);
 			if (user == null)
 				this.result.notFound();
 			else {
