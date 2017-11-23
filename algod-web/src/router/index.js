@@ -69,7 +69,7 @@ export default new Router({
       name: 'Sala de aula',
       component: SalaDeAula,
     }, {
-      path: 'user/profile',
+      path: 'user/profile/:nickname',
       name: 'Perfil',
       component: Profile,
     }, {

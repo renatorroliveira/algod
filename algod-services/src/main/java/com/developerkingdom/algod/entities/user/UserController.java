@@ -210,6 +210,21 @@ public class UserController extends UserControlAbstractController {
 		}
 	}
 	
+	@Get("/get/{nickname}")
+	@NoCache
+	public void getUser(String nickname) {
+		try {
+			User user = this.bs.exists(nickname, User.class);
+			if (user == null)
+				this.result.notFound();
+			else {
+				user = this.bs.getUserByNick(nickname);
+				this.success(user);
+			}
+		} catch (Throwable e) {
+			this.fail(e.getMessage());
+		}
+	}
 	
 //	@Post("/api/user")
 //	@Consumes

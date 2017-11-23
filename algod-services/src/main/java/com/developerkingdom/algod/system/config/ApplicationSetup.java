@@ -83,6 +83,7 @@ public class ApplicationSetup {
 			user = new User();
 			user.setEmail("admin@admin");
 			user.setName("Administrador do Sistema");
+			user.setNickname("admin");
 			user.setPassword(CryptManager.passwordHash("12345"));
 			user.setAccessLevel(AccessLevels.SYSTEM_ADMIN.getLevel());
 			dao.persist(user);

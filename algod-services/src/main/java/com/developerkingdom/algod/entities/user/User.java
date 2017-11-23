@@ -21,6 +21,7 @@ import br.com.caelum.vraptor.serialization.SkipSerialization;
 @Table(name = User.TABLE)
 public class User extends SimpleLogicalDeletableEntity {
 	public static final String TABLE = "algod_users";
+
 	private static final long serialVersionUID = 1L;
 
 	@Column(nullable=false, unique=true, length=255)
@@ -32,6 +33,9 @@ public class User extends SimpleLogicalDeletableEntity {
 	
 	@Column(nullable=false, length=255)
 	private String name;
+	
+	@Column(nullable=false, length=255, unique=true)
+	private String nickname;
 
 	@Column(nullable=true, unique=true, length=255)
 	private String phone;
@@ -49,7 +53,7 @@ public class User extends SimpleLogicalDeletableEntity {
 	private boolean active = false;
 	
 	/** Nível de acesso global, independente de tenant. */
-	private int accessLevel = AccessLevels.NONE.getLevel();
+	private int accessLevel = AccessLevels.AUTHENTICATED.getLevel();
 
 	public String getEmail() {
 		return email;
@@ -101,6 +105,14 @@ public class User extends SimpleLogicalDeletableEntity {
 
 	public Date getCreation() {
 		return creation;
+	}
+	
+	public String getNickname() {
+		return nickname;
+	}
+
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
 	}
 
 	public void setCreation(Date creation) {

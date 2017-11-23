@@ -4,6 +4,7 @@
       <v-card-text>
         <img id="profile_picture" class="center" :src="user.picture">
         <div class="body-2">Nome: {{user.name}}</div>
+        <div class="body-2">Apelido: {{user.nickname}}</div>
         <div class="body-2">Email: {{user.email}}</div>
         <div class="body-2">Telefone: {{user.phone}}</div>
         <div class="body-2">Criation date: {{user.creation}}</div>
@@ -35,19 +36,25 @@ export default {
   name: 'Profile',
   data() {
     return {
-      user: UserSession.get('user'),
+      user: [],
       toggle: false,
       url: '',
     };
   },
   mounted() {
-    const me = this;
     UserSession.on('loaded', () => {
-      me.user = UserSession.get('user');
-    }, me);
+      UserSession.dispatch({
+        action: UserSession.ACTION_GET_USER,
+        data: this.$router.currentRoute.params.nickname,
+      });
+    }, this);
     UserSession.on('changePic', () => {
       Toastr.success('Foto alterada');
-    }, me);
+    }, this);
+    UserSession.on('getUser', (response) => {
+      console.log(response);
+      this.user = response;
+    }, this);
   },
   beforeDestoy() {
     UserSession.off(null, null, this);

@@ -12,6 +12,11 @@
             autofocus
           ></v-text-field>
           <v-text-field
+            label="Apelido"
+            v-model="nickname"
+            persistent-hint
+          ></v-text-field>
+          <v-text-field
             label="Email"
             v-model="email"
             persistent-hint
@@ -61,6 +66,7 @@ export default {
       password: '',
       passwordconfirm: '',
       name: '',
+      nickname: '',
       phone: '',
       btnToggle: false,
       btnToggle2: false,
@@ -86,7 +92,7 @@ export default {
     register(event) {
       event.preventDefault();
       if (this.password !== this.passwordconfirm) {
-        Toastr.error('As senhas digitadas não são iguais.');
+        Toastr.warning('As senhas digitadas não são iguais.');
       } else {
         UserStore.dispatch({
           action: UserStore.ACTION_REGISTER,
@@ -95,6 +101,7 @@ export default {
             phone: this.phone,
             email: this.email,
             password: this.password,
+            nickname: this.nickname,
           },
         });
       }

@@ -333,5 +333,12 @@ public class UserBS extends HibernateBusiness {
 			mex.printStackTrace();
 		}
 	}
-
+	
+	public User getUserByNick(String nick) {
+		Criteria criteria = this.dao.newCriteria(User.class)
+				.add(Restrictions.eq("nickname", nick))
+				.add(Restrictions.eqOrIsNull("deleted", false));
+		User user = (User) criteria.uniqueResult();
+		return user;
+	}
 }

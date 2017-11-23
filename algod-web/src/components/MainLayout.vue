@@ -8,7 +8,7 @@
       v-model="drawer"
     >
       <v-list>
-        <v-list-tile avatar v-if="!!user" to="/user/profile">
+        <v-list-tile avatar v-if="!!user" :to="`/user/profile/${user.nickname}`">
           <v-list-tile-avatar>
             <img v-if="!!user.picture" :src="user.picture" alt="User" />
             <v-icon v-else>account_circle</v-icon>
@@ -104,7 +104,7 @@
           access: 0,
           children: [{
             title: 'Perfil',
-            href: '/user/profile',
+            href: `/user/profile/${this.user.nickname}`,
           }],
         }, {
           icon: 'settings',

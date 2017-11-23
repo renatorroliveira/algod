@@ -11,6 +11,7 @@ const UserSession = Backbone.Model.extend({
   ACTION_VALIDATE_TOKEN: 'tokenValidation',
   ACTION_NEW_PASSWORD: 'newPassword',
   ACTION_CHANGE_PIC: 'changePicture',
+  ACTION_GET_USER: 'getUser',
 
   url: `${Config.baseUrl}/v1/user`,
   dispatch(payload) {
@@ -251,6 +252,21 @@ const UserSession = Backbone.Model.extend({
       data: JSON.stringify(params),
       success() {
         me.trigger('newPassword');
+      },
+      error(opts) {
+        me.handleRequestErrors([], opts);
+      },
+    });
+  },
+
+  getUser(nickname) {
+    const me = this;
+    $.ajax({
+      url: `${me.url}/get/${nickname}`,
+      method: 'GET',
+      dataType: 'JSON',
+      success(data) {
+        me.trigger('getUser', data);
       },
       error(opts) {
         me.handleRequestErrors([], opts);
