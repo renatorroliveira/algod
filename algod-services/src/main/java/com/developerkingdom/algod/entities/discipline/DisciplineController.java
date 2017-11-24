@@ -161,4 +161,20 @@ public class DisciplineController extends UserControlAbstractController {
 			this.fail("[Error]: " + e.getMessage());
 		}
 	}
+	
+	@Get("/search/{query}")
+	public void searchDiscipline(String query) {
+		try {
+			if (query != null) {
+				Discipline discipline = this.bs.searchDiscipline();
+				if (discipline != null) {
+					this.success(discipline);
+				} else {
+					this.fail("Disciplina não encontrada");
+				}
+			}
+		} catch (Throwable e) {
+			this.fail(e.getMessage());
+		}
+	}
 }

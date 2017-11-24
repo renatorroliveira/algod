@@ -95,10 +95,11 @@
     data() {
       return {
         title: 'Bem-vindo',
-        loading: UserSession.get('loading'),
-        accessLevel: UserSession.get('accessLevel'),
+        loading: true,
+        accessLevel: null,
         drawer: true,
         user: UserSession.get('user'),
+        nickname: '',
         items: [],
       };
     },
@@ -115,7 +116,7 @@
           access: 0,
           children: [{
             title: 'Perfil',
-            href: `/user/profile/${this.user.nickname}`,
+            href: '/user/profile/',
           }],
         }, {
           icon: 'settings',
@@ -137,7 +138,8 @@
         }
         this.user = UserSession.get('user');
         if (this.user != null) {
-          this.accessLevel = this.user.accessLevel;
+          this.accessLevel = UserSession.get('accessLevel');
+          this.nickname = this.user.nickname;
         }
         this.loading = false;
       }, this);

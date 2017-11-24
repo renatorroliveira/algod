@@ -28,6 +28,11 @@
         </v-card-actions>
       </v-card>
     </v-flex>
+    <v-flex>
+      <v-card>
+        
+      </v-card>
+    </v-flex>
   </v-layout>
 </template>
 
