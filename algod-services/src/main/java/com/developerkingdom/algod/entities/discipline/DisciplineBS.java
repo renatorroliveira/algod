@@ -86,4 +86,13 @@ public class DisciplineBS extends HibernateBusiness {
 				.add(Restrictions.eq("discipline", discipline));
 		return (DisciplineUser) criteria.uniqueResult();
 	}
+	
+	public Discipline search(String query) {
+		Criteria criteria = this.dao.newCriteria(Discipline.class)
+				.add(Restrictions.eq("name", query))
+				.add(Restrictions.eq("shortName", query))
+				.add(Restrictions.eq("deleted", false))
+				.add(Restrictions.eq("closed", false));
+		return (Discipline) criteria.uniqueResult();
+	}
 }
