@@ -166,7 +166,7 @@ public class DisciplineController extends UserControlAbstractController {
 	public void searchDiscipline(String query) {
 		try {
 			if (query != null) {
-				Discipline discipline = this.bs.searchDiscipline();
+				Discipline discipline = this.bs.search(query);
 				if (discipline != null) {
 					this.success(discipline);
 				} else {

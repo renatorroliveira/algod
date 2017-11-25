@@ -4,12 +4,14 @@
       <h1>Algorithm God 2</h1>
       <h5>Uma nova experiência no ensino da programação de computadores</h5>
       <p class="body-2">
+        Área de admin
         Bem vindo ao Algod. Nesse site você vai ter acesso a suas grades curriculares,
         acompanhar os exemplos das suas aulas, além de entregar trabalhos, atividades e
         realizar suas provas. Tudo por aqui, simples e prático.
       </p>
     </v-flex>
     <v-flex xs12 v-else>
+
       <v-card v-for="(discipline, i) in disciplines" :key="i">
         <v-card-media
           v-if="discipline.img != null"
@@ -30,7 +32,7 @@
     </v-flex>
     <v-flex>
       <v-card>
-        
+
       </v-card>
     </v-flex>
   </v-layout>

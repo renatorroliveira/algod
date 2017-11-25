@@ -1,7 +1,7 @@
 <template>
   <v-flex sm8 md6>
-    <v-card v-if="!!user">
-      <v-card-text>
+    <v-card v-if="exists">
+      <v-card-text v-if="!!user">
         <img id="profile_picture" class="center" :src="user.picture">
         <div class="body-2">Nome: {{user.name}}</div>
         <div class="body-2">Apelido: {{user.nickname}}</div>
@@ -11,7 +11,7 @@
         <div class="body-2">Access Level: {{user.accessLevel}}</div>
         <div class="body-2">Active: {{user.active}}</div>
         <div class="body-2">Deleted: {{user.deleted}}</div>
-        <v-btn dark @click.native="toggle = !toggle" v-model="toggle">Change pic</v-btn>
+        <v-btn dark v-on:click="toggle = !toggle" v-model="toggle">Change pic</v-btn>
         <form v-on:submit="changePic($event)" v-if="toggle">
           <v-text-field
             label="Url"
@@ -26,6 +26,9 @@
       </v-card-text>
     </v-card>
     <v-card v-else>
+      <v-card-text>
+        <h5>Perfil não encontrado</h5>
+      </v-card-text>
     </v-card>
   </v-flex>
 </template>
@@ -41,6 +44,7 @@ export default {
       user: [],
       toggle: false,
       url: '',
+      exists: false,
     };
   },
   mounted() {
@@ -53,7 +57,13 @@ export default {
       Toastr.success('Foto alterada');
     }, this);
     UserSession.on('getUser', (response) => {
+      this.exists = true;
       this.user = response.data;
+    }, this);
+    UserSession.on('fail', (args) => {
+      if (args.status === 404) {
+        this.exists = false;
+      }
     }, this);
   },
   beforeDestoy() {

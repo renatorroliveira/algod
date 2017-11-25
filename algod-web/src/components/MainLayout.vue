@@ -84,7 +84,7 @@
       <span>&copy; 2017</span>
     </v-footer>
   </v-app>
-  <div v-else></div>
+  <div v-else>Carregando</div>
 </template>
 
 <script>
@@ -95,7 +95,7 @@
     data() {
       return {
         title: 'Bem-vindo',
-        loading: true,
+        loading: UserSession.get('loading'),
         accessLevel: null,
         drawer: true,
         user: UserSession.get('user'),
@@ -116,7 +116,7 @@
           access: 0,
           children: [{
             title: 'Perfil',
-            href: '/user/profile/',
+            href: `/user/profile/a${this.nickname}`,
           }],
         }, {
           icon: 'settings',

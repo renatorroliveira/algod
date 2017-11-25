@@ -16,12 +16,11 @@
       if (!UserSession.get('loading') && UserSession.get('logged')) {
         this.$router.push('/');
       }
-      const me = this;
       UserSession.on('loaded', () => {
         if (UserSession.get('logged')) {
-          me.$router.push('/');
+          this.$router.push('/');
         }
-        me.loading = false;
+        this.loading = false;
       }, this);
     },
     data() {
