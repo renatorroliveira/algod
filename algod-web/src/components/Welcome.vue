@@ -11,7 +11,6 @@
       </p>
     </v-flex>
     <v-flex xs12 v-else>
-
       <v-card v-for="(discipline, i) in disciplines" :key="i">
         <v-card-media
           v-if="discipline.img != null"

@@ -84,7 +84,6 @@
       <span>&copy; 2017</span>
     </v-footer>
   </v-app>
-  <div v-else>Carregando</div>
 </template>
 
 <script>
@@ -96,8 +95,8 @@
       return {
         title: 'Bem-vindo',
         loading: UserSession.get('loading'),
-        accessLevel: null,
-        drawer: true,
+        accessLevel: UserSession.get('accessLevel'),
+        drawer: false,
         user: UserSession.get('user'),
         nickname: '',
         items: [],
@@ -107,16 +106,29 @@
       if (!UserSession.get('loading') && !UserSession.get('logged')) {
         this.$router.push('/auth/login');
       }
+      this.loading = UserSession.get('loading');
     },
     mounted() {
       UserSession.on('loaded', () => {
+        if (!UserSession.get('logged')) {
+          this.$router.push('/auth/login');
+        }
+
+        this.user = UserSession.get('user');
+        if (this.user != null) {
+          this.accessLevel = this.user.accessLevel;
+          this.nickname = this.user.nickname;
+        }
+
+        console.log(this.user);
+        const profilePath = `/user/profile/${this.user.nickname}`;
         this.items.push({
           icon: 'supervisor_account',
           title: 'Usuários',
           access: 0,
           children: [{
             title: 'Perfil',
-            href: `/user/profile/a${this.nickname}`,
+            href: profilePath,
           }],
         }, {
           icon: 'settings',
@@ -133,18 +145,10 @@
             href: '/user/list',
           }],
         });
-        if (!UserSession.get('logged')) {
-          this.$router.push('/auth/login');
-        }
-        this.user = UserSession.get('user');
-        if (this.user != null) {
-          this.accessLevel = UserSession.get('accessLevel');
-          this.nickname = this.user.nickname;
-        }
         this.loading = false;
       }, this);
       UserSession.on('logout', () => {
-        Toastr.success('Usuário deslogado');
+        Toastr.success('Logout');
         this.$router.push('/auth/login');
       }, this);
     },

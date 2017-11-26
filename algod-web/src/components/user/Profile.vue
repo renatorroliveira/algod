@@ -26,8 +26,9 @@
       </v-card-text>
     </v-card>
     <v-card v-else>
-      <v-card-text>
+      <v-card-text class="red lighten-2">
         <h5>Perfil não encontrado</h5>
+        <router-link :to="{ name: 'Welcome'}" class="btn">Voltar</router-link>
       </v-card-text>
     </v-card>
   </v-flex>
