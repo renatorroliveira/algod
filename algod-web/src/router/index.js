@@ -19,10 +19,6 @@ import ForgotPassword from '@/components/auth/ForgotPassword';
 import ResetPassword from '@/components/auth/ResetPassword';
 import RecoverPassword from '@/components/auth/RecoverPassword';
 
-import Atividade from '@/components/Atividade';
-import Curso from '@/components/Cursos';
-import SalaDeAula from '@/components/SalaDeAula';
-
 import AuthLayout from '@/components/AuthLayout';
 import MainLayout from '@/components/MainLayout';
 
@@ -58,16 +54,8 @@ export default new Router({
     component: MainLayout,
     children: [{
       path: '',
-      name: 'Bem-vindo',
+      name: 'Welcome',
       component: Welcome,
-    }, {
-      path: 'activity',
-      name: 'Atividades',
-      component: Atividade,
-    }, {
-      path: 'classroom',
-      name: 'Sala de aula',
-      component: SalaDeAula,
     }, {
       path: 'user/profile/:nickname',
       name: 'Perfil',
@@ -76,10 +64,6 @@ export default new Router({
       path: 'user/list',
       name: 'Lista de usuários',
       component: ListUsers,
-    }, {
-      path: 'courses',
-      name: 'Cursos',
-      component: Curso,
     }, {
       path: 'institution/list',
       name: 'Lista de instituições',

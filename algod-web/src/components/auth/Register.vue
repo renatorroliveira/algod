@@ -75,15 +75,13 @@ export default {
     };
   },
   created() {
-    const me = this;
     UserStore.on('fail', (res) => {
       console.log(res);
       Toastr.error(res);
-    }, me);
+    }, this);
     UserStore.on('register', () => {
-      Toastr.success('Conta criada com sucesso');
-      me.$router.push('/auth/login');
-    }, me);
+      this.$router.push('/auth/login');
+    }, this);
   },
   beforeDestroy() {
     UserStore.off(null, null, this);

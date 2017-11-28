@@ -1,6 +1,6 @@
 <template>
   <v-layout column align-center justify-center>
-    <v-flex class="text-xs-center">
+    <v-flex class="text-xs-center" v-if="exists">
       <v-card v-if="!!subscription">
         <v-card-text>
           <h4>{{discipline.name}}</h4>
@@ -26,6 +26,13 @@
         </v-card-text>
       </v-card>
     </v-flex>
+    <v-flex v-else>
+      <v-card>
+        <v-card-text class="red lighten-2">
+          <h5>Disciplina não econtrada</h5>
+        </v-card-text>
+      </v-card>
+    </v-flex>
   </v-layout>
 </template>
 
@@ -37,36 +44,53 @@
     data() {
       return {
         subscription: null,
-        discipline: [],
+        discipline: null,
         accessKey: '',
+        exists: false,
       };
     },
     created() {
-      DisciplineStore.on('fail', (err) => {
-        Toastr.error(err.responseJSON.message);
-      }, this);
-      DisciplineStore.on('doSubscribe', () => {
-        location.reload();
-      }, this);
-      DisciplineStore.on('doUnsubscribe', () => {
-        location.reload();
-      }, this);
       DisciplineStore.dispatch({
         action: DisciplineStore.ACTION_GET_SUBSCRIPTION,
         data: this.$router.currentRoute.params.id,
       });
+
+      DisciplineStore.on('fail', (err) => {
+        if (err.status === 404) {
+          this.exists = false;
+        } else if (err.responseJSON.message === 'Senha inválida') {
+          Toastr.error(err.responseJSON.message);
+        }
+      }, this);
+
+      DisciplineStore.on('doSubscribe', () => {
+        DisciplineStore.dispatch({
+          action: DisciplineStore.ACTION_GET_SUBSCRIPTION,
+          data: this.$router.currentRoute.params.id,
+        });
+      }, this);
+      DisciplineStore.on('doUnsubscribe', () => {
+        DisciplineStore.dispatch({
+          action: DisciplineStore.ACTION_GET_SUBSCRIPTION,
+          data: this.$router.currentRoute.params.id,
+        });
+      }, this);
+
       DisciplineStore.on('getSubscription', (data) => {
+        this.exists = true;
         if (typeof data === 'undefined') {
+          this.subscription = null;
+          this.accessKey = '';
           DisciplineStore.dispatch({
             action: DisciplineStore.ACTION_GET_DISCIPLINE,
             data: this.$router.currentRoute.params.id,
           });
         } else {
-          console.log('Go:', data);
           this.subscription = data;
           this.discipline = data.discipline;
         }
       }, this);
+
       DisciplineStore.on('getDiscipline', (data) => {
         this.discipline = data;
       }, this);

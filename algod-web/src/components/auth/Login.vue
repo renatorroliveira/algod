@@ -44,14 +44,12 @@ export default {
     };
   },
   mounted() {
-    const me = this;
     UserSession.on('fail', (res) => {
       Toastr.error(res);
-    }, me);
+    }, this);
     UserSession.on('login', () => {
-      Toastr.success('Usuário logado');
-      me.$router.push('/');
-    }, me);
+      this.$router.push('/');
+    }, this);
   },
   beforeDestroy() {
     UserSession.off(null, null, this);
