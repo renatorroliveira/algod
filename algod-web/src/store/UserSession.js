@@ -106,7 +106,7 @@ const UserSession = Backbone.Model.extend({
           me.trigger('loaded', true);
         }
         me.clearStorage();
-        location.assign('#/');
+        location.assign('#/auth/login');
       },
     });
   },
