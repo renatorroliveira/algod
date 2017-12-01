@@ -1,16 +1,20 @@
 package com.developerkingdom.algod.entities.discipline;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 
 import org.hibernate.Criteria;
+import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
 import com.developerkingdom.algod.entities.company.Institution;
 import com.developerkingdom.algod.entities.user.User;
 
 import br.com.caelum.vraptor.boilerplate.HibernateBusiness;
+import br.com.caelum.vraptor.boilerplate.bean.PaginatedList;
 
 @RequestScoped
 public class DisciplineBS extends HibernateBusiness {
@@ -23,10 +27,14 @@ public class DisciplineBS extends HibernateBusiness {
 		return discipline;
 	}
 	
-	public List<Discipline> list() {
-		Criteria criteria = this.dao.newCriteria(Discipline.class)
-				.add(Restrictions.eq("deleted", false));
-		return this.dao.findByCriteria(criteria, Discipline.class);
+	public List<DisciplineUser> list(User user) {
+		Criteria crit = this.dao.newCriteria(DisciplineUser.class)
+				.add(Restrictions.eq("deleted", false))
+				.add(Restrictions.eq("user", user));
+		List<DisciplineUser> list = (List<DisciplineUser>) this.dao.findByCriteria(crit, DisciplineUser.class);
+		if (list != null) 
+			return list;
+		return null;
 	}
 	
 	public List<DisciplineCategory> listCategory() {
@@ -87,12 +95,25 @@ public class DisciplineBS extends HibernateBusiness {
 		return (DisciplineUser) criteria.uniqueResult();
 	}
 	
-	public Discipline search(String query) {
-		Criteria criteria = this.dao.newCriteria(Discipline.class)
-				.add(Restrictions.eq("name", query))
-				.add(Restrictions.eq("shortName", query))
+	public PaginatedList<Discipline> search(String terms) {
+		PaginatedList<Discipline> results = new PaginatedList<Discipline>();
+		Criteria criteria = this.dao.newCriteria(Discipline.class);
+		criteria.add(Restrictions.eq("deleted", false));
+		
+		Criteria count = this.dao.newCriteria(Discipline.class)
 				.add(Restrictions.eq("deleted", false))
-				.add(Restrictions.eq("closed", false));
-		return (Discipline) criteria.uniqueResult();
+				.setProjection(Projections.countDistinct("id"));
+
+		if (terms != null && !terms.isEmpty()) {
+			Disjunction or = Restrictions.disjunction();
+			or.add(Restrictions.like("name", "%" + terms + "%").ignoreCase());
+			or.add(Restrictions.like("shortName", "%" + terms + "%").ignoreCase());
+			criteria.add(or);
+			count.add(or);
+		}
+
+		results.setList(this.dao.findByCriteria(criteria, Discipline.class));
+		results.setTotal((long) count.uniqueResult());
+		return results;
 	}
 }

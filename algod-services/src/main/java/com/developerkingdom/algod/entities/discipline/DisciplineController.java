@@ -17,6 +17,7 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.boilerplate.NoCache;
+import br.com.caelum.vraptor.boilerplate.bean.PaginatedList;
 
 @Controller
 @Path("/api/v1/discipline")
@@ -45,7 +46,7 @@ public class DisciplineController extends UserControlAbstractController {
 	@NoCache
 	public void list() {
 		try {
-			List<Discipline> disciplineList = this.bs.list();
+			List<DisciplineUser> disciplineList = this.bs.list(this.userSession.getUser());
 			this.success(disciplineList, (long) disciplineList.size());
 		} catch (Throwable e) {
 			LOGGER.errorf("Erro: %s", e.getMessage());
@@ -161,11 +162,11 @@ public class DisciplineController extends UserControlAbstractController {
 		}
 	}
 	
-	@Get("/search/{query}")
-	public void searchDiscipline(String query) {
+	@Get("/search/{terms}")
+	public void search(String terms) {
 		try {
-			if (query != null) {
-				Discipline discipline = this.bs.search(query);
+			if (terms != null) {
+				PaginatedList<Discipline> discipline = this.bs.search(terms);
 				if (discipline != null) {
 					this.success(discipline);
 				} else {
