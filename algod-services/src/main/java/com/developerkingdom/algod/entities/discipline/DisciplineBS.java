@@ -37,6 +37,15 @@ public class DisciplineBS extends HibernateBusiness {
 		return null;
 	}
 	
+	public List<Discipline> listAll() {
+		Criteria crit = this.dao.newCriteria(Discipline.class)
+				.add(Restrictions.eq("deleted", false));
+		List<Discipline> list = (List<Discipline>) this.dao.findByCriteria(crit, Discipline.class);
+		if (list != null) 
+			return list;
+		return null;
+	}
+	
 	public List<DisciplineCategory> listCategory() {
 		Criteria criteria = this.dao.newCriteria(DisciplineCategory.class);
 		return this.dao.findByCriteria(criteria, DisciplineCategory.class);
@@ -115,5 +124,19 @@ public class DisciplineBS extends HibernateBusiness {
 		results.setList(this.dao.findByCriteria(criteria, Discipline.class));
 		results.setTotal((long) count.uniqueResult());
 		return results;
+	}
+	
+	public Topic addTopic(Discipline discipline, Topic topic) {
+		topic.setDeleted(false);
+		topic.setDiscipline(discipline);
+		this.dao.persist(topic);
+		return topic;
+	}
+	
+	public List<Topic> listTopics(Discipline discipline) {
+		Criteria criteria = this.dao.newCriteria(Topic.class)
+				.add(Restrictions.eq("discipline", discipline))
+				.add(Restrictions.eq("deleted", false));
+		return (List<Topic>) this.dao.findByCriteria(criteria, Topic.class);
 	}
 }

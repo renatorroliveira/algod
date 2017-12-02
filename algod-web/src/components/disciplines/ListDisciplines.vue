@@ -103,7 +103,8 @@
         this.refreshList();
         Toastr.success('Disciplina removida');
       }, this);
-      DisciplineStore.on('list', (data) => {
+      DisciplineStore.on('listAll', (data) => {
+        console.log(data);
         this.list = data.data;
       }, this);
       this.refreshList();
@@ -115,7 +116,7 @@
     methods: {
       refreshList() {
         DisciplineStore.dispatch({
-          action: DisciplineStore.ACTION_LIST,
+          action: DisciplineStore.ACTION_LIST_ALL,
         });
         this.list = null;
         this.toggleAll();

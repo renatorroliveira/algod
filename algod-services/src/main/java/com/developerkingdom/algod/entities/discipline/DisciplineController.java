@@ -5,11 +5,11 @@ import java.util.List;
 import javax.inject.Inject;
 
 import com.developerkingdom.algod.entities.company.Institution;
-import com.developerkingdom.algod.entities.user.User;
 import com.developerkingdom.algod.entities.user.authz.AccessLevels;
 import com.developerkingdom.algod.entities.user.authz.Permissioned;
 import com.developerkingdom.algod.entities.user.authz.permission.ManageUsersPermission;
 import com.developerkingdom.algod.system.UserControlAbstractController;
+import com.developerkingdom.algod.entities.discipline.Topic;
 
 import br.com.caelum.vraptor.Consumes;
 import br.com.caelum.vraptor.Controller;
@@ -47,6 +47,18 @@ public class DisciplineController extends UserControlAbstractController {
 	public void list() {
 		try {
 			List<DisciplineUser> disciplineList = this.bs.list(this.userSession.getUser());
+			this.success(disciplineList, (long) disciplineList.size());
+		} catch (Throwable e) {
+			LOGGER.errorf("Erro: %s", e.getMessage());
+			this.fail("[Error]: " + e.getMessage());
+		}
+	}
+	
+	@Get("/listAll")
+	@NoCache
+	public void listAll() {
+		try {
+			List<Discipline> disciplineList = this.bs.listAll();
 			this.success(disciplineList, (long) disciplineList.size());
 		} catch (Throwable e) {
 			LOGGER.errorf("Erro: %s", e.getMessage());
@@ -138,6 +150,7 @@ public class DisciplineController extends UserControlAbstractController {
 				this.success(disciplineUser);
 			}
 		} catch (Throwable e) {
+			LOGGER.error(e);
 			this.fail("[Error]: " + e.getMessage());
 		}
 	}
@@ -170,10 +183,40 @@ public class DisciplineController extends UserControlAbstractController {
 				if (discipline != null) {
 					this.success(discipline);
 				} else {
-					this.fail("Disciplina não encontrada");
+					this.result.notFound();
 				}
 			}
 		} catch (Throwable e) {
+			LOGGER.error(e);
+			this.fail(e.getMessage());
+		}
+	}
+	
+	@Post("/topic/add")
+	public void addTopic(Discipline discipline, Topic topic) {
+		try {
+			if (discipline != null && topic != null) {
+				this.bs.addTopic(discipline, topic);
+				this.success();
+			}
+		} catch (Throwable e) {
+			LOGGER.error(e);
+			this.fail(e.getMessage());
+		}
+	}
+	
+	@Get("/topics/{id}")
+	public void listTopics(long id) {
+		try {
+			Discipline discipline = this.bs.exists(id, Discipline.class);
+			if (discipline == null)
+				this.result.notFound();
+			else {
+				List<Topic> list = this.bs.listTopics(discipline);
+				this.success(list, (long) list.size());
+			}
+		} catch (Throwable e) {
+			LOGGER.error(e);
 			this.fail(e.getMessage());
 		}
 	}

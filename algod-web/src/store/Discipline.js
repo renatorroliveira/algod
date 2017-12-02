@@ -9,6 +9,7 @@ const DisciplineModel = Fluxbone.Model.extend({
 const DisciplineStore = Fluxbone.Store.extend({
   ACTION_CREATE: 'create',
   ACTION_LIST: 'list',
+  ACTION_LIST_ALL: 'listAll',
   ACTION_LIST_CATEGORYS: 'listCategorys',
   ACTION_DELETE: 'delete',
   ACTION_GET_DISCIPLINE: 'getDiscipline',
@@ -16,6 +17,8 @@ const DisciplineStore = Fluxbone.Store.extend({
   ACTION_SUBSCRIBE: 'doSubscribe',
   ACTION_UNSUBSCRIBE: 'doUnsubscribe',
   ACTION_SEARCH: 'search',
+  ACTION_LIST_TOPICS: 'listTopics',
+  ACTION_ADD_TOPIC: 'addTopic',
 
   model: DisciplineModel,
   url: `${Config.baseUrl}/v1/discipline`,
@@ -44,6 +47,21 @@ const DisciplineStore = Fluxbone.Store.extend({
       dataType: 'json',
       success(data) {
         me.trigger('list', data);
+      },
+      error(opts) {
+        me.trigger('fail', opts);
+      },
+    });
+  },
+
+  listAll() {
+    const me = this;
+    $.ajax({
+      method: 'GET',
+      url: `${me.url}/listAll`,
+      dataType: 'json',
+      success(data) {
+        me.trigger('listAll', data);
       },
       error(opts) {
         me.trigger('fail', opts);
@@ -153,6 +171,38 @@ const DisciplineStore = Fluxbone.Store.extend({
       dataType: 'json',
       success(data) {
         me.trigger('search', data);
+      },
+      error(opts) {
+        me.trigger('fail', opts);
+      },
+    });
+  },
+
+  listTopics(id) {
+    const me = this;
+    $.ajax({
+      url: `${me.url}/topics/${id}`,
+      method: 'GET',
+      dataType: 'json',
+      success(data) {
+        me.trigger('listTopics', data);
+      },
+      error(opts) {
+        me.trigger('fail', opts);
+      },
+    });
+  },
+
+  addTopic(params) {
+    const me = this;
+    console.log(params);
+    $.ajax({
+      url: `${me.url}/topic/add`,
+      method: 'POST',
+      dataType: 'json',
+      data: JSON.stringify(params),
+      success(data) {
+        me.trigger('addTopic', data);
       },
       error(opts) {
         me.trigger('fail', opts);
