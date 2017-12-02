@@ -3,6 +3,8 @@ package com.developerkingdom.algod.entities.discipline;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import br.com.caelum.vraptor.boilerplate.SimpleLogicalDeletableEntity;
@@ -13,6 +15,9 @@ public class TopicItem extends SimpleLogicalDeletableEntity {
 	public static final String TABLE = "algod_discipline_topic_items";
 	private static final long serialVersionUID = 1L;
 	
+	@ManyToOne(fetch=FetchType.EAGER)
+	private Topic topic;
+
 	private String label;
 	
 	private String type;
@@ -29,11 +34,11 @@ public class TopicItem extends SimpleLogicalDeletableEntity {
 	
 	private Date dateAvailableTo;
 	
-	private boolean visible;
+	private boolean visible = true;
 	
-	private boolean visibleDateEnabled;
+	private boolean visibleDateEnabled = true;
 	
-	private boolean availableDateEnabled;
+	private boolean availableDateEnabled = true;
 	
 	public String getLabel() {
 		return label;
@@ -121,6 +126,14 @@ public class TopicItem extends SimpleLogicalDeletableEntity {
 
 	public void setAvailableDateEnabled(boolean availableDateEnabled) {
 		this.availableDateEnabled = availableDateEnabled;
+	}
+	
+	public Topic getTopic() {
+		return topic;
+	}
+
+	public void setTopic(Topic topic) {
+		this.topic = topic;
 	}
 	
 }

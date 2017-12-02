@@ -4,7 +4,14 @@
       <v-card v-if="!!subscription">
         <v-card-text>
           <h4>{{discipline.name}}</h4>
-          <v-btn v-on:click="newTopic = !newTopic">Adicionar tópico</v-btn><br>
+          <div v-for="(topic, i) in topics" :key="topic.id" class="">
+            <section>
+              <h5>Tópico {{i + 1}}</h5>
+              <v-btn v-on:click="newTopic = !newTopic; topicId = topic.id">Novo item</v-btn>
+              <hr>
+            </section>
+          </div>
+          <v-btn v-on:click="">Adicionar tópico</v-btn><br>
         </v-card-text>
           <p><v-btn v-on:click="doUnsubscribe($event)">Unsubscribe</v-btn><br></p>
       </v-card>
@@ -35,7 +42,7 @@
     <v-dialog class="text-xs-center" v-model="newTopic" max-width="600px">
       <v-card>
         <v-card-title>
-          <form class="center" v-on:submit="doNewTopic($event)">
+          <form class="center" v-on:submit="doNewTopicItem($event)">
             <v-text-field
               label="Label"
               v-model="label"
@@ -109,6 +116,7 @@
         content: '',
         dateAvailableTo: '',
         dateVisibleTo: '',
+        topicId: null,
       };
     },
     created() {
@@ -187,19 +195,25 @@
       },
       doNewTopic(event) {
         event.preventDefault();
+        console.log(this.discipline);
         DisciplineStore.dispatch({
           action: DisciplineStore.ACTION_ADD_TOPIC,
+          data: this.discipline,
+        });
+      },
+      doNewTopicItem(event) {
+        event.preventDefault();
+        DisciplineStore.dispatch({
+          action: DisciplineStore.ACTION_ADD_TOPIC_ITEM,
           data: {
-            discipline: this.discipline,
-            topic: {
-              topicItem: {
-                label: this.label,
-                description: this.description,
-                content: this.content,
-                dateAvailableTo: this.dateAvailableTo,
-                dateVisibleTo: this.dateVisibleTo,
-                type: this.selecTypes,
-              },
+            id: this.topicId,
+            topicItem: {
+              label: this.label,
+              type: this.selecTypes,
+              description: this.description,
+              content: this.content,
+              dateVisibleTo: this.dateVisibleTo,
+              dateAvailableTo: this.dateAvailableTo,
             },
           },
         });

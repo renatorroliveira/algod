@@ -1,6 +1,6 @@
 package com.developerkingdom.algod.entities.discipline;
 
-import java.util.LinkedList;
+import java.util.Date;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
@@ -126,17 +126,25 @@ public class DisciplineBS extends HibernateBusiness {
 		return results;
 	}
 	
-	public Topic addTopic(Discipline discipline, Topic topic) {
-		topic.setDeleted(false);
+	public Topic newTopic(Discipline discipline) {
+		Topic topic = new Topic();
 		topic.setDiscipline(discipline);
 		this.dao.persist(topic);
 		return topic;
 	}
 	
-	public List<Topic> listTopics(Discipline discipline) {
-		Criteria criteria = this.dao.newCriteria(Topic.class)
-				.add(Restrictions.eq("discipline", discipline))
+	public TopicItem newTopicItem(Topic topic, TopicItem topicItem) {
+		
+		topicItem.setId(null);
+		topicItem.setTopic(topic);
+		this.dao.persist(topicItem);
+		
+		return topicItem;
+	}
+	
+	public List<TopicItem> listTopics(Discipline discipline) {
+		Criteria criteria = this.dao.newCriteria(TopicItem.class)
 				.add(Restrictions.eq("deleted", false));
-		return (List<Topic>) this.dao.findByCriteria(criteria, Topic.class);
+		return (List<TopicItem>) this.dao.findByCriteria(criteria, TopicItem.class);
 	}
 }

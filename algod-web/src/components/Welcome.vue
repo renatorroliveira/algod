@@ -11,7 +11,7 @@
       </p>
     </v-flex>
     <v-flex xs12 v-else>
-      <div v-if="disciplines.length <= 0">
+      <div v-if="disciplines.length === 0">
         <h5>Você não está inscrito em nenhuma disciplina</h5>
         <form v-on:submit="doSearch($event)">
           <v-text-field prepend-icon="search" v-model="terms" hide-details single-line></v-text-field><p></p>

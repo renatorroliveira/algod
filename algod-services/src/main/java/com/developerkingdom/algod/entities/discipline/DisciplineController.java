@@ -1,5 +1,6 @@
 package com.developerkingdom.algod.entities.discipline;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -9,7 +10,6 @@ import com.developerkingdom.algod.entities.user.authz.AccessLevels;
 import com.developerkingdom.algod.entities.user.authz.Permissioned;
 import com.developerkingdom.algod.entities.user.authz.permission.ManageUsersPermission;
 import com.developerkingdom.algod.system.UserControlAbstractController;
-import com.developerkingdom.algod.entities.discipline.Topic;
 
 import br.com.caelum.vraptor.Consumes;
 import br.com.caelum.vraptor.Controller;
@@ -192,12 +192,28 @@ public class DisciplineController extends UserControlAbstractController {
 		}
 	}
 	
-	@Post("/topic/add")
-	public void addTopic(Discipline discipline, Topic topic) {
+	@Post("/topic/add/{id}")
+	public void addTopic(long id) {
 		try {
-			if (discipline != null && topic != null) {
-				this.bs.addTopic(discipline, topic);
-				this.success();
+			LOGGER.info(id);
+			Discipline discipline = this.bs.exists(id, Discipline.class);
+			if (discipline != null) {
+				Topic topic = this.bs.newTopic(discipline);
+				this.success(topic);
+			}
+		} catch (Throwable e) {
+			LOGGER.error(e);
+			this.fail(e.getMessage());
+		}
+	}
+	
+	@Post("/topic/{id}/add/item")
+	public void addTopicItem(long id, TopicItem topicItem) {
+		try {
+			Topic topic = this.bs.exists(id, Topic.class);
+			if (topic != null) {
+				topicItem = this.bs.newTopicItem(topic, topicItem);
+				this.success(topicItem);
 			}
 		} catch (Throwable e) {
 			LOGGER.error(e);
@@ -212,7 +228,7 @@ public class DisciplineController extends UserControlAbstractController {
 			if (discipline == null)
 				this.result.notFound();
 			else {
-				List<Topic> list = this.bs.listTopics(discipline);
+				List<TopicItem> list = this.bs.listTopics(discipline);
 				this.success(list, (long) list.size());
 			}
 		} catch (Throwable e) {
