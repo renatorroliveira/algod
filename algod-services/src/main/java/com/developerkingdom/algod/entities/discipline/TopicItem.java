@@ -15,7 +15,7 @@ public class TopicItem extends SimpleLogicalDeletableEntity {
 	public static final String TABLE = "algod_discipline_topic_items";
 	private static final long serialVersionUID = 1L;
 	
-	@ManyToOne(fetch=FetchType.EAGER)
+	@ManyToOne(fetch=FetchType.EAGER, optional=true)
 	private Topic topic;
 
 	private String label;

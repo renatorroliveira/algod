@@ -198,11 +198,18 @@ const DisciplineStore = Fluxbone.Store.extend({
     const me = this;
     console.log(params);
     $.ajax({
-      url: `${me.url}/topic/add/${params.id}`,
+      url: `${me.url}/topic/add/${params.discipline.id}`,
       method: 'POST',
       dataType: 'json',
-      success(data) {
-        me.trigger('addTopic', data);
+      data: JSON.stringify({
+        title: params.title,
+      }),
+      success(response) {
+        if (response.success) {
+          me.trigger('addTopic', response.data);
+        } else {
+          me.trigger('fail', response.message);
+        }
       },
       error(opts) {
         me.trigger('fail', opts);
@@ -217,7 +224,9 @@ const DisciplineStore = Fluxbone.Store.extend({
       url: `${me.url}/topic/${params.id}/add/item`,
       method: 'POST',
       dataType: 'json',
-      data: JSON.stringify(params.topicItem),
+      data: JSON.stringify({
+        topicItem: params.topicItem,
+      }),
       success(data) {
         me.trigger('addTopicItem', data);
       },

@@ -1,6 +1,5 @@
 package com.developerkingdom.algod.entities.discipline;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -193,13 +192,21 @@ public class DisciplineController extends UserControlAbstractController {
 	}
 	
 	@Post("/topic/add/{id}")
-	public void addTopic(long id) {
+	public void addTopic(Long id, String title) {
 		try {
-			LOGGER.info(id);
+			if (id == null) {
+				this.result.notFound();
+				return;
+			}
 			Discipline discipline = this.bs.exists(id, Discipline.class);
 			if (discipline != null) {
-				Topic topic = this.bs.newTopic(discipline);
+				Topic topic = new Topic();
+				topic.setDiscipline(discipline);
+				topic.setTitle(title);
+				this.bs.persist(topic);
 				this.success(topic);
+			} else {
+				this.result.notFound();
 			}
 		} catch (Throwable e) {
 			LOGGER.error(e);
@@ -208,12 +215,18 @@ public class DisciplineController extends UserControlAbstractController {
 	}
 	
 	@Post("/topic/{id}/add/item")
-	public void addTopicItem(long id, TopicItem topicItem) {
+	public void addTopicItem(Long id, TopicItem topicItem) {
 		try {
+			if (id == null) {
+				this.result.notFound();
+				return;
+			}
 			Topic topic = this.bs.exists(id, Topic.class);
 			if (topic != null) {
 				topicItem = this.bs.newTopicItem(topic, topicItem);
 				this.success(topicItem);
+			} else {
+				this.result.notFound();
 			}
 		} catch (Throwable e) {
 			LOGGER.error(e);

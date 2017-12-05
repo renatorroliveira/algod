@@ -4,14 +4,24 @@
       <v-card v-if="!!subscription">
         <v-card-text>
           <h4>{{discipline.name}}</h4>
-          <div v-for="(topic, i) in topics" :key="topic.id" class="">
+          <div v-for="(topic, i) in topics" :key="topic.id">
             <section>
               <h5>Tópico {{i + 1}}</h5>
-              <v-btn v-on:click="newTopic = !newTopic; topicId = topic.id">Novo item</v-btn>
+              <v-btn v-on:click="topicId = topic.id">Novo item</v-btn>
               <hr>
             </section>
           </div>
-          <v-btn v-on:click="">Adicionar tópico</v-btn><br>
+          <div v-if="newTopic">
+            <section>
+              <v-text-field
+                label="Títutlo do tópico"
+                v-model="newTopicTitle"
+              ></v-text-field>
+              <v-btn v-on:click="saveNewTopic($event)">Salvar</v-btn>
+              <hr>
+            </section>
+          </div>
+          <v-btn v-on:click="newTopic = !newTopic;">Adicionar tópico</v-btn><br>
         </v-card-text>
           <p><v-btn v-on:click="doUnsubscribe($event)">Unsubscribe</v-btn><br></p>
       </v-card>
@@ -39,7 +49,7 @@
       </v-card>
     </v-flex>
 
-    <v-dialog class="text-xs-center" v-model="newTopic" max-width="600px">
+    <v-dialog class="text-xs-center" v-model="newTopicItem" max-width="600px">
       <v-card>
         <v-card-title>
           <form class="center" v-on:submit="doNewTopicItem($event)">
@@ -105,6 +115,8 @@
         exists: false,
         topics: [],
         newTopic: false,
+        newTopicItem: false,
+        newTopicTitle: 'Novo tópico',
         types: [
           'Link',
           'Image',
@@ -171,6 +183,11 @@
         console.log(data);
         this.topics = data.data;
       }, this);
+      DisciplineStore.on('addTopic', (topic) => {
+        this.topics.push(topic);
+        this.newTopic = false;
+        this.newTopicTitle = 'Novo tópico';
+      }, this);
     },
     beforeDestroy() {
       DisciplineStore.off(null, null, this);
@@ -193,12 +210,15 @@
           data: this.discipline,
         });
       },
-      doNewTopic(event) {
+      saveNewTopic(event) {
         event.preventDefault();
         console.log(this.discipline);
         DisciplineStore.dispatch({
           action: DisciplineStore.ACTION_ADD_TOPIC,
-          data: this.discipline,
+          data: {
+            discipline: this.discipline,
+            title: this.newTopicTitle,
+          },
         });
       },
       doNewTopicItem(event) {
