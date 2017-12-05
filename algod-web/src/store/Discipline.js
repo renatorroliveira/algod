@@ -18,6 +18,7 @@ const DisciplineStore = Fluxbone.Store.extend({
   ACTION_UNSUBSCRIBE: 'doUnsubscribe',
   ACTION_SEARCH: 'search',
   ACTION_LIST_TOPICS: 'listTopics',
+  ACTION_LIST_TOPIC_ITEMS: 'listTopicItems',
   ACTION_ADD_TOPIC: 'addTopic',
   ACTION_ADD_TOPIC_ITEM: 'addTopicItem',
 
@@ -187,6 +188,21 @@ const DisciplineStore = Fluxbone.Store.extend({
       dataType: 'json',
       success(data) {
         me.trigger('listTopics', data);
+      },
+      error(opts) {
+        me.trigger('fail', opts);
+      },
+    });
+  },
+
+  listTopicItems(id) {
+    const me = this;
+    $.ajax({
+      url: `${me.url}/topics/${id}/items`,
+      method: 'GET',
+      dataType: 'json',
+      success(data) {
+        me.trigger('listTopicItems', data);
       },
       error(opts) {
         me.trigger('fail', opts);

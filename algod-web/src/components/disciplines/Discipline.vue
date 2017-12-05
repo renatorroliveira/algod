@@ -1,114 +1,155 @@
 <template>
-  <v-layout align-center justify-center>
-    <v-flex class="text-xs-center" v-if="exists">
-      <v-card v-if="!!subscription">
-        <v-card-text>
-          <h4>{{discipline.name}}</h4>
-          <div v-for="(topic, i) in topics" :key="topic.id">
-            <section>
-              <h5>Tópico {{i + 1}}</h5>
-              <v-btn v-on:click="topicId = topic.id">Novo item</v-btn>
-              <hr>
-            </section>
-          </div>
-          <div v-if="newTopic">
-            <section>
+  <v-container grid-list-md text-xs-center v-if="!!subscription">
+    <v-layout row wrap>
+      <v-flex xs12>
+        <v-card class="elevation-20">
+          <v-card-text>
+            <div class="display-1">{{discipline.name}}</div>
+            <div class="subheading">{{discipline.shortName}}</div>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+    </v-layout><br>
+
+    <v-layout row wrap v-for="(topic, i) in topics" :key="topic.id">
+      <v-flex xs3 v-if="i === 0">
+        <v-card dark color="blue-grey darken-1">
+          <v-card-text class="px-0">
+            <v-btn v-on:click="doUnsubscribe($event)">Unsubscribe</v-btn>
+            <v-btn v-if="accessLevel === 100">Ativar edição</v-btn>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+      <v-flex xs3 v-else></v-flex>
+      <v-flex xs9 v-if="topics.length > 0">
+        <v-card class="elevation-10" dark color="grey lighten-1">
+          <v-card-text class="px-0 black--text">
+            <v-layout row wrap>
+              <v-flex xs3><h5>{{topic.title}}</h5></v-flex>
+              <v-flex xs6></v-flex>
+              <v-flex xs3>
+                <div>
+                  <v-icon>add</v-icon><a class="black--text" style="cursor: pointer;" v-if="accessLevel === 100" v-on:click="newTopicItem = !newTopicItem; topicId = topic.id">Novo item</a><br>
+                  <p class="body-1 black--text" style="cursor: pointer;" v-on:click="newTopic = !newTopic;">Adicionar tópico</p>
+                </div>
+              </v-flex>
+            </v-layout>
+
+            <v-layout row wrap v-for="item in topicItems" :key="item.id" v-if="topic.id === item.topic.id">
+              <v-flex xs3>
+                <div v-if="item.type === 'Link'">
+                  {{i +1}}. <a target="_blank" class="black--text" :href="item.content">{{item.label}}</a>
+                </div>
+                <div v-else>
+                  {{i}}. {{item.label}}
+                </div>
+              </v-flex>
+              <v-flex xs6></v-flex>
+              <v-flex xs3></v-flex>
+            </v-layout>
+          </v-card-text>
+        </v-card><br>
+      </v-flex>
+    </v-layout>
+
+    <div>
+      <v-dialog class="text-xs-center" v-model="newTopicItem" max-width="600px">
+        <v-card>
+          <v-card-text>
+            <form class="center" v-on:submit="doNewTopicItem($event)">
               <v-text-field
-                label="Títutlo do tópico"
-                v-model="newTopicTitle"
+                label="Label"
+                v-model="label"
+                persistent-hint
+                autofocus
               ></v-text-field>
-              <v-btn v-on:click="saveNewTopic($event)">Salvar</v-btn>
-              <hr>
-            </section>
-          </div>
-          <v-btn v-on:click="newTopic = !newTopic;">Adicionar tópico</v-btn><br>
-        </v-card-text>
-          <p><v-btn v-on:click="doUnsubscribe($event)">Unsubscribe</v-btn><br></p>
-      </v-card>
-      <v-card v-else-if="!!discipline">
-        <v-card-text>
-          <h4>{{discipline.name}}</h4>
-          <p class="body-2">
-            <form v-on:submit="doSubscribe($event)">
+              <v-select
+                v-bind:items="types"
+                v-model="selecTypes"
+                label="Type"
+                single-line
+                bottom
+              ></v-select>
               <v-text-field
-                label="Senha"
-                v-model="accessKey"
-                autofocus>
-              </v-text-field>
-              <v-btn type="submit">Inscrever-se</v-btn>
+                label="Description"
+                v-model="description"
+                persistent-hint
+              ></v-text-field>
+              <v-text-field
+                label="Content"
+                v-model="content"
+                persistent-hint
+              ></v-text-field>
+              <v-text-field
+                label="Date available To"
+                v-model="dateAvailableTo"
+                type="date"
+                persistent-hint
+              ></v-text-field>
+              <v-text-field
+                label="Date visible To"
+                v-model="dateVisibleTo"
+                type="date"
+                persistent-hint
+              ></v-text-field>
+              <div class="input-field">
+                <v-btn type="submit" color="secondary">Create Topic</v-btn>
+              </div>
             </form>
-          </p>
-        </v-card-text>
-      </v-card>
-    </v-flex>
-    <v-flex v-else>
-      <v-card>
-        <v-card-text class="red lighten-2">
-          <h5>Disciplina não econtrada</h5>
-        </v-card-text>
-      </v-card>
-    </v-flex>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="primary" flat v-on:click="newTopicItem = !newTopicItem">Close</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
 
-    <v-dialog class="text-xs-center" v-model="newTopicItem" max-width="600px">
-      <v-card>
-        <v-card-title>
-          <form class="center" v-on:submit="doNewTopicItem($event)">
+      <v-dialog class="text-xs-center" v-model="newTopic" max-width="600px">
+        <v-card>
+          <v-card-text>
             <v-text-field
-              label="Label"
-              v-model="label"
-              persistent-hint
-              autofocus
+              label="Títutlo do tópico"
+              v-model="newTopicTitle"
             ></v-text-field>
-            <v-select
-              v-bind:items="types"
-              v-model="selecTypes"
-              label="Type"
-              single-line
-              bottom
-            ></v-select>
+            <v-btn v-on:click="saveNewTopic($event)">Salvar</v-btn>
+            <v-btn v-on:click="newTopicTitle = ''; newTopic = !newTopic">Cancelar</v-btn>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+    </div>
+  </v-container>
+
+  <v-container grid-list-md text-xs-center v-else-if="!!discipline">
+    <v-layout row wrap>
+      <v-flex xs3></v-flex>
+      <v-flex xs6>
+        <h4>{{discipline.name}}</h4>
+        <p class="body-2">
+          <form v-on:submit="doSubscribe($event)">
             <v-text-field
-              label="Description"
-              v-model="description"
-              persistent-hint
-            ></v-text-field>
-            <v-text-field
-              label="Content"
-              v-model="content"
-              persistent-hint
-            ></v-text-field>
-            <v-text-field
-              label="Date available To"
-              v-model="dateAvailableTo"
-              type="date"
-              persistent-hint
-            ></v-text-field>
-            <v-text-field
-              label="Date visible To"
-              v-model="dateVisibleTo"
-              type="date"
-              persistent-hint
-            ></v-text-field>
-            <div class="input-field">
-              <v-btn type="submit" color="secondary">Create Topic</v-btn>
-            </div>
+              v-if="discipline.accessKey !== null || discipline.accessKey !== ''"
+              label="Código de acesso"
+              v-model="accessKey"
+              autofocus>
+            </v-text-field>
+            <v-btn type="submit">Inscrever-se</v-btn>
           </form>
-        </v-card-title>
-        <v-card-actions>
-          <v-btn color="primary" flat v-on:click="newTopic = !newTopic">Close</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-  </v-layout>
+        </p>
+      </v-flex>
+      <v-flex xs3></v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
+  import UserSession from '@/store/UserSession';
   import DisciplineStore from '@/store/Discipline';
   import Toastr from 'toastr';
 
   export default {
     data() {
       return {
+        accessLevel: UserSession.get('accessLevel'),
+        topicItems: [],
         subscription: null,
         discipline: null,
         accessKey: '',
@@ -140,10 +181,9 @@
         if (err.status === 404) {
           this.exists = false;
         } else if (err.responseJSON.message === 'Senha inválida') {
-          Toastr.error(err.responseJSON.message);
+          Toastr.warning(err.responseJSON.message);
         }
       }, this);
-
       DisciplineStore.on('doSubscribe', () => {
         DisciplineStore.dispatch({
           action: DisciplineStore.ACTION_GET_SUBSCRIPTION,
@@ -156,7 +196,6 @@
           data: this.$router.currentRoute.params.id,
         });
       }, this);
-
       DisciplineStore.on('getSubscription', (data) => {
         this.exists = true;
         if (typeof data === 'undefined') {
@@ -169,13 +208,9 @@
         } else {
           this.subscription = data;
           this.discipline = data.discipline;
-          DisciplineStore.dispatch({
-            action: DisciplineStore.ACTION_LIST_TOPICS,
-            data: this.$router.currentRoute.params.id,
-          });
+          this.getTopics();
         }
       }, this);
-
       DisciplineStore.on('getDiscipline', (data) => {
         this.discipline = data;
       }, this);
@@ -183,9 +218,18 @@
         console.log(data);
         this.topics = data.data;
       }, this);
+      DisciplineStore.on('listTopicItems', (data) => {
+        console.log(data);
+        this.topicItems = data.data;
+      }, this);
       DisciplineStore.on('addTopic', (topic) => {
         this.topics.push(topic);
-        this.newTopic = false;
+        this.newTopic = !this.newTopic;
+        this.newTopicTitle = 'Novo tópico';
+      }, this);
+      DisciplineStore.on('addTopicItem', (topicItem) => {
+        this.topicItems.push(topicItem);
+        this.newTopicItem = !this.newTopicItem;
         this.newTopicTitle = 'Novo tópico';
       }, this);
     },
@@ -195,13 +239,17 @@
     methods: {
       doSubscribe(event) {
         event.preventDefault();
-        DisciplineStore.dispatch({
-          action: DisciplineStore.ACTION_SUBSCRIBE,
-          data: {
-            id: this.$router.currentRoute.params.id,
-            accessKey: this.accessKey,
-          },
-        });
+        if (this.accessKey === '') {
+          Toastr.warning('Você deve digitar a senha');
+        } else {
+          DisciplineStore.dispatch({
+            action: DisciplineStore.ACTION_SUBSCRIBE,
+            data: {
+              id: this.$router.currentRoute.params.id,
+              accessKey: this.accessKey,
+            },
+          });
+        }
       },
       doUnsubscribe(event) {
         event.preventDefault();
@@ -220,6 +268,7 @@
             title: this.newTopicTitle,
           },
         });
+        this.getTopics();
       },
       doNewTopicItem(event) {
         event.preventDefault();
@@ -236,6 +285,18 @@
               dateAvailableTo: this.dateAvailableTo,
             },
           },
+        });
+        this.newTopicItem = !this.newTopicItem;
+        this.getTopics();
+      },
+      getTopics() {
+        DisciplineStore.dispatch({
+          action: DisciplineStore.ACTION_LIST_TOPICS,
+          data: this.$router.currentRoute.params.id,
+        });
+        DisciplineStore.dispatch({
+          action: DisciplineStore.ACTION_LIST_TOPIC_ITEMS,
+          data: this.$router.currentRoute.params.id,
         });
       },
     },

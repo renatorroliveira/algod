@@ -192,6 +192,7 @@ public class DisciplineController extends UserControlAbstractController {
 	}
 	
 	@Post("/topic/add/{id}")
+	@Consumes
 	public void addTopic(Long id, String title) {
 		try {
 			if (id == null) {
@@ -215,6 +216,7 @@ public class DisciplineController extends UserControlAbstractController {
 	}
 	
 	@Post("/topic/{id}/add/item")
+	@Consumes
 	public void addTopicItem(Long id, TopicItem topicItem) {
 		try {
 			if (id == null) {
@@ -241,7 +243,23 @@ public class DisciplineController extends UserControlAbstractController {
 			if (discipline == null)
 				this.result.notFound();
 			else {
-				List<TopicItem> list = this.bs.listTopics(discipline);
+				List<Topic> list = this.bs.listTopics(discipline);
+				this.success(list, (long) list.size());
+			}
+		} catch (Throwable e) {
+			LOGGER.error(e);
+			this.fail(e.getMessage());
+		}
+	}
+	
+	@Get("/topics/{id}/items")
+	public void listTopicItems(long id) {
+		try {
+			Discipline discipline = this.bs.exists(id, Discipline.class);
+			if (discipline == null)
+				this.result.notFound();
+			else {
+				List<TopicItem> list = this.bs.listTopicItems(discipline);
 				this.success(list, (long) list.size());
 			}
 		} catch (Throwable e) {

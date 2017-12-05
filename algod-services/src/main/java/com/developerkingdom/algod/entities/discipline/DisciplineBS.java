@@ -6,6 +6,7 @@ import javax.enterprise.context.RequestScoped;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
@@ -134,9 +135,17 @@ public class DisciplineBS extends HibernateBusiness {
 		return topicItem;
 	}
 	
-	public List<TopicItem> listTopics(Discipline discipline) {
-		Criteria criteria = this.dao.newCriteria(TopicItem.class)
+	public List<Topic> listTopics(Discipline discipline) {
+		Criteria criteria = this.dao.newCriteria(Topic.class)
 				.add(Restrictions.eq("deleted", false));
+		return (List<Topic>) this.dao.findByCriteria(criteria, Topic.class);
+	}
+	
+	public List<TopicItem> listTopicItems(Discipline discipline) {
+		Criteria criteria = this.dao.newCriteria(TopicItem.class)
+				.add(Restrictions.eq("deleted", false))
+				.add(Restrictions.eq("visible", true))
+				.addOrder(Order.asc("topic.id"));
 		return (List<TopicItem>) this.dao.findByCriteria(criteria, TopicItem.class);
 	}
 }
