@@ -236,6 +236,7 @@ const DisciplineStore = Fluxbone.Store.extend({
   addTopicItem(params) {
     const me = this;
     console.log(params);
+    console.log('kkkkkkkk2');
     $.ajax({
       url: `${me.url}/topic/${params.id}/add/item`,
       method: 'POST',

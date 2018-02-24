@@ -1,18 +1,16 @@
 <template>
-  <v-container grid-list-md text-xs-center v-if="!!subscription">
+  <v-container grid-list-xl text-xs-center v-if="!!subscription">
     <v-layout row wrap>
-      <v-flex xs12>
-        <v-card class="elevation-20">
+      <v-flex xs12 offset-xs>
+        <v-card dark color="blue-grey darken-1">
           <v-card-text>
             <div class="display-1">{{discipline.name}}</div>
             <div class="subheading">{{discipline.shortName}}</div>
           </v-card-text>
         </v-card>
       </v-flex>
-    </v-layout><br>
 
-    <v-layout row wrap v-for="(topic, i) in topics" :key="topic.id">
-      <v-flex xs3 v-if="i === 0">
+      <v-flex xs3>
         <v-card dark color="blue-grey darken-1">
           <v-card-text class="px-0">
             <v-btn v-on:click="doUnsubscribe($event)">Unsubscribe</v-btn>
@@ -20,9 +18,9 @@
           </v-card-text>
         </v-card>
       </v-flex>
-      <v-flex xs3 v-else></v-flex>
-      <v-flex xs9 v-if="topics.length > 0">
-        <v-card class="elevation-10" dark color="grey lighten-1">
+
+      <v-flex xs9>
+        <v-card class="elevation-10" dark color="grey lighten-1" v-for="(topic, i) in topics" :key="topic.id">
           <v-card-text class="px-0 black--text">
             <v-layout row wrap>
               <v-flex xs3><h5>{{topic.title}}</h5></v-flex>
@@ -44,19 +42,16 @@
                   {{i}}. {{item.label}}
                 </div>
               </v-flex>
-              <v-flex xs6></v-flex>
-              <v-flex xs3></v-flex>
             </v-layout>
           </v-card-text>
-        </v-card><br>
+        </v-card>
       </v-flex>
     </v-layout>
 
-    <div>
-      <v-dialog class="text-xs-center" v-model="newTopicItem" max-width="600px">
-        <v-card>
-          <v-card-text>
-            <form class="center" v-on:submit="doNewTopicItem($event)">
+      <div>
+        <v-dialog class="text-xs-center" v-model="newTopicItem" max-width="600px">
+          <v-card>
+            <v-card-text>
               <v-text-field
                 label="Label"
                 v-model="label"
@@ -93,49 +88,46 @@
                 persistent-hint
               ></v-text-field>
               <div class="input-field">
-                <v-btn type="submit" color="secondary">Create Topic</v-btn>
+                <v-btn type="submit" v-on:click="doNewTopicItem($event)" color="secondary">Create Topic</v-btn>
               </div>
-            </form>
-          </v-card-text>
-          <v-card-actions>
-            <v-btn color="primary" flat v-on:click="newTopicItem = !newTopicItem">Close</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn color="primary" flat v-on:click="newTopicItem = !newTopicItem">Close</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
 
-      <v-dialog class="text-xs-center" v-model="newTopic" max-width="600px">
-        <v-card>
-          <v-card-text>
-            <v-text-field
-              label="Títutlo do tópico"
-              v-model="newTopicTitle"
-            ></v-text-field>
-            <v-btn v-on:click="saveNewTopic($event)">Salvar</v-btn>
-            <v-btn v-on:click="newTopicTitle = ''; newTopic = !newTopic">Cancelar</v-btn>
-          </v-card-text>
-        </v-card>
-      </v-dialog>
-    </div>
+        <v-dialog class="text-xs-center" v-model="newTopic" max-width="600px">
+          <v-card>
+            <v-card-text>
+              <v-text-field
+                label="Títutlo do tópico"
+                v-model="newTopicTitle"
+              ></v-text-field>
+              <v-btn v-on:click="saveNewTopic($event)">Salvar</v-btn>
+              <v-btn v-on:click="newTopicTitle = ''; newTopic = !newTopic">Cancelar</v-btn>
+            </v-card-text>
+          </v-card>
+        </v-dialog>
+      </div>
   </v-container>
 
-  <v-container grid-list-md text-xs-center v-else-if="!!discipline">
+  <v-container grid-list-xl text-xs-center v-else-if="!!discipline">
     <v-layout row wrap>
-      <v-flex xs3></v-flex>
-      <v-flex xs6>
-        <h4>{{discipline.name}}</h4>
-        <p class="body-2">
-          <form v-on:submit="doSubscribe($event)">
+      <v-flex xs6 offset-xs3>
+        <v-card>
+          <v-card-text>
+            <h4>{{discipline.name}}</h4>
             <v-text-field
               v-if="discipline.accessKey !== null || discipline.accessKey !== ''"
               label="Código de acesso"
               v-model="accessKey"
               autofocus>
             </v-text-field>
-            <v-btn type="submit">Inscrever-se</v-btn>
-          </form>
-        </p>
+            <v-btn v-on:click="doSubscribe($event)">Inscrever-se</v-btn>
+          </v-card-text>
+        </v-card>
       </v-flex>
-      <v-flex xs3></v-flex>
     </v-layout>
   </v-container>
 </template>
@@ -157,7 +149,7 @@
         topics: [],
         newTopic: false,
         newTopicItem: false,
-        newTopicTitle: 'Novo tópico',
+        newTopicTitle: 'Tópico ',
         types: [
           'Link',
           'Image',
@@ -198,7 +190,9 @@
       }, this);
       DisciplineStore.on('getSubscription', (data) => {
         this.exists = true;
+        console.log('1');
         if (typeof data === 'undefined') {
+          console.log('2');
           this.subscription = null;
           this.accessKey = '';
           DisciplineStore.dispatch({
@@ -206,8 +200,10 @@
             data: this.$router.currentRoute.params.id,
           });
         } else {
+          console.log('must');
           this.subscription = data;
           this.discipline = data.discipline;
+          console.log(this.subscription);
           this.getTopics();
         }
       }, this);
@@ -216,6 +212,7 @@
       }, this);
       DisciplineStore.on('listTopics', (data) => {
         console.log(data);
+        console.log('list topics');
         this.topics = data.data;
       }, this);
       DisciplineStore.on('listTopicItems', (data) => {
@@ -272,6 +269,7 @@
       },
       doNewTopicItem(event) {
         event.preventDefault();
+        console.log('entrou do new topic item');
         DisciplineStore.dispatch({
           action: DisciplineStore.ACTION_ADD_TOPIC_ITEM,
           data: {
@@ -290,6 +288,7 @@
         this.getTopics();
       },
       getTopics() {
+        console.log('2222');
         DisciplineStore.dispatch({
           action: DisciplineStore.ACTION_LIST_TOPICS,
           data: this.$router.currentRoute.params.id,
