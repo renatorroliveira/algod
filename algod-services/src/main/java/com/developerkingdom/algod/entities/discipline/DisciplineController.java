@@ -216,6 +216,27 @@ public class DisciplineController extends UserControlAbstractController {
 		}
 	}
 	
+	@Post("/topic/rem/{id}")
+	@Consumes
+	public void remTopic(Long id) {
+		try {
+			if (id == null) {
+				this.result.notFound();
+				return;
+			}
+			Discipline discipline = this.bs.exists(id, Discipline.class);
+			if (discipline != null) {
+				this.bs.remTopic(id);
+				this.success();
+			} else {
+				this.result.notFound();
+			}
+		} catch (Throwable e) {
+			LOGGER.error(e);
+			this.fail(e.getMessage());
+		}
+	}
+	
 	@Post("/topic/{id}/add/item")
 	@Consumes
 	public void addTopicItem(Long id, TopicItem topicItem) {

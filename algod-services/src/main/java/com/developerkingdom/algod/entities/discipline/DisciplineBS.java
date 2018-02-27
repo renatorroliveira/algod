@@ -148,6 +148,20 @@ public class DisciplineBS extends HibernateBusiness {
 		return topicItem;
 	}
 	
+	public void remTopic(long id) {
+		Topic topic = this.dao.exists(id, Topic.class);
+		if (topic != null) {
+			Criteria criteria = this.dao.newCriteria(TopicItem.class)
+					.add(Restrictions.eq("topic", topic));
+			List<TopicItem> topicItems = (List<TopicItem>) this.dao.findByCriteria(criteria, TopicItem.class);
+			for (int i = 0; i < topicItems.size(); i++) {
+				this.dao.delete(topicItems.get(i));
+			}
+			this.dao.delete(topic);
+		}
+		
+	}
+	
 	public List<Topic> listTopics(Discipline discipline) {
 		Criteria criteria = this.dao.newCriteria(Topic.class)
 				.add(Restrictions.eq("deleted", false))
