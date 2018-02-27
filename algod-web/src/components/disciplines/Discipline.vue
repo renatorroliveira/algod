@@ -11,38 +11,90 @@
       </v-flex>
 
       <v-flex xs3>
-        <v-card dark color="blue-grey darken-1">
-          <v-card-text class="px-0">
-            <v-btn v-on:click="doUnsubscribe($event)">Unsubscribe</v-btn>
-            <v-btn v-if="accessLevel === 100">Ativar edição</v-btn>
-          </v-card-text>
-        </v-card>
+        <v-list>
+          <v-list-tile>
+            <v-list-tile-content>
+              <v-list-tile-title><strong>Disciplinas</strong></v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+
+          <v-list-tile v-for="item in items" :to="item.href">
+            <v-list-tile-content>
+              <v-list-tile-title> {{ item.title }}</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-list>
+
+        <v-divider class="mb-3"></v-divider>
+
+        <v-list>
+          <v-list-tile>
+            <v-list-tile-content>
+              <v-list-tile-title><strong>Administração</strong></v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+
+          <v-list-group>
+            <v-list-tile slot="item">
+              <v-list-tile-content>
+                <v-list-tile-title>{{ discipline.name }}</v-list-tile-title>
+              </v-list-tile-content>
+              <v-list-tile-action>
+                <v-icon>keyboard_arrow_down</v-icon>
+              </v-list-tile-action>
+            </v-list-tile>
+            <v-list-tile v-for="(descDisc, i) in descDiscis" :key="i" :to="descDisc.href">
+              <v-list-tile-content>
+                <v-list-tile-title>{{descDisc.title}}</v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+            <v-list-tile @click="newTopic = !newTopic">
+              <v-list-tile-content>
+                <v-list-tile-title>Novo tópico</v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </v-list-group>
+        </v-list>
       </v-flex>
 
-      <v-flex xs9>
-        <v-card class="elevation-10" dark color="grey lighten-1" v-for="(topic, i) in topics" :key="topic.id">
+      <v-flex xs9 v-if="topics.length > 0">
+        <v-card class="elevation-2" dark color="white" v-for="(topic, i) in topics" :key="topic.id">
           <v-card-text class="px-0 black--text">
             <v-layout row wrap>
-              <v-flex xs3><h5>{{topic.title}}</h5></v-flex>
+              <v-flex xs4>
+                <h5>
+                  <v-btn flat icon>
+                    <v-icon>close</v-icon>
+                  </v-btn>
+                  {{topic.title}}
+                </h5>
+              </v-flex>
               <v-flex xs6></v-flex>
-              <v-flex xs3>
+              <v-flex xs2>
                 <div>
                   <v-icon>add</v-icon><a class="black--text" style="cursor: pointer;" v-if="accessLevel === 100" v-on:click="newTopicItem = !newTopicItem; topicId = topic.id">Novo item</a><br>
-                  <p class="body-1 black--text" style="cursor: pointer;" v-on:click="newTopic = !newTopic;">Adicionar tópico</p>
                 </div>
               </v-flex>
             </v-layout>
-
             <v-layout row wrap v-for="item in topicItems" :key="item.id" v-if="topic.id === item.topic.id">
               <v-flex xs3>
                 <div v-if="item.type === 'Link'">
                   {{i +1}}. <a target="_blank" class="black--text" :href="item.content">{{item.label}}</a>
                 </div>
                 <div v-else>
-                  {{i}}. {{item.label}}
+                  {{i +1}}. {{item.label}}
                 </div>
               </v-flex>
             </v-layout>
+          </v-card-text>
+          <v-divider class="mb-3"></v-divider>
+        </v-card>
+      </v-flex>
+      <v-flex xs9 v-else>
+        <v-card style="min-height:200px;">
+          <v-card-text>
+            <h5>A disciplina não possui nenhum tópico criado</h5>
+            <v-btn v-on:click="newTopic = !newTopic">Criar um tópico</v-btn>
           </v-card-text>
         </v-card>
       </v-flex>
@@ -109,7 +161,23 @@
             </v-card-text>
           </v-card>
         </v-dialog>
+
+        <v-dialog class="text-xs-center" v-model="editUser" max-width="600px">
+          <v-card>
+            <v-card-title>kk</v-card-title>
+            <v-card-text>
+              <v-select
+                v-bind:items="permissions"
+                v-model="e1"
+                label="Permissões"
+                single-line
+                bottom
+              ></v-select>
+            </v-card-text>
+          </v-card>
+        </v-dialog>
       </div>
+
   </v-container>
 
   <v-container grid-list-xl text-xs-center v-else-if="!!discipline">
@@ -144,16 +212,22 @@
         topicItems: [],
         subscription: null,
         discipline: null,
+        e1: null,
+        permissions: [],
         accessKey: '',
         exists: false,
         topics: [],
         newTopic: false,
         newTopicItem: false,
-        newTopicTitle: 'Tópico ',
+        editUser: false,
+        newTopicTitle: '',
         types: [
           'Link',
           'Image',
           'Task',
+        ],
+        items: [
+          //
         ],
         selecTypes: null,
         label: '',
@@ -162,6 +236,8 @@
         dateAvailableTo: '',
         dateVisibleTo: '',
         topicId: null,
+        disciplineRole: 0,
+        descDiscis: [],
       };
     },
     created() {
@@ -169,6 +245,40 @@
         action: DisciplineStore.ACTION_GET_SUBSCRIPTION,
         data: this.$router.currentRoute.params.id,
       });
+
+      DisciplineStore.dispatch({
+        action: DisciplineStore.ACTION_LIST,
+      });
+      DisciplineStore.on('list', (data) => {
+        for (let i = 0; i < data.data.length; i += 1) {
+          this.items.push({
+            title: data.data[i].discipline.name,
+            href: `/discipline/${data.data[i].discipline.id}`,
+          });
+        }
+        console.log(this.items);
+      }, this);
+      const permissionList = [
+        {
+          value: 5,
+          text: 'Aluno',
+        }, {
+          value: 30,
+          text: 'Professor',
+        }, {
+          value: 50,
+          text: 'Moderador',
+        }, {
+          value: 100,
+          text: 'Administrador',
+        },
+      ];
+      for (let i = 0; i < permissionList.length; i += 1) {
+        this.permissions.push({
+          text: permissionList[i].text,
+          roleValue: permissionList[i].value,
+        });
+      }
       DisciplineStore.on('fail', (err) => {
         if (err.status === 404) {
           this.exists = false;
@@ -190,9 +300,7 @@
       }, this);
       DisciplineStore.on('getSubscription', (data) => {
         this.exists = true;
-        console.log('1');
         if (typeof data === 'undefined') {
-          console.log('2');
           this.subscription = null;
           this.accessKey = '';
           DisciplineStore.dispatch({
@@ -200,9 +308,15 @@
             data: this.$router.currentRoute.params.id,
           });
         } else {
-          console.log('must');
           this.subscription = data;
           this.discipline = data.discipline;
+          const usersPath = `/discipline/${data.discipline.id}/users`;
+          this.descDiscis.push({
+            title: 'Usuários inscritos',
+            href: usersPath,
+          });
+          this.disciplineRole =
+          this.accessLevel >= 30 ? this.accessLevel : this.subscription.role;
           console.log(this.subscription);
           this.getTopics();
         }
@@ -211,11 +325,12 @@
         this.discipline = data;
       }, this);
       DisciplineStore.on('listTopics', (data) => {
-        console.log(data);
         console.log('list topics');
+        console.log(data);
         this.topics = data.data;
       }, this);
       DisciplineStore.on('listTopicItems', (data) => {
+        console.log('list topic items');
         console.log(data);
         this.topicItems = data.data;
       }, this);
@@ -227,7 +342,7 @@
       DisciplineStore.on('addTopicItem', (topicItem) => {
         this.topicItems.push(topicItem);
         this.newTopicItem = !this.newTopicItem;
-        this.newTopicTitle = 'Novo tópico';
+        this.newTopicTitle = 'Novo item';
       }, this);
     },
     beforeDestroy() {
@@ -269,7 +384,6 @@
       },
       doNewTopicItem(event) {
         event.preventDefault();
-        console.log('entrou do new topic item');
         DisciplineStore.dispatch({
           action: DisciplineStore.ACTION_ADD_TOPIC_ITEM,
           data: {
@@ -288,14 +402,13 @@
         this.getTopics();
       },
       getTopics() {
-        console.log('2222');
         DisciplineStore.dispatch({
           action: DisciplineStore.ACTION_LIST_TOPICS,
-          data: this.$router.currentRoute.params.id,
+          data: this.discipline.id,
         });
         DisciplineStore.dispatch({
           action: DisciplineStore.ACTION_LIST_TOPIC_ITEMS,
-          data: this.$router.currentRoute.params.id,
+          data: this.discipline.id,
         });
       },
     },

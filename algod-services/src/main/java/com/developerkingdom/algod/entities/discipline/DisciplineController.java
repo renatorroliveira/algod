@@ -5,6 +5,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import com.developerkingdom.algod.entities.company.Institution;
+import com.developerkingdom.algod.entities.user.User;
 import com.developerkingdom.algod.entities.user.authz.AccessLevels;
 import com.developerkingdom.algod.entities.user.authz.Permissioned;
 import com.developerkingdom.algod.entities.user.authz.permission.ManageUsersPermission;
@@ -264,6 +265,17 @@ public class DisciplineController extends UserControlAbstractController {
 			}
 		} catch (Throwable e) {
 			LOGGER.error(e);
+			this.fail(e.getMessage());
+		}
+	}
+	
+	@Post("/{id}/edit/disciplineUser")
+	public void editDisciplineUser(long id, DisciplineUser disciplineUser) {
+		try {
+			Discipline discipline = this.bs.exists(id, Discipline.class);
+			disciplineUser = this.bs.editUser(userSession.getUser(), discipline, disciplineUser);
+			this.success(disciplineUser);
+		} catch (Throwable e) {
 			this.fail(e.getMessage());
 		}
 	}

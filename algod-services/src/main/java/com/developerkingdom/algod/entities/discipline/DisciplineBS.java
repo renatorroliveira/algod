@@ -1,5 +1,6 @@
 package com.developerkingdom.algod.entities.discipline;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
@@ -12,6 +13,7 @@ import org.hibernate.criterion.Restrictions;
 
 import com.developerkingdom.algod.entities.company.Institution;
 import com.developerkingdom.algod.entities.user.User;
+import com.developerkingdom.algod.entities.user.authz.AccessLevels;
 
 import br.com.caelum.vraptor.boilerplate.HibernateBusiness;
 import br.com.caelum.vraptor.boilerplate.bean.PaginatedList;
@@ -68,7 +70,18 @@ public class DisciplineBS extends HibernateBusiness {
 			DisciplineUser disciplineUser = new DisciplineUser();
 			disciplineUser.setDiscipline(discipline);
 			disciplineUser.setUser(user);
-//			disciplineUser.setRole();
+			disciplineUser.setRole(AccessLevels.AUTHENTICATED.getLevel());
+			this.dao.persist(disciplineUser);
+			
+			return disciplineUser;
+		}
+		return null;
+	}
+	
+	public DisciplineUser editUser(User user, Discipline discipline, DisciplineUser disciplineUser) {
+		if (user.getAccessLevel() >= AccessLevels.MANAGER.getLevel()) {
+			
+			disciplineUser.setRole(disciplineUser.getRole());
 			this.dao.persist(disciplineUser);
 			
 			return disciplineUser;
@@ -137,15 +150,34 @@ public class DisciplineBS extends HibernateBusiness {
 	
 	public List<Topic> listTopics(Discipline discipline) {
 		Criteria criteria = this.dao.newCriteria(Topic.class)
-				.add(Restrictions.eq("deleted", false));
+				.add(Restrictions.eq("deleted", false))
+				.add(Restrictions.eq("discipline", discipline));
 		return (List<Topic>) this.dao.findByCriteria(criteria, Topic.class);
 	}
 	
 	public List<TopicItem> listTopicItems(Discipline discipline) {
-		Criteria criteria = this.dao.newCriteria(TopicItem.class)
-				.add(Restrictions.eq("deleted", false))
-				.add(Restrictions.eq("visible", true))
-				.addOrder(Order.asc("topic.id"));
-		return (List<TopicItem>) this.dao.findByCriteria(criteria, TopicItem.class);
+		Criteria crit = this.dao.newCriteria(Topic.class)
+				.add(Restrictions.eq("discipline", discipline));
+		List<Topic> topics = (List<Topic>) this.dao.findByCriteria(crit, Topic.class);
+		
+		LinkedList<TopicItem> list = new LinkedList<TopicItem>();
+		
+		for (int i = 0; i < topics.size(); i++) {
+			Criteria criteria = this.dao.newCriteria(TopicItem.class)
+					.add(Restrictions.eq("deleted", false))
+					.add(Restrictions.eq("visible", true))
+					.add(Restrictions.eq("topic", topics.get(i)))
+					.addOrder(Order.asc("topic.id"));
+			List<TopicItem> topicItem = (List<TopicItem>) this.dao.findByCriteria(criteria, TopicItem.class);
+			if (topicItem != null) {
+				for (int j = 0; j < topicItem.size(); j++) {
+					list.add(topicItem.get(j));
+				}
+				
+			}
+		}
+		
+		return list;
+		
 	}
 }

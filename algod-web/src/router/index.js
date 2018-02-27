@@ -12,6 +12,7 @@ import ListInstitutions from '@/components/institution/ListInstitutions';
 import ListDisciplines from '@/components/disciplines/ListDisciplines';
 import NewDiscipline from '@/components/disciplines/AddDiscipline';
 import Discipline from '@/components/disciplines/Discipline';
+import DisciplineUsers from '@/components/disciplines/DisciplineUsers';
 
 import Login from '@/components/auth/Login';
 import Register from '@/components/auth/Register';
@@ -84,6 +85,10 @@ export default new Router({
       path: 'discipline/:id',
       name: 'Disciplina',
       component: Discipline,
+    }, {
+      path: 'discipline/:id/users',
+      name: 'Usuários inscritos',
+      component: DisciplineUsers,
     }],
   }],
 });

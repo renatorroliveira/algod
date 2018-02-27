@@ -8,7 +8,7 @@
       v-model="drawer"
     >
       <v-list>
-        <v-list-tile avatar v-if="!!user" :to="`/user/profile/${user.nickname}`">
+        <v-list-tile avatar v-if="!!user" :to="`/user/profile/${user.nickname}`" v-on:click="drawer = false">
           <v-list-tile-avatar>
             <img v-if="!!user.picture" :src="user.picture" alt="User" />
             <v-icon v-else>account_circle</v-icon>
@@ -21,7 +21,7 @@
 
         <v-divider class="mb-3"></v-divider>
 
-        <v-list-tile avatar to="/">
+        <v-list-tile v-on:click="drawer = false" avatar to="/">
           <v-list-tile-avatar>
             <v-icon>home</v-icon>
           </v-list-tile-avatar>
@@ -42,7 +42,7 @@
           </v-list-tile>
           <v-list-tile v-for="(child, j) in item.children" :key="j" :to="child.href">
             <v-list-tile-content>
-              <v-list-tile-title v-text="child.title"></v-list-tile-title>
+              <v-list-tile-title v-on:click="drawer = false" v-text="child.title"></v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
         </v-list-group>
@@ -81,7 +81,7 @@
       </v-container>
     </v-content>
     <v-footer app>
-      <span>&copy; 2017</span>
+      <span>&copy; 2018</span>
     </v-footer>
   </v-app>
 </template>
@@ -103,12 +103,14 @@
       };
     },
     created() {
+      this.drawer = false;
       if (!UserSession.get('loading') && !UserSession.get('logged')) {
         this.$router.push('/auth/login');
       }
       this.loading = UserSession.get('loading');
     },
     mounted() {
+      this.drawer = false;
       UserSession.on('loaded', () => {
         if (!UserSession.get('logged')) {
           this.$router.push('/auth/login');
