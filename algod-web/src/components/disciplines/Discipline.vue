@@ -18,7 +18,7 @@
             </v-list-tile-content>
           </v-list-tile>
 
-          <v-list-tile v-for="item in items" :to="item.href">
+          <v-list-tile v-for="item in items" :key="item.id" :to="item.href">
             <v-list-tile-content>
               <v-list-tile-title> {{ item.title }}</v-list-tile-title>
             </v-list-tile-content>

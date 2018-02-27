@@ -10,8 +10,7 @@
       <v-list>
         <v-list-tile avatar v-if="!!user" :to="`/user/profile/${user.nickname}`" v-on:click="drawer = false">
           <v-list-tile-avatar>
-            <img v-if="!!user.picture" :src="user.picture" alt="User" />
-            <v-icon v-else>account_circle</v-icon>
+            <img :src="user.picture" alt="User" />
           </v-list-tile-avatar>
           <v-list-tile-content class="black--text">
             <div class="body-1">{{user.name}}</div>
@@ -81,7 +80,7 @@
       </v-container>
     </v-content>
     <v-footer app>
-      <span>&copy; 2018</span>
+      <span>Copyrights &copy; 2018 All rights reserved</span>
     </v-footer>
   </v-app>
 </template>
@@ -103,14 +102,11 @@
       };
     },
     created() {
-      this.drawer = false;
       if (!UserSession.get('loading') && !UserSession.get('logged')) {
         this.$router.push('/auth/login');
       }
       this.loading = UserSession.get('loading');
-    },
-    mounted() {
-      this.drawer = false;
+
       UserSession.on('loaded', () => {
         if (!UserSession.get('logged')) {
           this.$router.push('/auth/login');
@@ -149,6 +145,8 @@
         });
         this.loading = false;
       }, this);
+    },
+    mounted() {
       UserSession.on('logout', () => {
         Toastr.success('Logout');
         this.$router.push('/auth/login');

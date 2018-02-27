@@ -2,29 +2,49 @@
   <v-flex sm8 md6>
     <v-card v-if="exists">
       <v-card-text v-if="!!user">
-        <img id="profile_picture" class="center" :src="user.picture">
-        <div class="body-2">Nome: {{user.name}}</div>
-        <div class="body-2">Apelido: {{user.nickname}}</div>
-        <div class="body-2">Email: {{user.email}}</div>
-        <div class="body-2">Telefone: {{user.phone}}</div>
-        <div class="body-2">Criation date: {{user.creation}}</div>
-        <div class="body-2">Access Level: {{user.accessLevel}}</div>
-        <div class="body-2">Active: {{user.active}}</div>
-        <div class="body-2">Deleted: {{user.deleted}}</div>
-        <v-btn dark v-on:click="toggle = !toggle" v-model="toggle">Change pic</v-btn>
-        <form v-on:submit="changePic($event)" v-if="toggle">
-          <v-text-field
-            label="Url"
-            v-model="url"
-            persistent-hint
-            autofocus
-          ></v-text-field>
-          <div class="text-xs-right">
-            <v-btn type="submit" color="primary">Mudar foto</v-btn>
-          </div>
-        </form>
+        <v-list>
+          <v-list-tile>
+            <v-list-tile-avatar id="icon" v-on:click="changePic = !changePic">
+              <img :src="user.picture" alt="User" />
+            </v-list-tile-avatar>
+            <v-list-tile-content class="black--text">
+              <div style="font-size: 20px;">{{user.name}}</div>
+              <div class="caption">&nbsp;{{user.email}}</div>
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-list>
+
+        <v-divider class="mb-3"></v-divider>
+
+        <v-list>
+          <v-list-tile>
+            <v-list-tile-content v-if="user.accessLevel === 5">
+              Função: Estudante
+            </v-list-tile-content>
+            <v-list-tile-content v-if="user.accessLevel === 30">
+              Função: Professor
+            </v-list-tile-content>
+            <v-list-tile-content v-if="user.accessLevel === 100">
+              Função: Administrador
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-list>
       </v-card-text>
+      <v-dialog v-model="changePic">
+        <v-card>
+          <v-card-text>
+            <v-text-field
+              label="Url"
+              v-model="url"
+              persistent-hint
+              autofocus
+            ></v-text-field>
+            <v-btn v-on:click="sendPicture($event)">Mudar foto</v-btn>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
     </v-card>
+
     <v-card v-else>
       <v-card-text class="red lighten-2">
         <h5>Perfil não encontrado</h5>
@@ -43,7 +63,7 @@ export default {
   data() {
     return {
       user: [],
-      toggle: false,
+      changePic: false,
       url: '',
       exists: false,
     };
@@ -71,15 +91,21 @@ export default {
     UserSession.off(null, null, this);
   },
   methods: {
-    changePic(event) {
+    sendPicture(event) {
       event.preventDefault();
+      console.log('kkkk');
       UserSession.dispatch({
-        action: UserSession.ACTION_PICTURE,
+        action: UserSession.ACTION_CHANGE_PIC,
         data: {
           user: this.user,
           url: this.url,
         },
       });
+      UserSession.dispatch({
+        action: UserSession.ACTION_GET_USER,
+        data: this.$router.currentRoute.params.nickname,
+      });
+      this.changePic = !this.changePic;
     },
   },
 };
