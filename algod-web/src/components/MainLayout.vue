@@ -6,6 +6,7 @@
       fixed
       :clipped="$vuetify.breakpoint.width > 1264"
       v-model="drawer"
+      disable-route-watcher
     >
       <v-list>
         <v-list-tile avatar v-if="!!user" :to="`/user/profile/${user.nickname}`" v-on:click="drawer = false">
@@ -48,7 +49,7 @@
 
         <v-list-tile dark avatar v-on:click="doLogout($event)">
           <v-list-tile-avatar>
-            &nbsp;<v-icon dark>power_settings_new</v-icon>
+            <v-icon dark>power_settings_new</v-icon>
           </v-list-tile-avatar>
           <v-list-tile-content>
             <v-list-tile-title>
@@ -75,7 +76,7 @@
     <v-content class="grey lighten-3">
       <v-container fluid fill-height>
         <v-layout justify-center align-center>
-          <router-view></router-view>
+          <router-view :key="$route.path"></router-view>
         </v-layout>
       </v-container>
     </v-content>

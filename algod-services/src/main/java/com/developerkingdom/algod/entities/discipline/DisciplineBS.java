@@ -66,7 +66,15 @@ public class DisciplineBS extends HibernateBusiness {
 				.add(Restrictions.eq("id", discipline.getId()));
 		discipline = (Discipline) criteria.uniqueResult();
 		
-		if (discipline != null) {
+		Criteria crit = this.dao.newCriteria(DisciplineUser.class)
+				.add(Restrictions.eq("user", user))
+				.add(Restrictions.eq("discipline", discipline));
+		DisciplineUser verifyUserIsSubs = (DisciplineUser) crit.uniqueResult();
+		if (verifyUserIsSubs != null) {
+			return null;
+		}
+		
+		else if (discipline != null) {
 			DisciplineUser disciplineUser = new DisciplineUser();
 			disciplineUser.setDiscipline(discipline);
 			disciplineUser.setUser(user);

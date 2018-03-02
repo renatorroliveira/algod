@@ -1,78 +1,103 @@
 <template>
-  <v-layout column align-center justify-center>
-    <v-flex class="text-xs-center" v-if="accessLevel == 100">
-      <h1>Algorithm God 2</h1>
-      <h5>Uma nova experiência no ensino da programação de computadores</h5>
-      <p class="body-2">
-        Área de admin
-        Bem vindo ao Algod. Nesse site você vai ter acesso a suas grades curriculares,
-        acompanhar os exemplos das suas aulas, além de entregar trabalhos, atividades e
-        realizar suas provas. Tudo por aqui, simples e prático.
-      </p>
-    </v-flex>
-    <v-flex xs12 v-else>
-      <div v-if="disciplines.length === 0">
-        <h5>Você não está inscrito em nenhuma disciplina</h5>
-        <form v-on:submit="doSearch($event)">
-          <v-text-field prepend-icon="search" v-model="terms" hide-details single-line></v-text-field><p></p>
-          <div class="text-xs-right">
-            <v-btn type="submit" color="secondary">Pesquisar</v-btn>
-          </div>
-        </form>
-        <p></p>
-        <v-card v-if="resultSearch.length > 0" v-for="(discipline, i) in resultSearch" :key="i">
-          <v-card-media
-            v-if="discipline.img != null"
-            :src="discipline.img"
-            height="200px"
-          >
-          </v-card-media>
-          <v-card-title primary-title>
-            <div class="center">
-              <div class="headline" v-html="discipline.name"></div>
-              <span class="grey--text" v-html="discipline.shortName"></span>
-            </div>
-          </v-card-title>
-          <v-card-title>
-            <v-text-field
-              label="Código de acesso"
-              v-model="accessKey"
-              autofocus>
-            </v-text-field>
-          </v-card-title>
-          <v-card-actions>
-            <v-btn flat color="black" v-on:click="doSubscribe($event, discipline.id)">Subscribe</v-btn>
-            <v-btn flat color="purple" :to="`/discipline/${discipline.id}`">Explore</v-btn>
-          </v-card-actions>
-        </v-card>
-        <v-card v-else-if="query">
-          <v-card-text>
-            <h5>Nenhum resultado encontrado</h5>
-          </v-card-text>
-        </v-card>
-      </div>
-      <div v-else>
-        <v-card v-for="(discipline, i) in disciplines" :key="i">
-          <v-card-media
-            v-if="discipline.discipline.img != null"
-            :src="discipline.discipline.img"
-            height="200px"
-          >
-          </v-card-media>
-          <v-card-title primary-title>
-            <div>
-              <div class="headline" v-html="discipline.discipline.name"></div>
-              <span class="grey--text" v-html="discipline.discipline.shortName"></span>
-            </div>
-          </v-card-title>
-          <v-card-actions>
-            <v-btn flat color="purple" :to="`/discipline/${discipline.discipline.id}`">Explore</v-btn>
-            <v-btn flat color="black" v-on:click="doUnsubscribe($event, discipline.discipline)">Unsubscribe</v-btn>
-          </v-card-actions>
-        </v-card>
-      </div>
-    </v-flex>
-  </v-layout>
+  <v-container grid-list-md text-xs-center>
+    <v-layout row wrap>
+      <v-flex xs12 v-if="accessLevel >= 30" class="text-xs-center">
+        <v-btn color="primary" dark @click.stop="dialog = true">Pesquisar disciplinas</v-btn> <v-spacer class="mb-4"></v-spacer>
+        <h1>Algorithm God 2</h1>
+        <h5>Uma nova experiência no ensino da programação de computadores</h5>
+        <p class="body-2">
+          Área de admin!!
+          Bem vindo ao Algod. Nesse site você vai ter acesso a suas grades curriculares,
+          acompanhar os exemplos das suas aulas, além de entregar trabalhos, atividades e
+          realizar suas provas. Tudo por aqui, simples e prático.
+        </p>
+      </v-flex>
+      <v-flex xs4 offset-xs4>
+        <v-btn color="primary" dark @click.stop="dialog = true">Pesquisar disciplinas</v-btn> <v-spacer class="mb-4"></v-spacer>
+          <v-card v-for="(discipline, i) in disciplines" :key="discipline.id" class="text-xs-center">
+            <!-- <v-card-media
+              v-if="discipline.discipline.img != null"
+              :src="discipline.discipline.img"
+              height="200px"
+            >
+            </v-card-media> -->
+            <v-card-title>
+              <v-flex xs12>
+                <h5>{{discipline.discipline.name}}</h5>
+                <span class="grey--text">{{discipline.discipline.shortName}}</span>
+              </v-flex>
+            </v-card-title>
+            <v-card-actions>
+              <v-flex xs12>
+                <v-btn flat color="purple" :to="`/discipline/${discipline.discipline.id}`">Visitar</v-btn>
+                <v-btn flat color="black" v-on:click="doUnsubscribe($event, discipline.discipline)">Desinscrever</v-btn>
+              </v-flex>
+            </v-card-actions>
+            <v-spacer class="mb-3"></v-spacer>
+          </v-card>
+      </v-flex>
+    </v-layout>
+
+    <v-dialog v-model="dialog" fullscreen transition="dialog-bottom-transition" :overlay="false" scrollable>
+      <v-card tile>
+        <v-toolbar card dark color="blue-grey darken-2">
+          <v-btn icon @click.native="dialog = false">
+            <v-icon>close</v-icon>
+          </v-btn>
+          <v-toolbar-title>Pesquisar disciplinas</v-toolbar-title>
+        </v-toolbar>
+        <v-card-text>
+          <v-card xs5>
+            <v-card-text>
+              <v-flex xs6 offset-xs3>
+                <v-text-field
+                  prepend-icon="search"
+                  label="Buscar disciplinas"
+                  solo-inverted
+                  v-model="terms"
+                  class="mx-3"
+                  flat>
+                </v-text-field>
+                <v-btn v-on:click="doSearch($event)">Buscar</v-btn>
+              </v-flex>
+            </v-card-text>
+          </v-card>
+          <v-spacer class="mb-3"></v-spacer>
+          <v-flex offset-xs3 xs6 v-if="resultSearch.length > 0">
+            <v-card xs6 offset-xs3 v-for="(discipline, i) in resultSearch" :key="discipline.id">
+              <!-- <v-card-media
+                v-if="discipline.img != null"
+                :src="discipline.img"
+                height="200px"
+              >
+              </v-card-media> -->
+              <v-card-title class="text-xs-center">
+                <v-flex xs12>
+                  <h5>{{discipline.name}}</h5>
+                  <span class="grey--text">{{discipline.shortName}}</span>
+                </v-flex>
+              </v-card-title>
+              <v-card-title>
+                <v-text-field
+                  label="Código de acesso"
+                  v-model="accessKey"
+                  autofocus>
+                </v-text-field>
+              </v-card-title>
+              <v-card-actions>
+                <v-flex xs12>
+                  <v-btn flat color="black" v-on:click="doSubscribe($event, discipline.id)">Inscrever-se</v-btn>
+                  <v-btn flat color="purple" :to="`/discipline/${discipline.id}`">Visitar</v-btn>
+                </v-flex>
+              </v-card-actions>
+            </v-card>
+          </v-flex>
+        </v-card-text>
+        <div style="flex: 1 1 auto;"/>
+      </v-card>
+    </v-dialog>
+  </v-container>
+
 </template>
 
 <script>
@@ -90,6 +115,7 @@ export default {
     resultSearch: [],
     accessKey: '',
     query: false,
+    dialog: false,
   }),
   mounted() {
     const me = this;
@@ -137,6 +163,8 @@ export default {
           accessKey: this.accessKey,
         },
       });
+      this.accessKey = '';
+      this.dialog = false;
     },
     doUnsubscribe(event, discipline) {
       event.preventDefault();

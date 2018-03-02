@@ -5,7 +5,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import com.developerkingdom.algod.entities.company.Institution;
-import com.developerkingdom.algod.entities.user.User;
 import com.developerkingdom.algod.entities.user.authz.AccessLevels;
 import com.developerkingdom.algod.entities.user.authz.Permissioned;
 import com.developerkingdom.algod.entities.user.authz.permission.ManageUsersPermission;
