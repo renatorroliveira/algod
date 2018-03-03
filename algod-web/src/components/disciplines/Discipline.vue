@@ -1,5 +1,5 @@
 <template>
-  <v-container grid-list-xl text-xs-center v-if="!!subscription || disciplineRole >= 30">
+  <v-container grid-list-xl text-xs-center v-if="!!subscription || accessLevel >= 30 && !!discipline">
     <v-flex xs12>
       <v-card color="blue-grey darken-1 white--text">
         <v-card-text>
@@ -10,13 +10,12 @@
     </v-flex>
 
     <v-layout row wrap>
-      <v-flex xs12></v-flex>
       <v-flex xs3>
-        <v-list>
+        <v-list v-if="items.length > 0">
           <v-list-group no-action>
             <v-list-tile slot="item">
               <v-list-tile-content>
-                <v-list-tile-title><strong>Disciplinas Inscritas</strong></v-list-tile-title>
+                <v-list-tile-title><strong>Disciplinas</strong></v-list-tile-title>
               </v-list-tile-content>
               <v-list-tile-action>
                 <v-icon>keyboard_arrow_down</v-icon>
@@ -30,9 +29,9 @@
           </v-list-group>
         </v-list>
 
-        <v-divider class="mb-3"></v-divider>
+        <v-spacer v-if="items.length > 0" class="mb-3"></v-spacer>
 
-        <v-list v-if="disciplineRole >= 30">
+        <v-list v-if="disciplineRole >= 30 || accessLevel >= 30">
           <v-list-tile>
             <v-list-tile-content>
               <v-list-tile-title><strong>Administração</strong></v-list-tile-title>
@@ -47,11 +46,6 @@
                 <v-icon>keyboard_arrow_down</v-icon>
               </v-list-tile-action>
             </v-list-tile>
-            <v-list-tile v-for="(descDisc, i) in descDiscis" :key="i" :to="descDisc.href">
-              <v-list-tile-content>
-                <v-list-tile-title>{{descDisc.title}}</v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
             <v-list-tile @click="newTopic = !newTopic">
               <v-list-tile-content>
                 <v-list-tile-title>Novo tópico</v-list-tile-title>
@@ -62,41 +56,41 @@
       </v-flex>
 
       <v-flex xs9 v-if="topics.length > 0">
-        <v-container fluid style="min-height: 0;" grid-list-lg>
-          <v-layout row wrap>
-            <v-flex xs12 v-for="(topic, i) in topics" :key="topic.id">
-              <v-card color="white" style="min-height: 200px;">
-                <v-card-title primary-title>
-                  <v-flex xs10>
-                    <h5 class="text-sm-left">{{topic.title}}</h5>
+        <v-layout row wrap>
+          <v-flex xs12 v-for="(topic, i) in topics" :key="topic.id">
+            <v-card color="white" style="min-height: 200px;">
+              <v-card-title primary-title>
+                <span style="display: none;">{{update}}</span>
+                <v-flex xs10>
+                  <h5 class="text-sm-left">{{topic.title}}</h5>
+                </v-flex>
+                <v-flex xs1>
+                  <v-btn v-if="disciplineRole >= 30 || accessLevel >= 30" flat icon title="Adicionar item" v-on:click="newTopicItem = !newTopicItem; topicId = topic.id">
+                    <v-icon>add</v-icon>
+                  </v-btn>
+                </v-flex>
+                <v-flex xs1>
+                  <v-btn v-if="disciplineRole >= 30 || accessLevel >= 30" flat icon :title="`Remover ${topic.title}`" v-on:click="remTopic = !remTopic; topicId = topic.id; topicToRemove = topic.title">
+                    <v-icon>close</v-icon>
+                  </v-btn>
+                </v-flex>
+              </v-card-title>
+              <v-card-text v-if="topicItems.length > 0">
+                <v-layout row wrap v-for="item in topicItems" :key="item.id" v-if="topic.id === item.topic.id">
+                  <v-flex xs10 class="text-sm-left">
+                    <div v-if="item.type === 'Link'">
+                      <v-icon>public</v-icon> <a target="_blank" id="externalUrl" :href="item.content">{{item.label}}</a>
+                    </div>
+                    <div v-else-if="item.type === 'Task'">
+                      <v-icon>class</v-icon> <router-link id="internalUrl" :to="`/discipline/${discipline.id}/task/${item.id}`">{{item.label}}</router-link>
+                    </div>
                   </v-flex>
-                  <v-flex xs1>
-                    <v-btn v-if="disciplineRole >= 30" flat icon title="Adicionar item" v-on:click="newTopicItem = !newTopicItem; topicId = topic.id">
-                      <v-icon>add</v-icon>
-                    </v-btn>
-                  </v-flex>
-                  <v-flex xs1>
-                    <v-btn v-if="disciplineRole >= 30" flat icon :title="`Remover ${topic.title}`">
-                      <v-icon>close</v-icon>
-                    </v-btn>
-                  </v-flex>
-                </v-card-title>
-                <v-card-text>
-                  <v-layout row wrap v-for="item in topicItems" :key="item.id" v-if="topic.id === item.topic.id">
-                    <v-flex xs10 class="text-sm-left">
-                      <div v-if="item.type === 'Link'">
-                        <v-icon>public</v-icon> <a target="_blank" id="externalUrl" :href="item.content">{{item.label}}</a>
-                      </div>
-                      <div v-else-if="item.type === 'Task'">
-                        <v-icon>class</v-icon> <router-link id="internalUrl" :to="`/discipline/${discipline.id}/task/${item.id}`">{{item.label}}</router-link>
-                      </div>
-                    </v-flex>
-                  </v-layout>
-                </v-card-text>
-              </v-card>
-            </v-flex>
-          </v-layout>
-        </v-container>
+                </v-layout>
+              </v-card-text>
+              <v-card-text v-else></v-card-text>
+            </v-card>
+          </v-flex>
+        </v-layout>
       </v-flex>
 
       <v-flex xs9 v-else>
@@ -113,44 +107,46 @@
       <v-dialog class="text-xs-center" v-model="newTopicItem" max-width="600px">
         <v-card>
           <v-card-text>
-            <v-text-field
-              label="Título"
-              v-model="label"
-              persistent-hint
-              autofocus
-            ></v-text-field>
-            <v-select
-              v-bind:items="types"
-              v-model="selecTypes"
-              label="Tipo"
-              single-line
-              bottom
-            ></v-select>
-            <v-text-field
-              label="Descrição"
-              v-model="description"
-              persistent-hint
-            ></v-text-field>
-            <v-text-field
-              label="Conteúdo"
-              v-model="content"
-              persistent-hint
-            ></v-text-field>
-            <v-text-field
-              label="Date available To"
-              v-model="dateAvailableTo"
-              type="date"
-              persistent-hint
-            ></v-text-field>
-            <v-text-field
-              label="Date visible To"
-              v-model="dateVisibleTo"
-              type="date"
-              persistent-hint
-            ></v-text-field>
-            <div class="input-field">
-              <v-btn v-on:click="saveNewTopicItem($event)" color="secondary">Criar novo item</v-btn>
-            </div>
+            <v-form v-on:submit="saveNewTopicItem($event)">
+              <v-text-field
+                label="Título"
+                v-model="label"
+                persistent-hint
+                autofocus
+              ></v-text-field>
+              <v-select
+                v-bind:items="types"
+                v-model="selecTypes"
+                label="Tipo"
+                single-line
+                bottom
+              ></v-select>
+              <v-text-field
+                label="Descrição"
+                v-model="description"
+                persistent-hint
+              ></v-text-field>
+              <v-text-field
+                label="Conteúdo"
+                v-model="content"
+                persistent-hint
+              ></v-text-field>
+              <v-text-field
+                label="Date available To"
+                v-model="dateAvailableTo"
+                type="date"
+                persistent-hint
+              ></v-text-field>
+              <v-text-field
+                label="Date visible To"
+                v-model="dateVisibleTo"
+                type="date"
+                persistent-hint
+              ></v-text-field>
+              <div class="input-field">
+                <v-btn type="submit" color="secondary">Criar novo item</v-btn>
+              </div>
+            </v-form>
           </v-card-text>
         </v-card>
       </v-dialog>
@@ -163,7 +159,7 @@
               v-model="newTopicTitle"
             ></v-text-field>
             <v-btn v-on:click="saveNewTopic($event)">Criar tópico</v-btn>
-            <v-btn v-on:click="newTopicTitle = ''; newTopic = !newTopic">Cancelar</v-btn>
+            <v-btn v-on:click="newTopicTitle = ''; newTopic = false">Cancelar</v-btn>
           </v-card-text>
         </v-card>
       </v-dialog>
@@ -182,8 +178,21 @@
           </v-card-text>
         </v-card>
       </v-dialog>
+
+      <v-dialog v-model="remTopic" max-width="500px">
+        <v-card>
+          <v-card-title>
+            Você deseja remover {{topicToRemove}}?
+          </v-card-title>
+          <v-card-actions>
+            <v-btn color="primary" flat v-on:click="deleteTopic($event);">Sim</v-btn>
+            <v-btn color="primary" flat v-on:click="remTopic = false">Cancelar</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </div>
   </v-container>
+
   <v-container grid-list-xl text-xs-center v-else-if="!!discipline">
     <v-layout row wrap>
       <v-flex xs6 offset-xs3>
@@ -236,10 +245,12 @@
         description: '',
         content: '',
         dateAvailableTo: '',
+        update: '',
         dateVisibleTo: '',
         topicId: null,
         disciplineRole: 0,
-        descDiscis: [],
+        topicToRemove: '',
+        remTopic: null,
       };
     },
     created() {
@@ -248,14 +259,17 @@
         data: this.$router.currentRoute.params.id,
       });
       DisciplineStore.dispatch({
-        action: DisciplineStore.ACTION_LIST,
+        action: DisciplineStore.ACTION_LIST_SUBSCRIBED_DISCIPLINES,
       });
-      DisciplineStore.on('list', (data) => {
-        for (let i = 0; i < data.data.length; i += 1) {
-          this.items.push({
-            title: data.data[i].discipline.name,
-            href: `/discipline/${data.data[i].discipline.id}`,
-          });
+      DisciplineStore.on('listSubscribedDisciplines', (data) => {
+        if (data.total > 0) {
+          this.items = [];
+          for (let i = 0; i < data.data.length; i += 1) {
+            this.items.push({
+              title: data.data[i].discipline.name,
+              href: `/discipline/${data.data[i].discipline.id}`,
+            });
+          }
         }
       }, this);
       const permissionList = [
@@ -264,10 +278,10 @@
           text: 'Aluno',
         }, {
           value: 30,
-          text: 'Professor',
+          text: 'Moderador',
         }, {
           value: 50,
-          text: 'Moderador',
+          text: 'Professor',
         }, {
           value: 100,
           text: 'Administrador',
@@ -282,7 +296,8 @@
       DisciplineStore.on('fail', (err) => {
         if (err.status === 404) {
           this.exists = false;
-        } else if (err.responseJSON.message === 'Senha inválida') {
+          Toastr.warning(err.responseJSON.message);
+        } else {
           Toastr.warning(err.responseJSON.message);
         }
       }, this);
@@ -298,6 +313,52 @@
           data: this.$router.currentRoute.params.id,
         });
       }, this);
+      DisciplineStore.on('getDiscipline', (data) => {
+        this.discipline = data;
+      }, this);
+      DisciplineStore.on('addTopic', () => {
+        this.newTopic = false;
+        this.label = '';
+        this.content = '';
+        this.selecTypes = null;
+        this.dateVisibleTo = '';
+        this.dateAvailableTo = '';
+        this.description = '';
+        this.getTopics();
+        this.update = ' ';
+      }, this);
+      DisciplineStore.on('deleteTopic', () => {
+        this.remTopic = false;
+        this.topicToRemove = '';
+        this.getTopics();
+        this.update = ' ';
+      }, this);
+      DisciplineStore.on('addTopicItem', () => {
+        this.newTopicItem = false;
+        this.getTopics();
+        this.update = ' ';
+      }, this);
+      DisciplineStore.on('listTopics', (data) => {
+        this.topics = [];
+        if (data.data.length > 0) {
+          for (let i = 0; i < data.data.length; i += 1) {
+            if (!data.data[i].deleted) {
+              this.topics.push(data.data[i]);
+            }
+          }
+        }
+      }, this);
+      DisciplineStore.on('listTopicItems', (data) => {
+        this.topicItems = [];
+        if (data.data.length > 0) {
+          for (let i = 0; i < data.data.length; i += 1) {
+            if (!data.data[i].deleted) {
+              this.topicItems.push(data.data[i]);
+            }
+          }
+        }
+      }, this);
+      //
       DisciplineStore.on('getSubscription', (data) => {
         this.exists = true;
         if (typeof data === 'undefined') {
@@ -307,39 +368,18 @@
             action: DisciplineStore.ACTION_GET_DISCIPLINE,
             data: this.$router.currentRoute.params.id,
           });
+        } else if (this.accessLevel >= 30) {
+          this.discipline = data;
         } else {
           this.subscription = data;
-          console.log(data);
           this.discipline = data.discipline;
-          const usersPath = `/discipline/${data.discipline.id}/users`;
-          this.descDiscis.push({
-            title: 'Usuários inscritos',
-            href: usersPath,
-          });
-          this.disciplineRole =
-          this.accessLevel >= 30 ? this.accessLevel : this.subscription.role;
-          console.log(this.subscription);
-          this.getTopics();
+          if (this.accessLevel > this.subscription.role) {
+            this.disciplineRole = this.accessLevel;
+          } else {
+            this.disciplineRole = this.subscription.role;
+          }
         }
-      }, this);
-      DisciplineStore.on('getDiscipline', (data) => {
-        this.discipline = data;
-      }, this);
-      DisciplineStore.on('listTopics', (data) => {
-        console.log(data);
-        this.topics = data.data;
-      }, this);
-      DisciplineStore.on('listTopicItems', (data) => {
-        console.log(data);
-        this.topicItems = data.data;
-      }, this);
-      DisciplineStore.on('addTopic', (topic) => {
-        this.topics.push(topic);
-        this.newTopicTitle = 'Novo tópico';
-      }, this);
-      DisciplineStore.on('addTopicItem', (topicItem) => {
-        this.topicItems.push(topicItem);
-        this.newTopicTitle = 'Novo item';
+        this.getTopics();
       }, this);
     },
     beforeDestroy() {
@@ -376,36 +416,46 @@
             title: this.newTopicTitle,
           },
         });
-        this.newTopic = !this.newTopic;
-        this.getTopics();
+      },
+      deleteTopic(event) {
+        event.preventDefault();
+        DisciplineStore.dispatch({
+          action: DisciplineStore.ACTION_DELETE_TOPIC,
+          data: this.topicId,
+        });
       },
       saveNewTopicItem(event) {
         event.preventDefault();
-        DisciplineStore.dispatch({
-          action: DisciplineStore.ACTION_ADD_TOPIC_ITEM,
-          data: {
-            id: this.topicId,
-            topicItem: {
-              label: this.label,
-              type: this.selecTypes,
-              description: this.description,
-              content: this.content,
-              dateVisibleTo: this.dateVisibleTo,
-              dateAvailableTo: this.dateAvailableTo,
+        if (this.topicId !== null && this.label !== ''
+          && this.description !== ''
+          && this.content !== '' && this.dateVisibleTo !== ''
+          && this.dateAvailableTo !== '') {
+          DisciplineStore.dispatch({
+            action: DisciplineStore.ACTION_ADD_TOPIC_ITEM,
+            data: {
+              id: this.topicId,
+              topicItem: {
+                label: this.label,
+                type: this.selecTypes,
+                description: this.description,
+                content: this.content,
+                dateVisibleTo: this.dateVisibleTo,
+                dateAvailableTo: this.dateAvailableTo,
+              },
             },
-          },
-        });
-        this.newTopicItem = !this.newTopicItem;
-        this.getTopics();
+          });
+        } else {
+          Toastr.warning('Você deve completar todos os campos');
+        }
       },
       getTopics() {
         DisciplineStore.dispatch({
           action: DisciplineStore.ACTION_LIST_TOPICS,
-          data: this.discipline.id,
+          data: this.$router.currentRoute.params.id,
         });
         DisciplineStore.dispatch({
           action: DisciplineStore.ACTION_LIST_TOPIC_ITEMS,
-          data: this.discipline.id,
+          data: this.$router.currentRoute.params.id,
         });
       },
     },
@@ -421,4 +471,5 @@
     color: #455A64;
     text-decoration: none;
   }
+
 </style>

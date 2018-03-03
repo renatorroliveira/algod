@@ -13,7 +13,7 @@
         </p>
       </v-flex>
       <v-flex xs4 offset-xs4>
-        <v-btn color="primary" dark @click.stop="dialog = true">Pesquisar disciplinas</v-btn> <v-spacer class="mb-4"></v-spacer>
+        <v-btn v-if="accessLevel < 30" color="primary" dark @click.stop="dialog = true">Pesquisar disciplinas</v-btn> <v-spacer class="mb-4"></v-spacer>
           <v-card v-for="(discipline, i) in disciplines" :key="discipline.id" class="text-xs-center">
             <!-- <v-card-media
               v-if="discipline.discipline.img != null"

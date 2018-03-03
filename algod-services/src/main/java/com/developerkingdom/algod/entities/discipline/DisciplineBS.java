@@ -89,7 +89,6 @@ public class DisciplineBS extends HibernateBusiness {
 	public DisciplineUser editUser(User user, Discipline discipline, DisciplineUser disciplineUser) {
 		if (user.getAccessLevel() >= AccessLevels.MANAGER.getLevel()) {
 			
-			disciplineUser.setRole(disciplineUser.getRole());
 			this.dao.persist(disciplineUser);
 			
 			return disciplineUser;
@@ -148,7 +147,6 @@ public class DisciplineBS extends HibernateBusiness {
 	}
 	
 	public TopicItem newTopicItem(Topic topic, TopicItem topicItem) {
-		
 		topicItem.setId(null);
 		topicItem.setTopic(topic);
 		this.dao.persist(topicItem);
@@ -156,17 +154,22 @@ public class DisciplineBS extends HibernateBusiness {
 		return topicItem;
 	}
 	
-	public void remTopic(long id) {
+	public Topic remTopic(long id) {
 		Topic topic = this.dao.exists(id, Topic.class);
 		if (topic != null) {
 			Criteria criteria = this.dao.newCriteria(TopicItem.class)
 					.add(Restrictions.eq("topic", topic));
 			List<TopicItem> topicItems = (List<TopicItem>) this.dao.findByCriteria(criteria, TopicItem.class);
 			for (int i = 0; i < topicItems.size(); i++) {
-				this.dao.delete(topicItems.get(i));
+				TopicItem topicItem = topicItems.get(i);
+				topicItem.setDeleted(true);
+				this.dao.persist(topicItem);
 			}
-			this.dao.delete(topic);
+			topic.setDeleted(true);
+			this.dao.persist(topic);
+			return topic;
 		}
+		return null;
 		
 	}
 	
@@ -178,10 +181,7 @@ public class DisciplineBS extends HibernateBusiness {
 	}
 	
 	public List<TopicItem> listTopicItems(Discipline discipline) {
-		Criteria crit = this.dao.newCriteria(Topic.class)
-				.add(Restrictions.eq("discipline", discipline));
-		List<Topic> topics = (List<Topic>) this.dao.findByCriteria(crit, Topic.class);
-		
+		List<Topic> topics = this.listTopics(discipline);
 		LinkedList<TopicItem> list = new LinkedList<TopicItem>();
 		
 		for (int i = 0; i < topics.size(); i++) {
@@ -190,16 +190,14 @@ public class DisciplineBS extends HibernateBusiness {
 					.add(Restrictions.eq("visible", true))
 					.add(Restrictions.eq("topic", topics.get(i)))
 					.addOrder(Order.asc("topic.id"));
-			List<TopicItem> topicItem = (List<TopicItem>) this.dao.findByCriteria(criteria, TopicItem.class);
-			if (topicItem != null) {
-				for (int j = 0; j < topicItem.size(); j++) {
-					list.add(topicItem.get(j));
+			List<TopicItem> topicItems = (List<TopicItem>) this.dao.findByCriteria(criteria, TopicItem.class);
+			if (topicItems != null) {
+				for (int j = 0; j < topicItems.size(); j++) {
+					list.add(topicItems.get(j));
 				}
-				
 			}
 		}
 		
 		return list;
-		
 	}
 }

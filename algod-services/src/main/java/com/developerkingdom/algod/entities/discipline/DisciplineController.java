@@ -43,7 +43,7 @@ public class DisciplineController extends UserControlAbstractController {
 	
 	@Get("/list")
 	@NoCache
-	public void list() {
+	public void listSubscribedDisciplines() {
 		try {
 			List<DisciplineUser> disciplineList = this.bs.list(this.userSession.getUser());
 			this.success(disciplineList, (long) disciplineList.size());
@@ -102,7 +102,11 @@ public class DisciplineController extends UserControlAbstractController {
 				if (discipline == null)
 					this.result.notFound();
 				else {
-					this.success(this.bs.isSubscribed(discipline, this.userSession.getUser()));
+					if (this.userSession.getAccessLevel() >= 30) {
+						this.success(discipline);
+					} else {
+						this.success(this.bs.isSubscribed(discipline, this.userSession.getUser()));
+					}
 				}
 			} else {
 				this.fail("User or discipline null");
@@ -193,6 +197,7 @@ public class DisciplineController extends UserControlAbstractController {
 	
 	@Post("/topic/add/{id}")
 	@Consumes
+	@NoCache
 	public void addTopic(Long id, String title) {
 		try {
 			if (id == null) {
@@ -215,16 +220,17 @@ public class DisciplineController extends UserControlAbstractController {
 		}
 	}
 	
-	@Post("/topic/rem/{id}")
+	@Post("/topic/del/{id}")
 	@Consumes
+	@NoCache
 	public void remTopic(Long id) {
 		try {
 			if (id == null) {
 				this.result.notFound();
 				return;
 			}
-			Discipline discipline = this.bs.exists(id, Discipline.class);
-			if (discipline != null) {
+			Topic topic = this.bs.exists(id, Topic.class);
+			if (topic != null) {
 				this.bs.remTopic(id);
 				this.success();
 			} else {
@@ -238,12 +244,9 @@ public class DisciplineController extends UserControlAbstractController {
 	
 	@Post("/topic/{id}/add/item")
 	@Consumes
-	public void addTopicItem(Long id, TopicItem topicItem) {
+	@NoCache
+	public void newTopicItem(Long id, TopicItem topicItem) {
 		try {
-			if (id == null) {
-				this.result.notFound();
-				return;
-			}
 			Topic topic = this.bs.exists(id, Topic.class);
 			if (topic != null) {
 				topicItem = this.bs.newTopicItem(topic, topicItem);
@@ -258,6 +261,7 @@ public class DisciplineController extends UserControlAbstractController {
 	}
 	
 	@Get("/topics/{id}")
+	@NoCache
 	public void listTopics(long id) {
 		try {
 			Discipline discipline = this.bs.exists(id, Discipline.class);
@@ -274,6 +278,7 @@ public class DisciplineController extends UserControlAbstractController {
 	}
 	
 	@Get("/topics/{id}/items")
+	@NoCache
 	public void listTopicItems(long id) {
 		try {
 			Discipline discipline = this.bs.exists(id, Discipline.class);

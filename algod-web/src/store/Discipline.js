@@ -8,7 +8,7 @@ const DisciplineModel = Fluxbone.Model.extend({
 
 const DisciplineStore = Fluxbone.Store.extend({
   ACTION_CREATE: 'create',
-  ACTION_LIST: 'list',
+  ACTION_LIST_SUBSCRIBED_DISCIPLINES: 'listSubscribedDisciplines',
   ACTION_LIST_ALL: 'listAll',
   ACTION_LIST_CATEGORYS: 'listCategorys',
   ACTION_DELETE: 'delete',
@@ -20,6 +20,7 @@ const DisciplineStore = Fluxbone.Store.extend({
   ACTION_LIST_TOPICS: 'listTopics',
   ACTION_LIST_TOPIC_ITEMS: 'listTopicItems',
   ACTION_ADD_TOPIC: 'addTopic',
+  ACTION_DELETE_TOPIC: 'deleteTopic',
   ACTION_ADD_TOPIC_ITEM: 'addTopicItem',
 
   model: DisciplineModel,
@@ -41,7 +42,7 @@ const DisciplineStore = Fluxbone.Store.extend({
     });
   },
 
-  list() {
+  listSubscribedDisciplines() {
     const me = this;
     $.ajax({
       method: 'GET',
@@ -212,7 +213,6 @@ const DisciplineStore = Fluxbone.Store.extend({
 
   addTopic(params) {
     const me = this;
-    console.log(params);
     $.ajax({
       url: `${me.url}/topic/add/${params.discipline.id}`,
       method: 'POST',
@@ -233,10 +233,26 @@ const DisciplineStore = Fluxbone.Store.extend({
     });
   },
 
+  deleteTopic(params) {
+    console.log(`params: ${params}`);
+    const me = this;
+    $.ajax({
+      url: `${me.url}/topic/del/${params}`,
+      method: 'POST',
+      dataType: 'json',
+      success(data) {
+        me.trigger('deleteTopic', data);
+      },
+      error(opts) {
+        me.trigger('fail', opts);
+      },
+    });
+  },
+
   addTopicItem(params) {
     const me = this;
+    console.log('params form topic item');
     console.log(params);
-    console.log('kkkkkkkk2');
     $.ajax({
       url: `${me.url}/topic/${params.id}/add/item`,
       method: 'POST',

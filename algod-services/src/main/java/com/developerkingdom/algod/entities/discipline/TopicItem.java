@@ -2,10 +2,13 @@ package com.developerkingdom.algod.entities.discipline;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import br.com.caelum.vraptor.boilerplate.SimpleLogicalDeletableEntity;
 
@@ -26,12 +29,20 @@ public class TopicItem extends SimpleLogicalDeletableEntity {
 	
 	private String description;
 	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable=false)
 	private Date dateVisibleFrom = new Date();
 	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable=false)
 	private Date dateVisibleTo;
 	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable=false)
 	private Date dateAvailableFrom = new Date();
 	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable=false)
 	private Date dateAvailableTo;
 	
 	private boolean visible = true;
