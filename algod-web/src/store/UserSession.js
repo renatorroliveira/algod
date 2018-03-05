@@ -12,6 +12,7 @@ const UserSession = Backbone.Model.extend({
   ACTION_NEW_PASSWORD: 'newPassword',
   ACTION_CHANGE_PIC: 'changePicture',
   ACTION_GET_USER: 'getUser',
+  ACTION_LIST_USERS_BY_NAME: 'paginatedList',
 
   url: `${Config.baseUrl}/v1/user`,
   dispatch(payload) {
@@ -275,6 +276,12 @@ const UserSession = Backbone.Model.extend({
       },
     });
   },
+
+  paginatedList(name) {
+    console.log(name);
+    //
+  },
+
 });
 
 export default new UserSession();

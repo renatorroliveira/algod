@@ -19,6 +19,7 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.boilerplate.NoCache;
+import br.com.caelum.vraptor.boilerplate.bean.PaginatedList;
 import br.com.caelum.vraptor.boilerplate.util.GeneralUtils;
 
 /**
@@ -205,6 +206,17 @@ public class UserController extends UserControlAbstractController {
 		try {
 			List<User> userList = this.bs.listUsers();
 			this.success(userList, (long) userList.size());
+		} catch (Throwable e) {
+			this.fail(e.getMessage());
+		}
+	}
+	
+	@Get("/paginatedList")
+	@NoCache
+	public void paginatedList(String name) {
+		try {
+			PaginatedList<User> list = this.bs.paginatedList(name);
+			this.success(list);
 		} catch (Throwable e) {
 			this.fail(e.getMessage());
 		}

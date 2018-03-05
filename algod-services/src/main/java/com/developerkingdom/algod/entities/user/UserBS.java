@@ -19,6 +19,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
+import com.developerkingdom.algod.entities.discipline.Discipline;
 import com.developerkingdom.algod.entities.user.auth.UserAccessToken;
 import com.developerkingdom.algod.entities.user.auth.UserSession;
 
@@ -245,6 +246,27 @@ public class UserBS extends HibernateBusiness {
 		Criteria counting = this.dao.newCriteria(User.class).setProjection(Projections.countDistinct("id"));
 		results.setList(this.dao.findByCriteria(criteria, User.class));
 		results.setTotal((Long) counting.uniqueResult());
+		return results;
+	}
+	
+	public PaginatedList<User> paginatedList(String name) {
+		PaginatedList<User> results = new PaginatedList<User>();
+		Criteria criteria = this.dao.newCriteria(User.class);
+		criteria.add(Restrictions.eq("deleted", false));
+		
+		Criteria count = this.dao.newCriteria(User.class)
+				.add(Restrictions.eq("deleted", false))
+				.setProjection(Projections.countDistinct("id"));
+
+		if (name != null && !name.isEmpty()) {
+			Disjunction or = Restrictions.disjunction();
+			or.add(Restrictions.like("name", "%" + name + "%").ignoreCase());
+			criteria.add(or);
+			count.add(or);
+		}
+
+		results.setList(this.dao.findByCriteria(criteria, User.class));
+		results.setTotal((long) count.uniqueResult());
 		return results;
 	}
 	

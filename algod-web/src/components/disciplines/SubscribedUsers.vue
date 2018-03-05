@@ -12,18 +12,24 @@
       <v-flex xs3>
         <v-card>
           <v-card-text>
-            dsa
+            <v-list>
+              <v-list-tile v-on:click="addUser = !addUser">
+                <v-list-tile-title>
+                  Inscrever usuários
+                </v-list-tile-title>
+              </v-list-tile>
+            </v-list>
           </v-card-text>
         </v-card>
       </v-flex>
-      <v-flex xs6 v-if="subscribedUsers.length > 0">
+      <v-flex xs9 v-if="subscribedUsers.length > 0">
         <v-card v-for="user in subscribedUsers" :key="user.id">
           <v-card-text>
             {{user.name}}
           </v-card-text>
         </v-card>
       </v-flex>
-      <v-flex xs6 v-else>
+      <v-flex xs9 v-else>
         <v-card>
           <v-card-text>
             <h5>A disciplina {{discipline.name}} não possui usuários cadastrados</h5>
@@ -33,6 +39,28 @@
       <v-flex xs3>
       </v-flex>
     </v-layout>
+
+    <v-dialog v-model="addUser">
+      <v-card>
+        <v-card-title>
+          Pesquise o usuário que você deseja cadastrar
+          <v-flex xs12>
+            <v-text-field
+              label="Nome do aluno"
+              v-model="studentsName"
+              prepend-icon="search"
+              persistent-hint
+              autofocus
+            ></v-text-field>
+          </v-flex>
+          <v-flex xs6 offset-xs3><v-btn v-on:click="searchUser()">Pesquisar</v-btn></v-flex>
+        </v-card-title>
+        <v-card-text>
+
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
   </v-container>
 </template>
 
@@ -45,6 +73,7 @@ export default {
     return {
       discipline: [],
       subscribedUsers: [],
+      addUser: false,
     };
   },
   created() {
@@ -67,7 +96,9 @@ export default {
     DisciplineStore.off(null, null, this);
   },
   methods: {
-    //
+    addNewUser(event) {
+      event.preventDefault();
+    },
   },
 };
 </script>
