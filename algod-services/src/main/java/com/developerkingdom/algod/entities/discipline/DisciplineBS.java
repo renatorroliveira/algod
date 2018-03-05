@@ -200,4 +200,11 @@ public class DisciplineBS extends HibernateBusiness {
 		
 		return list;
 	}
+	
+	public List<DisciplineUser> listSubscribedUsers(Discipline discipline) {
+		Criteria criteria = this.dao.newCriteria(DisciplineUser.class)
+				.add(Restrictions.eq("discipline", discipline))
+				.add(Restrictions.eq("deleted", false));
+		return (List<DisciplineUser>) this.dao.findByCriteria(criteria, DisciplineUser.class);
+	}
 }

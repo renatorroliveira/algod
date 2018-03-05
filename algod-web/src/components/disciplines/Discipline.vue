@@ -51,6 +51,11 @@
                 <v-list-tile-title>Novo tópico</v-list-tile-title>
               </v-list-tile-content>
             </v-list-tile>
+            <v-list-tile :to="`/discipline/${discipline.id}/users`">
+              <v-list-tile-content>
+                <v-list-tile-title>Usuários inscritos</v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
           </v-list-group>
         </v-list>
       </v-flex>

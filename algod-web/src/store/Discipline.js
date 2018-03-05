@@ -22,6 +22,7 @@ const DisciplineStore = Fluxbone.Store.extend({
   ACTION_ADD_TOPIC: 'addTopic',
   ACTION_DELETE_TOPIC: 'deleteTopic',
   ACTION_ADD_TOPIC_ITEM: 'addTopicItem',
+  ACTION_GET_SUBSCRIBED_USERS: 'subscribedUsers',
 
   model: DisciplineModel,
   url: `${Config.baseUrl}/v1/discipline`,
@@ -104,7 +105,6 @@ const DisciplineStore = Fluxbone.Store.extend({
   },
 
   getDiscipline(id) {
-    console.log(`id: ${id}`);
     const me = this;
     $.ajax({
       method: 'GET',
@@ -234,7 +234,6 @@ const DisciplineStore = Fluxbone.Store.extend({
   },
 
   deleteTopic(params) {
-    console.log(`params: ${params}`);
     const me = this;
     $.ajax({
       url: `${me.url}/topic/del/${params}`,
@@ -251,8 +250,6 @@ const DisciplineStore = Fluxbone.Store.extend({
 
   addTopicItem(params) {
     const me = this;
-    console.log('params form topic item');
-    console.log(params);
     $.ajax({
       url: `${me.url}/topic/${params.id}/add/item`,
       method: 'POST',
@@ -262,6 +259,21 @@ const DisciplineStore = Fluxbone.Store.extend({
       }),
       success(data) {
         me.trigger('addTopicItem', data);
+      },
+      error(opts) {
+        me.trigger('fail', opts);
+      },
+    });
+  },
+
+  subscribedUsers(params) {
+    const me = this;
+    $.ajax({
+      url: `${me.url}/${params}/users`,
+      method: 'GET',
+      dataType: 'json',
+      success(data) {
+        me.trigger('subscribedUsers', data);
       },
       error(opts) {
         me.trigger('fail', opts);

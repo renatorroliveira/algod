@@ -304,4 +304,19 @@ public class DisciplineController extends UserControlAbstractController {
 			this.fail(e.getMessage());
 		}
 	}
+	
+	@Get("/{id}/users")
+	public void subscribedUsers(long id) {
+		try {
+			Discipline discipline = this.bs.exists(id, Discipline.class);
+			if (discipline != null) {
+				List<DisciplineUser> list = this.bs.listSubscribedUsers(discipline);
+				this.success(list, (long) list.size());
+			} else {
+				this.result.notFound();
+			}
+		} catch (Throwable e) {
+			this.fail(e.getMessage());
+		}
+	}
 }

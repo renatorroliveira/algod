@@ -12,7 +12,7 @@ import ListInstitutions from '@/components/institution/ListInstitutions';
 import ListDisciplines from '@/components/disciplines/ListDisciplines';
 import NewDiscipline from '@/components/disciplines/AddDiscipline';
 import Discipline from '@/components/disciplines/Discipline';
-import DisciplineUsers from '@/components/disciplines/DisciplineUsers';
+import DisciplineUsers from '@/components/disciplines/SubscribedUsers';
 
 import Login from '@/components/auth/Login';
 import Register from '@/components/auth/Register';
