@@ -277,9 +277,19 @@ const UserSession = Backbone.Model.extend({
     });
   },
 
-  paginatedList(name) {
-    console.log(name);
-    //
+  paginatedList(terms) {
+    const me = this;
+    $.ajax({
+      url: `${me.url}/paginatedList/${terms}`,
+      method: 'GET',
+      dataType: 'json',
+      success(data) {
+        me.trigger('paginatedList', data);
+      },
+      error(opts) {
+        me.handleRequestErrors([], opts);
+      },
+    });
   },
 
 });

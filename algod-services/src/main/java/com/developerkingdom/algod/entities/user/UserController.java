@@ -211,11 +211,11 @@ public class UserController extends UserControlAbstractController {
 		}
 	}
 	
-	@Get("/paginatedList")
+	@Get("/paginatedList/{terms}")
 	@NoCache
-	public void paginatedList(String name) {
+	public void paginatedList(String terms) {
 		try {
-			PaginatedList<User> list = this.bs.paginatedList(name);
+			PaginatedList<User> list = this.bs.paginatedList(terms);
 			this.success(list);
 		} catch (Throwable e) {
 			this.fail(e.getMessage());

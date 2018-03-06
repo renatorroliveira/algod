@@ -40,23 +40,41 @@
       </v-flex>
     </v-layout>
 
-    <v-dialog v-model="addUser">
+    <v-dialog
+      v-model="addUser"
+      fullscreen
+      transition="dialog-bottom-transition"
+      :overlay="false"
+      scrollable>
       <v-card>
-        <v-card-title>
-          Pesquise o usuário que você deseja cadastrar
-          <v-flex xs12>
-            <v-text-field
-              label="Nome do aluno"
-              v-model="studentsName"
-              prepend-icon="search"
-              persistent-hint
-              autofocus
-            ></v-text-field>
-          </v-flex>
-          <v-flex xs6 offset-xs3><v-btn v-on:click="searchUser()">Pesquisar</v-btn></v-flex>
-        </v-card-title>
         <v-card-text>
-
+          <v-flex xs6 offset-xs3>
+            <v-card>
+              <v-card-text>
+                <form v-on:submit="searchUser($event)">
+                  <v-text-field
+                    label="Nome do aluno"
+                    v-model="terms"
+                    prepend-icon="search"
+                    persistent-hint
+                    autofocus
+                  ></v-text-field>
+                  <v-btn>Pesquisar</v-btn>
+                </form>
+              </v-card-text>
+            </v-card>
+          </v-flex><v-spacer class="mb-3"></v-spacer>
+          <v-flex xs6 offset-xs3 v-for="user in users" :key="user.id">
+            <v-card>
+              <v-card-text>
+                <h5>{{user.name}}</h5>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer class="mb-3"></v-spacer>
+                <v-btn v-on:click="">Inscrever na disciplina</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-flex>
         </v-card-text>
       </v-card>
     </v-dialog>
@@ -66,6 +84,7 @@
 
 <script>
 import DisciplineStore from '@/store/Discipline';
+import UserSession from '@/store/UserSession';
 
 export default {
   name: 'Subscribed-Users',
@@ -74,6 +93,8 @@ export default {
       discipline: [],
       subscribedUsers: [],
       addUser: false,
+      terms: '',
+      users: [],
     };
   },
   created() {
@@ -91,13 +112,24 @@ export default {
     DisciplineStore.on('subscribedUsers', (data) => {
       this.subscribedUsers = data;
     }, this);
+    UserSession.on('paginatedList', (data) => {
+      this.users = data.data;
+    }, this);
   },
   beforeDestroy() {
     DisciplineStore.off(null, null, this);
+    UserSession.off(null, null, this);
   },
   methods: {
     addNewUser(event) {
       event.preventDefault();
+    },
+    searchUser(event) {
+      event.preventDefault();
+      UserSession.dispatch({
+        action: UserSession.ACTION_LIST_USERS_BY_NAME,
+        data: this.terms,
+      });
     },
   },
 };
