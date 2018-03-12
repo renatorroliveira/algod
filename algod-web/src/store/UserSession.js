@@ -278,12 +278,14 @@ const UserSession = Backbone.Model.extend({
   },
 
   paginatedList(terms) {
+    console.log('entrou');
     const me = this;
     $.ajax({
       url: `${me.url}/paginatedList/${terms}`,
       method: 'GET',
       dataType: 'json',
       success(data) {
+        console.log(data);
         me.trigger('paginatedList', data);
       },
       error(opts) {

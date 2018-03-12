@@ -207,4 +207,52 @@ public class DisciplineBS extends HibernateBusiness {
 				.add(Restrictions.eq("deleted", false));
 		return (List<DisciplineUser>) this.dao.findByCriteria(criteria, DisciplineUser.class);
 	}
+	
+	public DisciplineUser subscribeUser(Discipline discipline, User user) {
+		Criteria criteria = this.dao.newCriteria(DisciplineUser.class)
+				.add(Restrictions.eq("discipline", discipline))
+				.add(Restrictions.eq("user", user))
+				.add(Restrictions.eq("deleted", true));
+		DisciplineUser discUser = (DisciplineUser) criteria.uniqueResult();
+		if (discUser == null) {
+			DisciplineUser disciplineUser = new DisciplineUser();
+			disciplineUser.setUser(user);
+			disciplineUser.setDiscipline(discipline);
+			disciplineUser.setRole(AccessLevels.AUTHENTICATED.getLevel());
+			this.dao.persist(disciplineUser);
+			return disciplineUser;
+		} else {
+			discUser.setDeleted(false);
+			this.dao.persist(discUser);
+			return discUser;
+		}
+	}
+	
+	public DisciplineUser updateUserRole(Discipline discipline, User user, int newRole) {
+		Criteria criteria = this.dao.newCriteria(DisciplineUser.class)
+				.add(Restrictions.eq("discipline", discipline))
+				.add(Restrictions.eq("user", user))
+				.add(Restrictions.eq("deleted", false));
+		DisciplineUser discUser = (DisciplineUser) criteria.uniqueResult();
+		if (discUser != null) {
+			discUser.setRole(newRole);
+			this.persist(discUser);
+			return discUser;
+		}
+		return null;
+	}
+	
+	public DisciplineUser unsubscribeUser(Discipline discipline, User user) {
+		Criteria criteria = this.dao.newCriteria(DisciplineUser.class)
+				.add(Restrictions.eq("discipline", discipline))
+				.add(Restrictions.eq("deleted", false))
+				.add(Restrictions.eq("user", user));
+		DisciplineUser discUser = (DisciplineUser) criteria.uniqueResult();
+		if (discUser != null) {
+			discUser.setDeleted(true);
+			this.dao.persist(discUser);
+			return discUser;
+		}
+		return null;
+	}
 }

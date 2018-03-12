@@ -21,12 +21,22 @@
                 <v-icon>keyboard_arrow_down</v-icon>
               </v-list-tile-action>
             </v-list-tile>
-            <v-list-tile v-for="(item, i) in items" :key="item.id" :to="item.href">
+            <v-list-tile v-for="(disciplina, i) in items" :key="disciplina.id" :to="disciplina.href">
               <v-list-tile-content>
-                <v-list-tile-title>{{item.title}}</v-list-tile-title>
+                <v-list-tile-title>{{disciplina.title}}</v-list-tile-title>
               </v-list-tile-content>
             </v-list-tile>
           </v-list-group>
+        </v-list>
+        <v-spacer v-if="accessLevel < 30" class="mb-3"></v-spacer>
+        <v-list v-if="accessLevel < 30">
+          <v-list-tile v-on:click="doUnsubscribe($event)">
+            <v-list-tile-content>
+              <v-list-tile-title>
+                Excluir inscrição
+              </v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
         </v-list>
 
         <v-spacer v-if="items.length > 0" class="mb-3"></v-spacer>
@@ -37,26 +47,16 @@
               <v-list-tile-title><strong>Administração</strong></v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
-          <v-list-group no-action>
-            <v-list-tile slot="item">
-              <v-list-tile-content>
-                <v-list-tile-title>{{ discipline.name }}</v-list-tile-title>
-              </v-list-tile-content>
-              <v-list-tile-action>
-                <v-icon>keyboard_arrow_down</v-icon>
-              </v-list-tile-action>
-            </v-list-tile>
-            <v-list-tile @click="newTopic = !newTopic">
-              <v-list-tile-content>
-                <v-list-tile-title>Novo tópico</v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
-            <v-list-tile :to="`/discipline/${discipline.id}/users`">
-              <v-list-tile-content>
-                <v-list-tile-title>Usuários inscritos</v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
-          </v-list-group>
+          <v-list-tile @click="newTopic = !newTopic">
+            <v-list-tile-content>
+              <v-list-tile-title>Novo tópico</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile :to="`/discipline/${discipline.id}/users`">
+            <v-list-tile-content>
+              <v-list-tile-title>Usuários inscritos</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
         </v-list>
       </v-flex>
 
@@ -102,7 +102,7 @@
         <v-card style="min-height:200px;">
           <v-card-text>
             <h5>A disciplina não possui nenhum tópico criado</h5>
-            <v-btn v-on:click="newTopic = !newTopic">Criar um tópico</v-btn>
+            <v-btn v-if="accessLevel >= 30 || disciplineRole >= 30" v-on:click="newTopic = !newTopic">Criar um tópico</v-btn>
           </v-card-text>
         </v-card>
       </v-flex>
@@ -169,21 +169,6 @@
         </v-card>
       </v-dialog>
 
-      <v-dialog class="text-xs-center" v-model="editUser" max-width="600px">
-        <v-card>
-          <v-card-title>kk</v-card-title>
-          <v-card-text>
-            <v-select
-              v-bind:items="permissions"
-              v-model="e1"
-              label="Permissões"
-              single-line
-              bottom
-            ></v-select>
-          </v-card-text>
-        </v-card>
-      </v-dialog>
-
       <v-dialog v-model="remTopic" max-width="500px">
         <v-card>
           <v-card-title>
@@ -205,7 +190,7 @@
           <v-card-text>
             <h4>{{discipline.name}}</h4>
             <v-text-field
-              v-if="discipline.accessKey !== null || discipline.accessKey !== ''"
+              v-if="discipline.accessKey.length > 0"
               label="Código de acesso"
               v-model="accessKey"
               autofocus>
@@ -231,7 +216,6 @@
         subscription: null,
         discipline: null,
         e1: null,
-        permissions: [],
         accessKey: '',
         exists: false,
         topics: [],
@@ -277,27 +261,6 @@
           }
         }
       }, this);
-      const permissionList = [
-        {
-          value: 5,
-          text: 'Aluno',
-        }, {
-          value: 30,
-          text: 'Moderador',
-        }, {
-          value: 50,
-          text: 'Professor',
-        }, {
-          value: 100,
-          text: 'Administrador',
-        },
-      ];
-      for (let i = 0; i < permissionList.length; i += 1) {
-        this.permissions.push({
-          text: permissionList[i].text,
-          roleValue: permissionList[i].value,
-        });
-      }
       DisciplineStore.on('fail', (err) => {
         if (err.status === 404) {
           this.exists = false;
@@ -374,7 +337,8 @@
             data: this.$router.currentRoute.params.id,
           });
         } else if (this.accessLevel >= 30) {
-          this.discipline = data;
+          this.discipline = data.discipline;
+          this.disciplineRole = this.accessLevel;
         } else {
           this.subscription = data;
           this.discipline = data.discipline;
@@ -393,9 +357,9 @@
     methods: {
       doSubscribe(event) {
         event.preventDefault();
-        if (this.accessKey === '') {
+        if (this.accessKey === '' && this.discipline.accessKey.length > 0) {
           Toastr.warning('Você deve digitar a senha');
-        } else {
+        } else if (this.discipline.accessKey.length === 0) {
           DisciplineStore.dispatch({
             action: DisciplineStore.ACTION_SUBSCRIBE,
             data: {

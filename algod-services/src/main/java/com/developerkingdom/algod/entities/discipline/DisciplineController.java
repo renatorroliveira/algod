@@ -5,6 +5,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import com.developerkingdom.algod.entities.company.Institution;
+import com.developerkingdom.algod.entities.user.User;
 import com.developerkingdom.algod.entities.user.authz.AccessLevels;
 import com.developerkingdom.algod.entities.user.authz.Permissioned;
 import com.developerkingdom.algod.entities.user.authz.permission.ManageUsersPermission;
@@ -26,7 +27,7 @@ public class DisciplineController extends UserControlAbstractController {
 	@Post("/create")
 	@Consumes
 	@NoCache
-	@Permissioned(value = AccessLevels.SYSTEM_ADMIN, permissions = { ManageUsersPermission.class })
+	@Permissioned(value = AccessLevels.MANAGER, permissions = { ManageUsersPermission.class })
 	public void create(Discipline discipline, DisciplineCategory category, Institution institution) {
 		try {
 			if (discipline != null) {
@@ -79,7 +80,6 @@ public class DisciplineController extends UserControlAbstractController {
 	
 	@Post("/delete")
 	@Consumes
-	@Permissioned(value = AccessLevels.SYSTEM_ADMIN, permissions = { ManageUsersPermission.class } )
 	public void delete(Discipline discipline) {
 		try {
 			if (discipline != null) {
@@ -102,11 +102,7 @@ public class DisciplineController extends UserControlAbstractController {
 				if (discipline == null)
 					this.result.notFound();
 				else {
-					if (this.userSession.getAccessLevel() >= 30) {
-						this.success(discipline);
-					} else {
-						this.success(this.bs.isSubscribed(discipline, this.userSession.getUser()));
-					}
+					this.success(this.bs.isSubscribed(discipline, this.userSession.getUser()));
 				}
 			} else {
 				this.fail("User or discipline null");
@@ -315,6 +311,66 @@ public class DisciplineController extends UserControlAbstractController {
 			} else {
 				this.result.notFound();
 			}
+		} catch (Throwable e) {
+			this.fail(e.getMessage());
+		}
+	}
+	
+	@Post("/{id}/subscribeUser")
+	@NoCache
+	@Consumes
+	public void subscribeUser(long id, User user) {
+		try {
+			if (user == null)
+				this.result.notFound();
+			Discipline discipline = this.bs.exists(id, Discipline.class);
+			if (discipline == null)
+				this.result.notFound();
+			else {
+				DisciplineUser subscribed = this.bs.subscribeUser(discipline, user);
+				this.success(subscribed);
+			}
+			
+		} catch (Throwable e) {
+			this.fail(e.getMessage());
+		}
+	}
+	
+	@Post("/{id}/updateUserRole")
+	@NoCache
+	@Consumes
+	public void updateUser(long id, User user, int newRole) {
+		try {
+			if (user == null)
+				this.result.notFound();
+			Discipline discipline = this.bs.exists(id, Discipline.class);
+			if (discipline == null)
+				this.result.notFound();
+			else {
+				DisciplineUser updated = this.bs.updateUserRole(discipline, user, newRole);
+				this.success(updated);
+			}
+			
+		} catch (Throwable e) {
+			this.fail(e.getMessage());
+		}
+	}
+	
+	@Post("/{id}/unsubscribeUser")
+	@NoCache
+	@Consumes
+	public void unsubscribeUser(long id, User user) {
+		try {
+			Discipline discipline = this.bs.exists(id, Discipline.class);
+			if (discipline == null)
+				this.result.notFound();
+			if (user == null)
+				this.result.notFound();
+			else {
+				DisciplineUser unsub = this.bs.unsubscribeUser(discipline, user);
+				this.success(unsub);
+			}
+			
 		} catch (Throwable e) {
 			this.fail(e.getMessage());
 		}

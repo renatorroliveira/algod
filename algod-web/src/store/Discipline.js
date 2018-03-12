@@ -23,6 +23,9 @@ const DisciplineStore = Fluxbone.Store.extend({
   ACTION_DELETE_TOPIC: 'deleteTopic',
   ACTION_ADD_TOPIC_ITEM: 'addTopicItem',
   ACTION_GET_SUBSCRIBED_USERS: 'subscribedUsers',
+  ACTION_SUBSCRIBE_USER: 'subscribeUser',
+  ACTION_UPDATE_ROLE: 'updateUserRole',
+  ACTION_UNSUBSCRIBE_USER: 'unsubscribeUser',
 
   model: DisciplineModel,
   url: `${Config.baseUrl}/v1/discipline`,
@@ -50,7 +53,7 @@ const DisciplineStore = Fluxbone.Store.extend({
       url: `${me.url}/list`,
       dataType: 'json',
       success(data) {
-        me.trigger('list', data);
+        me.trigger('listSubscribedDisciplines', data);
       },
       error(opts) {
         me.trigger('fail', opts);
@@ -274,6 +277,61 @@ const DisciplineStore = Fluxbone.Store.extend({
       dataType: 'json',
       success(data) {
         me.trigger('subscribedUsers', data);
+      },
+      error(opts) {
+        me.trigger('fail', opts);
+      },
+    });
+  },
+
+  subscribeUser(params) {
+    const me = this;
+    $.ajax({
+      url: `${me.url}/${params.discipline.id}/subscribeUser`,
+      method: 'POST',
+      dataType: 'json',
+      data: JSON.stringify({
+        user: params.user,
+      }),
+      success(data) {
+        me.trigger('subscribeUser', data);
+      },
+      error(args) {
+        me.trigger('fail', args);
+      },
+    });
+  },
+
+  updateUserRole(params) {
+    const me = this;
+    $.ajax({
+      url: `${me.url}/${params.discipline.id}/updateUserRole`,
+      method: 'POST',
+      dataType: 'json',
+      data: JSON.stringify({
+        user: params.user,
+        newRole: params.newRole,
+      }),
+      success(data) {
+        me.trigger('updateUserRole', data);
+      },
+      error(args) {
+        me.trigger('fail', args);
+      },
+    });
+  },
+
+  unsubscribeUser(params) {
+    const me = this;
+    $.ajax({
+      url: `${me.url}/${params.discipline.id}/unsubscribeUser`,
+      method: 'POST',
+      dataType: 'json',
+      data: JSON.stringify({
+        user: params.user,
+      }),
+      success(data) {
+        me.trigger('unsubscribeUser', data);
       },
       error(opts) {
         me.trigger('fail', opts);

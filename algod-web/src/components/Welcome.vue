@@ -77,23 +77,14 @@
                   <span class="grey--text">{{discipline.shortName}}</span>
                 </v-flex>
               </v-card-title>
-              <v-card-title>
-                <v-text-field
-                  label="Código de acesso"
-                  v-model="accessKey"
-                  autofocus>
-                </v-text-field>
-              </v-card-title>
               <v-card-actions>
                 <v-flex xs12>
-                  <v-btn flat color="black" v-on:click="doSubscribe($event, discipline.id)">Inscrever-se</v-btn>
-                  <v-btn flat color="purple" :to="`/discipline/${discipline.id}`">Visitar</v-btn>
+                  <v-btn flat color="secondary" :to="`/discipline/${discipline.id}`">Visitar</v-btn>
                 </v-flex>
               </v-card-actions>
             </v-card>
           </v-flex>
         </v-card-text>
-        <div style="flex: 1 1 auto;"/>
       </v-card>
     </v-dialog>
   </v-container>
@@ -101,81 +92,64 @@
 </template>
 
 <script>
-import Toastr from 'toastr';
-import UserSession from '@/store/UserSession';
-import DisciplineStore from '@/store/Discipline';
+  import Toastr from 'toastr';
+  import UserSession from '@/store/UserSession';
+  import DisciplineStore from '@/store/Discipline';
 
-export default {
-  name: 'Welcome',
-  data: () => ({
-    show: false,
-    accessLevel: UserSession.get('accessLevel'),
-    disciplines: [],
-    terms: '',
-    resultSearch: [],
-    accessKey: '',
-    query: false,
-    dialog: false,
-  }),
-  mounted() {
-    const me = this;
-    DisciplineStore.dispatch({
-      action: DisciplineStore.ACTION_LIST,
-    });
-    DisciplineStore.on('list', (data) => {
-      console.log(data.data);
-      me.disciplines = data.data;
-    }, this);
-    DisciplineStore.on('doUnsubscribe', () => {
+  export default {
+    name: 'Welcome',
+    data: () => ({
+      show: false,
+      accessLevel: UserSession.get('accessLevel'),
+      disciplines: [],
+      terms: '',
+      resultSearch: [],
+      accessKey: '',
+      query: false,
+      dialog: false,
+    }),
+    mounted() {
+      const me = this;
       DisciplineStore.dispatch({
-        action: DisciplineStore.ACTION_LIST,
+        action: DisciplineStore.ACTION_LIST_SUBSCRIBED_DISCIPLINES,
       });
-    }, this);
-    DisciplineStore.on('doSubscribe', () => {
-      DisciplineStore.dispatch({
-        action: DisciplineStore.ACTION_LIST,
-      });
-    }, this);
-    DisciplineStore.on('search', (data) => {
-      console.log(data);
-      me.query = true;
-      me.resultSearch = data.data;
-    }, this);
-  },
-  methods: {
-    doSearch(event) {
-      event.preventDefault();
-      if (this.terms !== '') {
+      DisciplineStore.on('listSubscribedDisciplines', (data) => {
+        console.log(data.data);
+        me.disciplines = data.data;
+      }, this);
+      DisciplineStore.on('doUnsubscribe', () => {
         DisciplineStore.dispatch({
-          action: DisciplineStore.ACTION_SEARCH,
-          data: this.terms,
+          action: DisciplineStore.ACTION_LIST_SUBSCRIBED_DISCIPLINES,
         });
-      } else {
-        Toastr.warning('Insira algum texto');
-      }
+      }, this);
+      DisciplineStore.on('search', (data) => {
+        console.log(data);
+        me.query = true;
+        me.resultSearch = data.data;
+      }, this);
     },
-    doSubscribe(event, disciplineId) {
-      event.preventDefault();
-      DisciplineStore.dispatch({
-        action: DisciplineStore.ACTION_SUBSCRIBE,
-        data: {
-          id: disciplineId,
-          accessKey: this.accessKey,
-        },
-      });
-      this.accessKey = '';
-      this.dialog = false;
+    methods: {
+      doSearch(event) {
+        event.preventDefault();
+        if (this.terms !== '') {
+          DisciplineStore.dispatch({
+            action: DisciplineStore.ACTION_SEARCH,
+            data: this.terms,
+          });
+        } else {
+          Toastr.warning('Insira algum texto');
+        }
+      },
+      doUnsubscribe(event, discipline) {
+        event.preventDefault();
+        DisciplineStore.dispatch({
+          action: DisciplineStore.ACTION_UNSUBSCRIBE,
+          data: discipline,
+        });
+      },
     },
-    doUnsubscribe(event, discipline) {
-      event.preventDefault();
-      DisciplineStore.dispatch({
-        action: DisciplineStore.ACTION_UNSUBSCRIBE,
-        data: discipline,
-      });
+    beforeDestroy() {
+      DisciplineStore.off(null, null, this);
     },
-  },
-  beforeDestroy() {
-    DisciplineStore.off(null, null, this);
-  },
-};
+  };
 </script>
