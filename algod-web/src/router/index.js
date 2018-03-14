@@ -13,6 +13,7 @@ import ListDisciplines from '@/components/disciplines/ListDisciplines';
 import NewDiscipline from '@/components/disciplines/AddDiscipline';
 import Discipline from '@/components/disciplines/Discipline';
 import DisciplineUsers from '@/components/disciplines/SubscribedUsers';
+import Task from '@/components/disciplines/Task';
 
 import Login from '@/components/auth/Login';
 import Register from '@/components/auth/Register';
@@ -89,6 +90,10 @@ export default new Router({
       path: 'discipline/:id/users',
       name: 'Usuários inscritos',
       component: DisciplineUsers,
+    }, {
+      path: 'discipline/:id/task/:topicItemId',
+      name: 'Atividade',
+      component: Task,
     }],
   }],
 });
