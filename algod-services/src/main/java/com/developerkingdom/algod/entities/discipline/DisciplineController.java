@@ -375,4 +375,19 @@ public class DisciplineController extends UserControlAbstractController {
 			this.fail(e.getMessage());
 		}
 	}
+	
+	@Get("/topicItem/{id}")
+	@NoCache
+	@Consumes
+	public void getTopicById(long id) {
+		try {
+			TopicItem topicItem = this.bs.exists(id, TopicItem.class);
+			if (topicItem == null)
+				this.result.notFound();
+			else
+				this.success(topicItem);
+		} catch (Throwable e) {
+			this.fail(e.getMessage());
+		}
+	}
 }

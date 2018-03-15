@@ -51,6 +51,16 @@ public class TopicItem extends SimpleLogicalDeletableEntity {
 	
 	private boolean availableDateEnabled = true;
 	
+	private int contentType;
+	
+	public int getContentType() {
+		return contentType;
+	}
+
+	public void setContentType(int contentType) {
+		this.contentType = contentType;
+	}
+
 	public String getLabel() {
 		return label;
 	}

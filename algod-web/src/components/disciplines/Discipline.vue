@@ -130,12 +130,21 @@
                 label="Descrição"
                 v-model="description"
                 persistent-hint
+                multi-line
               ></v-text-field>
               <v-text-field
                 label="Conteúdo"
                 v-model="content"
+                v-if="selecTypes !== 'Task'"
                 persistent-hint
               ></v-text-field>
+              <v-select
+                v-bind:items="contentTypes"
+                v-model="contentType"
+                label="Tipo do conteúdo"
+                single-line
+                v-else
+              ></v-select>
               <v-text-field
                 label="Date available To"
                 v-model="dateAvailableTo"
@@ -228,7 +237,15 @@
           'Image',
           'Task',
         ],
+        contentTypes: [{
+          text: 'Upload',
+          id: 1,
+        }, {
+          text: 'Envio de texto',
+          id: 2,
+        }],
         items: [],
+        contentType: [],
         selecTypes: null,
         label: '',
         description: '',
@@ -397,7 +414,7 @@
         event.preventDefault();
         if (this.topicId !== null && this.label !== ''
           && this.description !== ''
-          && this.content !== '' && this.dateVisibleTo !== ''
+          && (this.content !== '' || !!this.contentType) && this.dateVisibleTo !== ''
           && this.dateAvailableTo !== '') {
           DisciplineStore.dispatch({
             action: DisciplineStore.ACTION_ADD_TOPIC_ITEM,
@@ -410,6 +427,7 @@
                 content: this.content,
                 dateVisibleTo: this.dateVisibleTo,
                 dateAvailableTo: this.dateAvailableTo,
+                contentType: this.contentType.id,
               },
             },
           });

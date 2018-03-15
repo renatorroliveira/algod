@@ -30,7 +30,7 @@
           </v-list-tile-content>
         </v-list-tile>
 
-        <v-list-group v-for="(item, i) in items" :key="i" v-if="item.access <= accessLevel">
+        <v-list-group v-for="(item, i) in items" :key="i" v-if="item.access <= user.accessLevel">
           <v-list-tile slot="item">
             <v-list-tile-avatar>
               <v-icon v-html="item.icon"></v-icon>
@@ -95,7 +95,6 @@
       return {
         title: 'Bem-vindo',
         loading: UserSession.get('loading'),
-        accessLevel: UserSession.get('accessLevel'),
         drawer: false,
         user: UserSession.get('user'),
         nickname: '',
@@ -115,19 +114,19 @@
 
         this.user = UserSession.get('user');
         if (this.user != null) {
-          this.accessLevel = this.user.accessLevel;
           this.nickname = this.user.nickname;
         }
 
+        console.log('User:');
         console.log(this.user);
-        const profilePath = `/user/profile/${this.user.nickname}`;
+        const me = this;
         this.items.push({
           icon: 'supervisor_account',
           title: 'Usuários',
           access: 0,
           children: [{
             title: 'Perfil',
-            href: profilePath,
+            href: `/user/profile/${me.user.nickname}`,
           }],
         }, {
           icon: 'settings',
