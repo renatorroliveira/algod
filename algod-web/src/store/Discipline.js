@@ -27,6 +27,7 @@ const DisciplineStore = Fluxbone.Store.extend({
   ACTION_UPDATE_ROLE: 'updateUserRole',
   ACTION_UNSUBSCRIBE_USER: 'unsubscribeUser',
   ACTION_GET_TOPIC_ITEM: 'getTopicItemById',
+  ACTION_UPLOAD: 'uploadFile',
 
   model: DisciplineModel,
   url: `${Config.baseUrl}/v1/discipline`,
@@ -352,6 +353,35 @@ const DisciplineStore = Fluxbone.Store.extend({
       error(args) {
         me.trigger('fail', args);
       },
+    });
+  },
+
+  uploadFile(file) {
+    const me = this;
+    $.ajax({
+      type: 'POST',
+      url: `${me.url}/upload`,
+      xhr() {
+        const myXhr = $.ajaxSettings.xhr();
+        if (myXhr.upload) {
+          myXhr.upload.addEventListener('progress', me.progressHandling, false);
+        }
+        return myXhr;
+      },
+      success(data) {
+        // your callback here
+        console.log(data);
+      },
+      error(error) {
+        // handle error
+        console.log(error);
+      },
+      async: true,
+      data: file,
+      cache: false,
+      contentType: false,
+      processData: false,
+      timeout: 60000,
     });
   },
 

@@ -15,7 +15,15 @@
             <p>{{topicItem.description}}</p>
             <v-spacer class="mb-3"></v-spacer>
             <div v-if="topicItem.contentType === 1">
-              //upload
+              <form id="upload-widget" method="post" action="/upload" class="dropzone">
+                <div class="fallback">
+                  <input name="file" type="file" />
+                </div>
+              </form>
+
+                <upload-button title="Escolher arquivo" :selectedCallback="fileSelected">
+              </upload-button>
+              <v-btn dark class="btn--dark-flat-focused jbtn-file"></v-btn>
             </div>
             <div v-else>
               <v-text-field
@@ -34,6 +42,7 @@
 
 <script>
   import DisciplineStore from '@/store/Discipline';
+  import UploadButton from './UploadButton';
 
   export default {
     data: () => ({
@@ -48,6 +57,18 @@
       DisciplineStore.on('getTopicItemById', (topicItem) => {
         this.topicItem = topicItem.data;
       }, this);
+    },
+    methods: {
+      fileSelected(e) {
+        console.log(e);
+        DisciplineStore.dispatch({
+          action: DisciplineStore.ACTION_UPLOAD,
+          data: e,
+        });
+      },
+    },
+    components: {
+      UploadButton,
     },
   };
 </script>

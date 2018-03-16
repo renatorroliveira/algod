@@ -1,5 +1,6 @@
 package com.developerkingdom.algod.entities.discipline;
 
+import java.io.File;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -18,6 +19,7 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.boilerplate.NoCache;
 import br.com.caelum.vraptor.boilerplate.bean.PaginatedList;
+import br.com.caelum.vraptor.observer.upload.UploadedFile;
 
 @Controller
 @Path("/api/v1/discipline")
@@ -389,5 +391,13 @@ public class DisciplineController extends UserControlAbstractController {
 		} catch (Throwable e) {
 			this.fail(e.getMessage());
 		}
+	}
+	
+	@Post("/upload")
+	public void uploadFile(UploadedFile file) {
+		String path = "c://Desktop/";
+		File savedPhoto = new File(path, file.getFileName());
+	    file.writeTo(savedPhoto);
+		LOGGER.info(file.getFileName());
 	}
 }
