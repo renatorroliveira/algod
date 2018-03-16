@@ -15,15 +15,8 @@
             <p>{{topicItem.description}}</p>
             <v-spacer class="mb-3"></v-spacer>
             <div v-if="topicItem.contentType === 1">
-              <form id="upload-widget" method="post" action="/upload" class="dropzone">
-                <div class="fallback">
-                  <input name="file" type="file" />
-                </div>
-              </form>
-
-                <upload-button title="Escolher arquivo" :selectedCallback="fileSelected">
+              <upload-button title="Escolher arquivo" :selectedCallback="fileSelected">
               </upload-button>
-              <v-btn dark class="btn--dark-flat-focused jbtn-file"></v-btn>
             </div>
             <div v-else>
               <v-text-field
