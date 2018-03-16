@@ -25,7 +25,7 @@ import br.com.caelum.vraptor.observer.upload.UploadedFile;
 @Path("/api/v1/discipline")
 public class DisciplineController extends UserControlAbstractController {
 	@Inject private DisciplineBS bs;
-	
+
 	@Post("/create")
 	@Consumes
 	@NoCache
@@ -43,7 +43,7 @@ public class DisciplineController extends UserControlAbstractController {
 			this.fail("[Error]: " + e.getMessage());
 		}
 	}
-	
+
 	@Get("/list")
 	@NoCache
 	public void listSubscribedDisciplines() {
@@ -55,7 +55,7 @@ public class DisciplineController extends UserControlAbstractController {
 			this.fail("[Error]: " + e.getMessage());
 		}
 	}
-	
+
 	@Get("/listAll")
 	@NoCache
 	public void listAll() {
@@ -67,7 +67,7 @@ public class DisciplineController extends UserControlAbstractController {
 			this.fail("[Error]: " + e.getMessage());
 		}
 	}
-	
+
 	@Get("/category/list")
 	@NoCache
 	public void listCategory() {
@@ -79,7 +79,7 @@ public class DisciplineController extends UserControlAbstractController {
 			this.fail("[Error]: " + e.getMessage());
 		}
 	}
-	
+
 	@Post("/delete")
 	@Consumes
 	public void delete(Discipline discipline) {
@@ -93,7 +93,7 @@ public class DisciplineController extends UserControlAbstractController {
 			this.fail("[Error]: " + e.getMessage());
 		}
 	}
-	
+
 	@Get("/{id}/subscription")
 	@NoCache
 	@Permissioned
@@ -114,7 +114,7 @@ public class DisciplineController extends UserControlAbstractController {
 			this.fail("[Error]: " + e.getMessage());
 		}
 	}
-	
+
 	@Post("/{id}/subscribe")
 	@NoCache
 	@Consumes
@@ -140,7 +140,7 @@ public class DisciplineController extends UserControlAbstractController {
 			this.fail("[Error]: " + e.getMessage());
 		}
 	}
-	
+
 	@Post("/unsubscribe")
 	@NoCache
 	@Consumes
@@ -155,7 +155,7 @@ public class DisciplineController extends UserControlAbstractController {
 			this.fail("[Error]: " + e.getMessage());
 		}
 	}
-	
+
 	@Get("/{id}")
 	@NoCache
 	@Permissioned
@@ -175,7 +175,7 @@ public class DisciplineController extends UserControlAbstractController {
 			this.fail("[Error]: " + e.getMessage());
 		}
 	}
-	
+
 	@Get("/search/{terms}")
 	public void search(String terms) {
 		try {
@@ -192,7 +192,7 @@ public class DisciplineController extends UserControlAbstractController {
 			this.fail(e.getMessage());
 		}
 	}
-	
+
 	@Post("/topic/add/{id}")
 	@Consumes
 	@NoCache
@@ -217,7 +217,7 @@ public class DisciplineController extends UserControlAbstractController {
 			this.fail(e.getMessage());
 		}
 	}
-	
+
 	@Post("/topic/del/{id}")
 	@Consumes
 	@NoCache
@@ -239,7 +239,7 @@ public class DisciplineController extends UserControlAbstractController {
 			this.fail(e.getMessage());
 		}
 	}
-	
+
 	@Post("/topic/{id}/add/item")
 	@Consumes
 	@NoCache
@@ -257,7 +257,7 @@ public class DisciplineController extends UserControlAbstractController {
 			this.fail(e.getMessage());
 		}
 	}
-	
+
 	@Get("/topics/{id}")
 	@NoCache
 	public void listTopics(long id) {
@@ -274,7 +274,7 @@ public class DisciplineController extends UserControlAbstractController {
 			this.fail(e.getMessage());
 		}
 	}
-	
+
 	@Get("/topics/{id}/items")
 	@NoCache
 	public void listTopicItems(long id) {
@@ -291,7 +291,7 @@ public class DisciplineController extends UserControlAbstractController {
 			this.fail(e.getMessage());
 		}
 	}
-	
+
 	@Post("/{id}/edit/disciplineUser")
 	public void editDisciplineUser(long id, DisciplineUser disciplineUser) {
 		try {
@@ -302,7 +302,7 @@ public class DisciplineController extends UserControlAbstractController {
 			this.fail(e.getMessage());
 		}
 	}
-	
+
 	@Get("/{id}/users")
 	public void subscribedUsers(long id) {
 		try {
@@ -317,7 +317,7 @@ public class DisciplineController extends UserControlAbstractController {
 			this.fail(e.getMessage());
 		}
 	}
-	
+
 	@Post("/{id}/subscribeUser")
 	@NoCache
 	@Consumes
@@ -332,12 +332,12 @@ public class DisciplineController extends UserControlAbstractController {
 				DisciplineUser subscribed = this.bs.subscribeUser(discipline, user);
 				this.success(subscribed);
 			}
-			
+
 		} catch (Throwable e) {
 			this.fail(e.getMessage());
 		}
 	}
-	
+
 	@Post("/{id}/updateUserRole")
 	@NoCache
 	@Consumes
@@ -352,12 +352,12 @@ public class DisciplineController extends UserControlAbstractController {
 				DisciplineUser updated = this.bs.updateUserRole(discipline, user, newRole);
 				this.success(updated);
 			}
-			
+
 		} catch (Throwable e) {
 			this.fail(e.getMessage());
 		}
 	}
-	
+
 	@Post("/{id}/unsubscribeUser")
 	@NoCache
 	@Consumes
@@ -372,12 +372,12 @@ public class DisciplineController extends UserControlAbstractController {
 				DisciplineUser unsub = this.bs.unsubscribeUser(discipline, user);
 				this.success(unsub);
 			}
-			
+
 		} catch (Throwable e) {
 			this.fail(e.getMessage());
 		}
 	}
-	
+
 	@Get("/topicItem/{id}")
 	@NoCache
 	@Consumes
@@ -392,12 +392,17 @@ public class DisciplineController extends UserControlAbstractController {
 			this.fail(e.getMessage());
 		}
 	}
-	
+
 	@Post("/upload")
 	public void uploadFile(UploadedFile file) {
-		String path = "c://Desktop/";
+		String path = "C:\\";
 		File savedPhoto = new File(path, file.getFileName());
-	    file.writeTo(savedPhoto);
-		LOGGER.info(file.getFileName());
+	    try {
+			file.writeTo(savedPhoto);
+			LOGGER.info(file.getFileName());
+		} catch(Exception e) {
+			LOGGER.errorf(e, "Erro: %s", e.getMessage());
+		}
+		this.success(true);
 	}
 }
