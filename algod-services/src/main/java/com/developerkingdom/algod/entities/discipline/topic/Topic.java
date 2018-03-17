@@ -1,4 +1,4 @@
-package com.developerkingdom.algod.entities.discipline;
+package com.developerkingdom.algod.entities.discipline.topic;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -6,6 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.developerkingdom.algod.entities.discipline.Discipline;
 
 import br.com.caelum.vraptor.boilerplate.SimpleLogicalDeletableEntity;
 

@@ -1,6 +1,5 @@
 package com.developerkingdom.algod.entities.discipline;
 
-import java.io.File;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -19,7 +18,6 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.boilerplate.NoCache;
 import br.com.caelum.vraptor.boilerplate.bean.PaginatedList;
-import br.com.caelum.vraptor.observer.upload.UploadedFile;
 
 @Controller
 @Path("/api/v1/discipline")
@@ -193,105 +191,6 @@ public class DisciplineController extends UserControlAbstractController {
 		}
 	}
 
-	@Post("/topic/add/{id}")
-	@Consumes
-	@NoCache
-	public void addTopic(Long id, String title) {
-		try {
-			if (id == null) {
-				this.result.notFound();
-				return;
-			}
-			Discipline discipline = this.bs.exists(id, Discipline.class);
-			if (discipline != null) {
-				Topic topic = new Topic();
-				topic.setDiscipline(discipline);
-				topic.setTitle(title);
-				this.bs.persist(topic);
-				this.success(topic);
-			} else {
-				this.result.notFound();
-			}
-		} catch (Throwable e) {
-			LOGGER.error(e);
-			this.fail(e.getMessage());
-		}
-	}
-
-	@Post("/topic/del/{id}")
-	@Consumes
-	@NoCache
-	public void remTopic(Long id) {
-		try {
-			if (id == null) {
-				this.result.notFound();
-				return;
-			}
-			Topic topic = this.bs.exists(id, Topic.class);
-			if (topic != null) {
-				this.bs.remTopic(id);
-				this.success();
-			} else {
-				this.result.notFound();
-			}
-		} catch (Throwable e) {
-			LOGGER.error(e);
-			this.fail(e.getMessage());
-		}
-	}
-
-	@Post("/topic/{id}/add/item")
-	@Consumes
-	@NoCache
-	public void newTopicItem(Long id, TopicItem topicItem) {
-		try {
-			Topic topic = this.bs.exists(id, Topic.class);
-			if (topic != null) {
-				topicItem = this.bs.newTopicItem(topic, topicItem);
-				this.success(topicItem);
-			} else {
-				this.result.notFound();
-			}
-		} catch (Throwable e) {
-			LOGGER.error(e);
-			this.fail(e.getMessage());
-		}
-	}
-
-	@Get("/topics/{id}")
-	@NoCache
-	public void listTopics(long id) {
-		try {
-			Discipline discipline = this.bs.exists(id, Discipline.class);
-			if (discipline == null)
-				this.result.notFound();
-			else {
-				List<Topic> list = this.bs.listTopics(discipline);
-				this.success(list, (long) list.size());
-			}
-		} catch (Throwable e) {
-			LOGGER.error(e);
-			this.fail(e.getMessage());
-		}
-	}
-
-	@Get("/topics/{id}/items")
-	@NoCache
-	public void listTopicItems(long id) {
-		try {
-			Discipline discipline = this.bs.exists(id, Discipline.class);
-			if (discipline == null)
-				this.result.notFound();
-			else {
-				List<TopicItem> list = this.bs.listTopicItems(discipline);
-				this.success(list, (long) list.size());
-			}
-		} catch (Throwable e) {
-			LOGGER.error(e);
-			this.fail(e.getMessage());
-		}
-	}
-
 	@Post("/{id}/edit/disciplineUser")
 	public void editDisciplineUser(long id, DisciplineUser disciplineUser) {
 		try {
@@ -376,33 +275,5 @@ public class DisciplineController extends UserControlAbstractController {
 		} catch (Throwable e) {
 			this.fail(e.getMessage());
 		}
-	}
-
-	@Get("/topicItem/{id}")
-	@NoCache
-	@Consumes
-	public void getTopicById(long id) {
-		try {
-			TopicItem topicItem = this.bs.exists(id, TopicItem.class);
-			if (topicItem == null)
-				this.result.notFound();
-			else
-				this.success(topicItem);
-		} catch (Throwable e) {
-			this.fail(e.getMessage());
-		}
-	}
-
-	@Post("/upload")
-	public void uploadFile(UploadedFile file) {
-		String path = "C:\\";
-		File savedPhoto = new File(path, file.getFileName());
-	    try {
-			file.writeTo(savedPhoto);
-			LOGGER.info(file.getFileName());
-		} catch(Exception e) {
-			LOGGER.errorf(e, "Erro: %s", e.getMessage());
-		}
-		this.success(true);
 	}
 }

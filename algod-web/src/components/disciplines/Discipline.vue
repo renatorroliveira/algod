@@ -215,6 +215,7 @@
 <script>
   import UserSession from '@/store/UserSession';
   import DisciplineStore from '@/store/Discipline';
+  import TopicStore from '@/store/Topic';
   import Toastr from 'toastr';
 
   export default {
@@ -301,7 +302,7 @@
       DisciplineStore.on('getDiscipline', (data) => {
         this.discipline = data;
       }, this);
-      DisciplineStore.on('addTopic', () => {
+      TopicStore.on('addTopic', () => {
         this.newTopic = false;
         this.label = '';
         this.content = '';
@@ -312,18 +313,18 @@
         this.getTopics();
         this.update = ' ';
       }, this);
-      DisciplineStore.on('deleteTopic', () => {
+      TopicStore.on('deleteTopic', () => {
         this.remTopic = false;
         this.topicToRemove = '';
         this.getTopics();
         this.update = ' ';
       }, this);
-      DisciplineStore.on('addTopicItem', () => {
+      TopicStore.on('addTopicItem', () => {
         this.newTopicItem = false;
         this.getTopics();
         this.update = ' ';
       }, this);
-      DisciplineStore.on('listTopics', (data) => {
+      TopicStore.on('listTopics', (data) => {
         this.topics = [];
         if (data.data.length > 0) {
           for (let i = 0; i < data.data.length; i += 1) {
@@ -333,7 +334,7 @@
           }
         }
       }, this);
-      DisciplineStore.on('listTopicItems', (data) => {
+      TopicStore.on('listTopicItems', (data) => {
         this.topicItems = [];
         if (data.data.length > 0) {
           for (let i = 0; i < data.data.length; i += 1) {
@@ -370,6 +371,8 @@
     },
     beforeDestroy() {
       DisciplineStore.off(null, null, this);
+      TopicStore.off(null, null, this);
+      UserSession.off(null, null, this);
     },
     methods: {
       doSubscribe(event) {
@@ -395,8 +398,8 @@
       },
       saveNewTopic(event) {
         event.preventDefault();
-        DisciplineStore.dispatch({
-          action: DisciplineStore.ACTION_ADD_TOPIC,
+        TopicStore.dispatch({
+          action: TopicStore.ACTION_ADD_TOPIC,
           data: {
             discipline: this.discipline,
             title: this.newTopicTitle,
@@ -405,8 +408,8 @@
       },
       deleteTopic(event) {
         event.preventDefault();
-        DisciplineStore.dispatch({
-          action: DisciplineStore.ACTION_DELETE_TOPIC,
+        TopicStore.dispatch({
+          action: TopicStore.ACTION_DELETE_TOPIC,
           data: this.topicId,
         });
       },
@@ -416,8 +419,8 @@
           && this.description !== ''
           && (this.content !== '' || !!this.contentType) && this.dateVisibleTo !== ''
           && this.dateAvailableTo !== '') {
-          DisciplineStore.dispatch({
-            action: DisciplineStore.ACTION_ADD_TOPIC_ITEM,
+          TopicStore.dispatch({
+            action: TopicStore.ACTION_ADD_TOPIC_ITEM,
             data: {
               id: this.topicId,
               topicItem: {
@@ -436,12 +439,12 @@
         }
       },
       getTopics() {
-        DisciplineStore.dispatch({
-          action: DisciplineStore.ACTION_LIST_TOPICS,
+        TopicStore.dispatch({
+          action: TopicStore.ACTION_LIST_TOPICS,
           data: this.$router.currentRoute.params.id,
         });
-        DisciplineStore.dispatch({
-          action: DisciplineStore.ACTION_LIST_TOPIC_ITEMS,
+        TopicStore.dispatch({
+          action: TopicStore.ACTION_LIST_TOPIC_ITEMS,
           data: this.$router.currentRoute.params.id,
         });
       },

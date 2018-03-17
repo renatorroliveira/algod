@@ -1,7 +1,6 @@
 package com.developerkingdom.algod.entities.user;
 
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
@@ -19,7 +18,6 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
-import com.developerkingdom.algod.entities.discipline.Discipline;
 import com.developerkingdom.algod.entities.user.auth.UserAccessToken;
 import com.developerkingdom.algod.entities.user.auth.UserSession;
 

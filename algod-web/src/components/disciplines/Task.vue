@@ -34,7 +34,7 @@
 </template>
 
 <script>
-  import DisciplineStore from '@/store/Discipline';
+  import TopicStore from '@/store/Topic';
   import UploadButton from './UploadButton';
 
   export default {
@@ -43,25 +43,28 @@
       content: '',
     }),
     created() {
-      DisciplineStore.dispatch({
-        action: DisciplineStore.ACTION_GET_TOPIC_ITEM,
+      TopicStore.dispatch({
+        action: TopicStore.ACTION_GET_TOPIC_ITEM,
         data: this.$router.currentRoute.params.topicItemId,
       });
-      DisciplineStore.on('getTopicItemById', (topicItem) => {
+      TopicStore.on('getTopicItemById', (topicItem) => {
         this.topicItem = topicItem.data;
       }, this);
     },
     methods: {
       fileSelected(e) {
         console.log(e);
-        DisciplineStore.dispatch({
-          action: DisciplineStore.ACTION_UPLOAD,
+        TopicStore.dispatch({
+          action: TopicStore.ACTION_UPLOAD,
           data: e,
         });
       },
     },
     components: {
       UploadButton,
+    },
+    beforeDestroy() {
+      TopicStore.off(null, null, this);
     },
   };
 </script>

@@ -41,6 +41,8 @@ public class ApplicationSetup {
 
 	private static final String INSTITUTION_NAME = "Instituto Federal Catarinense - Campus Concórdia";
 	
+	public static final String UPLOAD_PATH = "C:\\";
+	
 	protected ApplicationSetup() {
 	}
 

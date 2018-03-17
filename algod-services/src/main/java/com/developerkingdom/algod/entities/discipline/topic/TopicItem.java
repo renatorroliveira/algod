@@ -1,4 +1,4 @@
-package com.developerkingdom.algod.entities.discipline;
+package com.developerkingdom.algod.entities.discipline.topic;
 
 import java.util.Date;
 

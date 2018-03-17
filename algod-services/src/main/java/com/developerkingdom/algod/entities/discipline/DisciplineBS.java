@@ -1,13 +1,11 @@
 package com.developerkingdom.algod.entities.discipline;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Disjunction;
-import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 
@@ -144,61 +142,6 @@ public class DisciplineBS extends HibernateBusiness {
 		results.setList(this.dao.findByCriteria(criteria, Discipline.class));
 		results.setTotal((long) count.uniqueResult());
 		return results;
-	}
-	
-	public TopicItem newTopicItem(Topic topic, TopicItem topicItem) {
-		topicItem.setId(null);
-		topicItem.setTopic(topic);
-		this.dao.persist(topicItem);
-		
-		return topicItem;
-	}
-	
-	public Topic remTopic(long id) {
-		Topic topic = this.dao.exists(id, Topic.class);
-		if (topic != null) {
-			Criteria criteria = this.dao.newCriteria(TopicItem.class)
-					.add(Restrictions.eq("topic", topic));
-			List<TopicItem> topicItems = (List<TopicItem>) this.dao.findByCriteria(criteria, TopicItem.class);
-			for (int i = 0; i < topicItems.size(); i++) {
-				TopicItem topicItem = topicItems.get(i);
-				topicItem.setDeleted(true);
-				this.dao.persist(topicItem);
-			}
-			topic.setDeleted(true);
-			this.dao.persist(topic);
-			return topic;
-		}
-		return null;
-		
-	}
-	
-	public List<Topic> listTopics(Discipline discipline) {
-		Criteria criteria = this.dao.newCriteria(Topic.class)
-				.add(Restrictions.eq("deleted", false))
-				.add(Restrictions.eq("discipline", discipline));
-		return (List<Topic>) this.dao.findByCriteria(criteria, Topic.class);
-	}
-	
-	public List<TopicItem> listTopicItems(Discipline discipline) {
-		List<Topic> topics = this.listTopics(discipline);
-		LinkedList<TopicItem> list = new LinkedList<TopicItem>();
-		
-		for (int i = 0; i < topics.size(); i++) {
-			Criteria criteria = this.dao.newCriteria(TopicItem.class)
-					.add(Restrictions.eq("deleted", false))
-					.add(Restrictions.eq("visible", true))
-					.add(Restrictions.eq("topic", topics.get(i)))
-					.addOrder(Order.asc("topic.id"));
-			List<TopicItem> topicItems = (List<TopicItem>) this.dao.findByCriteria(criteria, TopicItem.class);
-			if (topicItems != null) {
-				for (int j = 0; j < topicItems.size(); j++) {
-					list.add(topicItems.get(j));
-				}
-			}
-		}
-		
-		return list;
 	}
 	
 	public List<DisciplineUser> listSubscribedUsers(Discipline discipline) {

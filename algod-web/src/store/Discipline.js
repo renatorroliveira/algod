@@ -17,17 +17,10 @@ const DisciplineStore = Fluxbone.Store.extend({
   ACTION_SUBSCRIBE: 'doSubscribe',
   ACTION_UNSUBSCRIBE: 'doUnsubscribe',
   ACTION_SEARCH: 'search',
-  ACTION_LIST_TOPICS: 'listTopics',
-  ACTION_LIST_TOPIC_ITEMS: 'listTopicItems',
-  ACTION_ADD_TOPIC: 'addTopic',
-  ACTION_DELETE_TOPIC: 'deleteTopic',
-  ACTION_ADD_TOPIC_ITEM: 'addTopicItem',
   ACTION_GET_SUBSCRIBED_USERS: 'subscribedUsers',
   ACTION_SUBSCRIBE_USER: 'subscribeUser',
   ACTION_UPDATE_ROLE: 'updateUserRole',
   ACTION_UNSUBSCRIBE_USER: 'unsubscribeUser',
-  ACTION_GET_TOPIC_ITEM: 'getTopicItemById',
-  ACTION_UPLOAD: 'uploadFile',
 
   model: DisciplineModel,
   url: `${Config.baseUrl}/v1/discipline`,
@@ -186,91 +179,6 @@ const DisciplineStore = Fluxbone.Store.extend({
     });
   },
 
-  listTopics(id) {
-    const me = this;
-    $.ajax({
-      url: `${me.url}/topics/${id}`,
-      method: 'GET',
-      dataType: 'json',
-      success(data) {
-        me.trigger('listTopics', data);
-      },
-      error(opts) {
-        me.trigger('fail', opts);
-      },
-    });
-  },
-
-  listTopicItems(id) {
-    const me = this;
-    $.ajax({
-      url: `${me.url}/topics/${id}/items`,
-      method: 'GET',
-      dataType: 'json',
-      success(data) {
-        me.trigger('listTopicItems', data);
-      },
-      error(opts) {
-        me.trigger('fail', opts);
-      },
-    });
-  },
-
-  addTopic(params) {
-    const me = this;
-    $.ajax({
-      url: `${me.url}/topic/add/${params.discipline.id}`,
-      method: 'POST',
-      dataType: 'json',
-      data: JSON.stringify({
-        title: params.title,
-      }),
-      success(response) {
-        if (response.success) {
-          me.trigger('addTopic', response.data);
-        } else {
-          me.trigger('fail', response.message);
-        }
-      },
-      error(opts) {
-        me.trigger('fail', opts);
-      },
-    });
-  },
-
-  deleteTopic(params) {
-    const me = this;
-    $.ajax({
-      url: `${me.url}/topic/del/${params}`,
-      method: 'POST',
-      dataType: 'json',
-      success(data) {
-        me.trigger('deleteTopic', data);
-      },
-      error(opts) {
-        me.trigger('fail', opts);
-      },
-    });
-  },
-
-  addTopicItem(params) {
-    const me = this;
-    $.ajax({
-      url: `${me.url}/topic/${params.id}/add/item`,
-      method: 'POST',
-      dataType: 'json',
-      data: JSON.stringify({
-        topicItem: params.topicItem,
-      }),
-      success(data) {
-        me.trigger('addTopicItem', data);
-      },
-      error(opts) {
-        me.trigger('fail', opts);
-      },
-    });
-  },
-
   subscribedUsers(params) {
     const me = this;
     $.ajax({
@@ -338,50 +246,6 @@ const DisciplineStore = Fluxbone.Store.extend({
       error(opts) {
         me.trigger('fail', opts);
       },
-    });
-  },
-
-  getTopicItemById(id) {
-    const me = this;
-    $.ajax({
-      url: `${me.url}/topicItem/${id}`,
-      method: 'GET',
-      dataType: 'json',
-      success(data) {
-        me.trigger('getTopicItemById', data);
-      },
-      error(args) {
-        me.trigger('fail', args);
-      },
-    });
-  },
-
-  uploadFile(file) {
-    const me = this;
-    $.ajax({
-      type: 'POST',
-      url: `${me.url}/upload`,
-      xhr() {
-        const myXhr = $.ajaxSettings.xhr();
-        if (myXhr.upload) {
-          myXhr.upload.addEventListener('progress', me.progressHandling, false);
-        }
-        return myXhr;
-      },
-      success(data) {
-        // your callback here
-        console.log(data);
-      },
-      error(error) {
-        // handle error
-        console.log(error);
-      },
-      async: true,
-      data: file,
-      cache: false,
-      contentType: false,
-      processData: false,
-      timeout: 60000,
     });
   },
 
