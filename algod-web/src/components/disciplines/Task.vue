@@ -27,6 +27,32 @@
               ></v-text-field>
             </div>
           </v-card-text>
+          <div>
+            <v-btn v-if="accessLevel >= 30" color="primary" dark @click.stop="sends = true">Ver Envios</v-btn>
+          </div>
+
+          <v-dialog v-model="sends" max-width="1000px">
+            <v-card>
+              <v-card-title><h3>Envios</h3></v-card-title>
+              <v-card-text>
+                <template>
+                  <v-data-table
+                    :headers="headers"
+                    :items="items"
+                    hide-actions
+                    class="elevation-1"
+                    >
+                    <template slot="items" slot-scope="props">
+                      <td>{{ props.item.name }}</td>
+                      <td class="text-xs-right">{{ props.item.date }}</td>
+                      <td class="text-xs-right">{{ props.item.arq }}</td>
+                    </template>
+                  </v-data-table>
+                </template>
+              </v-card-text>
+            </v-card>
+          </v-dialog>
+
         </v-card>
       </v-flex>
     </v-layout>
@@ -34,13 +60,21 @@
 </template>
 
 <script>
+  import UserSession from '@/store/UserSession';
   import TopicStore from '@/store/Topic';
   import UploadButton from './UploadButton';
 
   export default {
     data: () => ({
+      accessLevel: UserSession.get('accessLevel'),
       topicItem: [],
       content: '',
+      sends: false,
+      headers: [{ text: 'Nome', align: 'left', sortable: false, value: 'name' },
+         { text: 'Data', value: 'date' },
+         { text: 'Arquivo', value: 'arq' }],
+      items: [{ value: false, name: 'Gustavo', date: '22/04/2018', arq: 'jogo.rar' },
+              { value: false, name: 'Guilherme', date: '23/04/2018', arq: 'joguinho.rar' }],
     }),
     created() {
       TopicStore.dispatch({
