@@ -1,10 +1,8 @@
 package com.developerkingdom.algod.entities.discipline.topic;
 
-import java.io.File;
-import java.sql.Date;
+import java.util.Date;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
@@ -25,11 +23,10 @@ public class Sends extends SimpleLogicalDeletableEntity {
 	@ManyToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
 	private User user;
 	
-	private File file;
+	private byte[] file;
 	
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(nullable=false)
-	private Date sendDate;
+	private Date sendDate = new Date();
 	
 	@ManyToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
 	private TopicItem topicItem;
@@ -42,11 +39,11 @@ public class Sends extends SimpleLogicalDeletableEntity {
 		this.user = user;
 	}
 
-	public File getFile() {
+	public byte[] getFile() {
 		return file;
 	}
 
-	public void setFile(File file) {
+	public void setFile(byte[] file) {
 		this.file = file;
 	}
 
