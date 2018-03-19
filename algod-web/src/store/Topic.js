@@ -119,33 +119,55 @@ const TopicStore = Fluxbone.Store.extend({
     });
   },
 
-  uploadFile(file) {
+  uploadFile(params) {
+    console.log(params.file);
     const me = this;
     $.ajax({
+      url: `${me.url}/task/${params.topicItem.id}/upload`,
       type: 'POST',
-      url: `${me.url}/task/upload`,
-      xhr() {
-        const myXhr = $.ajaxSettings.xhr();
-        if (myXhr.upload) {
-          myXhr.upload.addEventListener('progress', me.progressHandling, false);
-        }
-        return myXhr;
+      data: {
+        file: params.file,
       },
-      success(data) {
-        // your callback here
-        console.log(data);
-      },
-      error(error) {
-        // handle error
-        console.log(error);
-      },
-      async: true,
-      data: file,
+      async: false,
       cache: false,
       contentType: false,
+      enctype: 'multipart/form-data',
       processData: false,
-      timeout: 60000,
+      success(response) {
+        console.log(response);
+      },
+      fail(e) {
+        console.log(e);
+      },
     });
+
+    // $.ajax({
+    //   type: 'POST',
+    //   url: `${me.url}/task/${params.topicItem.id}/upload`,
+    //   xhr() {
+    //     const myXhr = $.ajaxSettings.xhr();
+    //     if (myXhr.upload) {
+    //       myXhr.upload.addEventListener('progress', me.progressHandling, false);
+    //     }
+    //     return myXhr;
+    //   },
+    //   async: true,
+    //   data: {
+    //     file: params.file,
+    //   },
+    //   cache: false,
+    //   contentType: false,
+    //   processData: false,
+    //   timeout: 60000,
+    //   success(data) {
+    //     // your callback here
+    //     console.log(data);
+    //   },
+    //   error(error) {
+    //     // handle error
+    //     console.log(error);
+    //   },
+    // });
   },
 
 });

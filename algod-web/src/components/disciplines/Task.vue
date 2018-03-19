@@ -15,8 +15,11 @@
             <p>{{topicItem.description}}</p>
             <v-spacer class="mb-3"></v-spacer>
             <div v-if="topicItem.contentType === 1">
-              <upload-button title="Escolher arquivo" :selectedCallback="fileSelected">
+              <upload-button enctype="multipart/form-data" title="Escolher arquivo" :selectedCallback="fileSelected">
               </upload-button>
+              <!-- <v-btn type="file" v-model="file">Escolher arquivo</v-btn> -->
+              <span v-if="!!file">{{file.name}}</span>
+              <v-btn v-on:click="uploadFile($event)">Enviar</v-btn>
             </div>
             <div v-else>
               <v-text-field
@@ -69,8 +72,9 @@
       accessLevel: UserSession.get('accessLevel'),
       topicItem: [],
       content: '',
+      file: null,
       sends: false,
-      headers: [{ text: 'Nome', align: 'left', sortable: false, value: 'name' },
+      headers: [{ text: 'Nome', align: 'left', sortable: true, value: 'name' },
          { text: 'Data', value: 'date' },
          { text: 'Arquivo', value: 'arq' }],
       items: [{ value: false, name: 'Gustavo', date: '22/04/2018', arq: 'jogo.rar' },
@@ -87,12 +91,21 @@
     },
     methods: {
       fileSelected(e) {
-        console.log(e);
+        this.file = e;
+      },
+      uploadFile(event) {
+        event.preventDefault();
         TopicStore.dispatch({
           action: TopicStore.ACTION_UPLOAD,
-          data: e,
+          data: {
+            file: this.file,
+            topicItem: this.topicItem,
+          },
         });
       },
+    },
+    updated() {
+      console.log(this.file);
     },
     components: {
       UploadButton,

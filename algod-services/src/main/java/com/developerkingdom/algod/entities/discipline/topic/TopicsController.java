@@ -144,7 +144,8 @@ public class TopicsController extends UserControlAbstractController {
 	@Post("/task/{id}/upload")
 	public void uploadFile(long id, UploadedFile file) {
 		String path = ApplicationSetup.UPLOAD_PATH;
-		File savedPhoto = new File(path, file.getFileName());
+		String Path = "C:\\";
+		File savedPhoto = new File(Path, file.getFileName());
 	    try {
 			file.writeTo(savedPhoto);
 			LOGGER.info(file.getFileName());

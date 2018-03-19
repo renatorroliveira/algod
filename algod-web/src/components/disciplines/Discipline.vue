@@ -344,7 +344,7 @@
           }
         }
       }, this);
-      //
+
       DisciplineStore.on('getSubscription', (data) => {
         this.exists = true;
         if (typeof data === 'undefined') {
