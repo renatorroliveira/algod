@@ -16,7 +16,7 @@
             <v-spacer class="mb-3"></v-spacer>
 
             <form id="formulario" v-on:submit="uploadFile($event)" enctype="multipart/form-data">
-              <input type="file" name="file" value="file">
+              <input id="fileupload" type="file" name="files[]" :data-url="`https://localhost:8000/algod/api/v1/topic/task/${topicItem.id}/upload`" multiple>
               <input type="submit" name="submit" value="Enviar">
             </form>
 
@@ -128,15 +128,23 @@
         event.preventDefault();
         const form = $('form');
         console.log(form[0].children[0].files[0]);
-        if (form[0].children[0].files[0]) {
-          TopicStore.dispatch({
-            action: TopicStore.ACTION_UPLOAD,
-            data: {
-              file: form[0].children[0].files[0],
-              topicItem: this.topicItem,
-            },
-          });
-        }
+        $('#fileupload').fileupload({
+          dataType: 'json',
+          done(e, data) {
+            $.each(data.result.files, (index, file) => {
+              $('<p/>').text(file.name).appendTo(document.body);
+            });
+          },
+        });
+        // if (form[0].children[0].files[0]) {
+        //   TopicStore.dispatch({
+        //     action: TopicStore.ACTION_UPLOAD,
+        //     data: {
+        //       file: form[0].children[0].files[0],
+        //       topicItem: this.topicItem,
+        //     },
+        //   });
+        // }
       },
     },
     updated() {
