@@ -143,12 +143,13 @@ public class TopicsController extends UserControlAbstractController {
 
 	@Post("/task/{id}/upload")
 	public void uploadFile(long id, UploadedFile file) {
-		String path = ApplicationSetup.UPLOAD_PATH;
-		String Path = "C:\\";
-		File savedPhoto = new File(Path, file.getFileName());
+		LOGGER.info(file.getFileName());
+		File uploadedFile = new File(ApplicationSetup.UPLOAD_PATH);
+		if (!uploadedFile.exists())
+			uploadedFile.mkdirs();
+		File savedPhoto = new File(ApplicationSetup.UPLOAD_PATH, file.getFileName());
 	    try {
 			file.writeTo(savedPhoto);
-			LOGGER.info(file.getFileName());
 		} catch(Exception e) {
 			LOGGER.errorf(e, "Erro: %s", e.getMessage());
 		}

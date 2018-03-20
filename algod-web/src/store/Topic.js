@@ -128,15 +128,13 @@ const TopicStore = Fluxbone.Store.extend({
       data: {
         file: params.file,
       },
-      async: false,
+      async: true,
       cache: false,
-      contentType: false,
-      enctype: 'multipart/form-data',
-      processData: false,
+      contentType: 'multipart/form-data',
       success(response) {
         console.log(response);
       },
-      fail(e) {
+      error(e) {
         console.log(e);
       },
     });
