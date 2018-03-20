@@ -135,7 +135,7 @@ const TopicStore = Fluxbone.Store.extend({
         console.log(response);
       },
       error(e) {
-        console.log(e);
+        console.error(e);
       },
     });
 

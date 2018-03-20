@@ -5,6 +5,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.commons.fileupload.FileUploadBase.SizeLimitExceededException;
+import org.apache.commons.fileupload.FileUploadException;
+
 import com.developerkingdom.algod.entities.discipline.Discipline;
 import com.developerkingdom.algod.system.UserControlAbstractController;
 import com.developerkingdom.algod.system.config.ApplicationSetup;
@@ -15,6 +18,7 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.boilerplate.NoCache;
+import br.com.caelum.vraptor.observer.upload.UploadSizeLimit;
 import br.com.caelum.vraptor.observer.upload.UploadedFile;
 
 @Controller
@@ -142,7 +146,8 @@ public class TopicsController extends UserControlAbstractController {
 	}
 
 	@Post("/task/{id}/upload")
-	public void uploadFile(long id, UploadedFile file) {
+	@UploadSizeLimit(sizeLimit=40 * 1024 * 1024, fileSizeLimit=40 * 1024 * 1024)
+	public void uploadFile(long id, UploadedFile file) throws FileUploadException {
 		LOGGER.info(file.getFileName());
 		File uploadedFile = new File(ApplicationSetup.UPLOAD_PATH);
 		if (!uploadedFile.exists())
@@ -151,8 +156,9 @@ public class TopicsController extends UserControlAbstractController {
 	    try {
 			file.writeTo(savedPhoto);
 		} catch(Exception e) {
+			this.fail(e.getMessage());
 			LOGGER.errorf(e, "Erro: %s", e.getMessage());
-		}
+		} 
 		this.success(true);
 	}
 }
