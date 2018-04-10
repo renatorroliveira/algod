@@ -5,7 +5,6 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 import com.developerkingdom.algod.system.config.SystemConfigs;
-import com.google.gson.Gson;
 
 import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Get;
@@ -28,7 +27,7 @@ public class IndexController extends AbstractController {
 	@Get("/environment")
 	public void envInfo() {
 		StringBuilder body = new StringBuilder();
-		Gson gson = this.gsonBuilder.create();
+//		Gson gson = this.gsonBuilder.create();
 		
 		body.append("EnvInfo={");
 		body.append("'baseUrl': '").append(SystemConfigs.getConfig("sys.baseurl")).append("'");

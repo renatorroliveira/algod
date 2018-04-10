@@ -4,10 +4,8 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.enterprise.context.SessionScoped;
-import javax.enterprise.inject.spi.CDI;
 
 import com.developerkingdom.algod.entities.user.User;
-import com.developerkingdom.algod.entities.user.UserBS;
 
 /**
  * @author Rodrigo Freitas
@@ -25,7 +23,7 @@ public class UserSession implements Serializable {
 		this.logout();
 		this.accessToken = token;
 		
-		UserBS bs = CDI.current().select(UserBS.class).get();
+//		UserBS bs = CDI.current().select(UserBS.class).get();
 		// TODO Recuperar as permissões de fato.
 //		List<UserPermission> perms = null;
 //		if (GeneralUtils.isEmpty(perms)) {
