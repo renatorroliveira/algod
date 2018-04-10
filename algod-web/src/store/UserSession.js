@@ -114,7 +114,7 @@ const UserSession = Backbone.Model.extend({
 
   handleRequestErrors(collection, opts) {
     if (opts.status === 504) {
-      this.trigger('fail', opts.statusText);
+      this.trigger('fail', 'Tempo esgotado');
     } else if (opts.status === 404) {
       this.trigger('fail', opts);
     } else if (opts.status === 400) {

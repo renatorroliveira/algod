@@ -15,15 +15,13 @@
             <p>{{topicItem.description}}</p>
             <v-spacer class="mb-3"></v-spacer>
 
-            <form id="formulario" v-on:submit="uploadFile($event)" enctype="multipart/form-data">
-              <input id="fileupload" type="file" name="files[]" :data-url="`https://localhost:8000/algod/api/v1/topic/task/${topicItem.id}/upload`" multiple>
-              <input type="submit" name="submit" value="Enviar">
-            </form>
-
-            <div v-if="topicItem.contentType === 1">
-              <!-- <upload-button title="Escolher arquivo" :selectedCallback="fileSelected">
-              </upload-button> -->
+            <div v-if="topicItem.type === 'Task'">
+              <form id="formulario" v-on:submit="uploadFile($event)" enctype="multipart/form-data">
+                <input id="fileupload" type="file" name="file" multiple>
+                <input type="submit" name="submit" value="Enviar">
+              </form>
             </div>
+
             <div v-else>
               <v-text-field
                 label="Conteudo"
@@ -66,37 +64,8 @@
 </template>
 
 <script>
-  import $ from 'jquery';
   import UserSession from '@/store/UserSession';
   import TopicStore from '@/store/Topic';
-  import UploadButton from './UploadButton';
-
-  // const me = this;
-  // $('#formulario').on('submit', () => {
-  //   alert('dasdasds');
-  //   const formData = new FormData(this);
-  //   console.log(formData);
-    // $.ajax({
-    //   url: `http://localhost:8000/algod/api/v1/topic/task/${me.topicItem.id}/upload`,
-    //   type: 'POST',
-    //   data: formData,
-    //   success(data) {
-    //     console.log(data);
-    //   },
-    //   cache: false,
-    //   contentType: false,
-    //   processData: false,
-    //   xhr() {  // Custom XMLHttpRequest
-    //     const myXhr = $.ajaxSettings.xhr();
-    //     if (myXhr.upload) { // Avalia se tem suporte a propriedade upload
-    //       myXhr.upload.addEventListener('progress', () => {
-    //         /* faz alguma coisa durante o progresso do upload */
-    //       }, false);
-    //     }
-    //     return myXhr;
-    //   },
-    // });
-  // });
 
   export default {
     data: () => ({
@@ -126,32 +95,21 @@
       },
       uploadFile(event) {
         event.preventDefault();
-        const form = $('form');
-        console.log(form[0].children[0].files[0]);
-        $('#fileupload').fileupload({
-          dataType: 'json',
-          done(e, data) {
-            $.each(data.result.files, (index, file) => {
-              $('<p/>').text(file.name).appendTo(document.body);
-            });
-          },
-        });
+        const formData = new FormData();
+        console.log(event.target);
+        console.log(formData);
         // if (form[0].children[0].files[0]) {
         //   TopicStore.dispatch({
         //     action: TopicStore.ACTION_UPLOAD,
         //     data: {
-        //       file: form[0].children[0].files[0],
+        //       formData: form[0].children[0].files[0],
         //       topicItem: this.topicItem,
         //     },
         //   });
-        // }
       },
     },
     updated() {
       // console.log(this.form);
-    },
-    components: {
-      UploadButton,
     },
     beforeDestroy() {
       TopicStore.off(null, null, this);
