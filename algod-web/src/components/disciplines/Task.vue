@@ -15,11 +15,22 @@
             <p>{{topicItem.description}}</p>
             <v-spacer class="mb-3"></v-spacer>
 
+<<<<<<< HEAD
             <div v-if="topicItem.type === 'Task'">
               <form id="formulario" v-on:submit="uploadFile($event)" enctype="multipart/form-data">
                 <input id="fileupload" type="file" name="file" multiple>
                 <input type="submit" name="submit" value="Enviar">
               </form>
+=======
+            <form id="formulario" v-on:submit="uploadFile($event)" enctype="multipart/form-data">
+              <input id="fileupload" type="file" name="file"  multiple>
+              <input type="submit" name="submit" value="Enviar">
+            </form>
+
+            <div v-if="topicItem.contentType === 1">
+              <!-- <upload-button title="Escolher arquivo" :selectedCallback="fileSelected">
+              </upload-button> -->
+>>>>>>> 138eb485d2b9048c2e551c119f4cff1c6fbe38ec
             </div>
 
             <div v-else>
@@ -93,21 +104,28 @@
       fileSelected(e) {
         console.log(e);
       },
+
       uploadFile(event) {
         event.preventDefault();
+        const form = $('form');
         const formData = new FormData();
-        console.log(event.target);
-        console.log(formData);
-        // if (form[0].children[0].files[0]) {
-        //   TopicStore.dispatch({
-        //     action: TopicStore.ACTION_UPLOAD,
-        //     data: {
-        //       formData: form[0].children[0].files[0],
-        //       topicItem: this.topicItem,
-        //     },
-        //   });
+
+        console.log($('#fileupload'));
+
+        formData.append('file', $('#fileupload')[0].files[0]);
+
+        if (form[0].children[0].files[0]) {
+          TopicStore.dispatch({
+            action: TopicStore.ACTION_UPLOAD,
+            data: {
+              formData,
+              topicItem: this.topicItem,
+            },
+          });
+        }
       },
     },
+
     updated() {
       // console.log(this.form);
     },

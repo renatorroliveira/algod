@@ -1,3 +1,4 @@
+import axios from 'axios';
 import $ from 'jquery';
 import Fluxbone from './Fluxbone';
 import Config from './Config';
@@ -120,52 +121,13 @@ const TopicStore = Fluxbone.Store.extend({
   },
 
   uploadFile(params) {
-    console.log(params.file);
-    const me = this;
-    $.ajax({
-      url: `${me.url}/task/${params.topicItem.id}/upload`,
-      type: 'POST',
-      data: {
-        file: params.file,
-      },
-      async: true,
-      cache: false,
-      contentType: 'multipart/form-data',
-      success(response) {
-        console.log(response);
-      },
-      error(e) {
-        console.error(e);
-      },
-    });
+    console.log(params.formData);
 
-    // $.ajax({
-    //   type: 'POST',
-    //   url: `${me.url}/task/${params.topicItem.id}/upload`,
-    //   xhr() {
-    //     const myXhr = $.ajaxSettings.xhr();
-    //     if (myXhr.upload) {
-    //       myXhr.upload.addEventListener('progress', me.progressHandling, false);
-    //     }
-    //     return myXhr;
-    //   },
-    //   async: true,
-    //   data: {
-    //     file: params.file,
-    //   },
-    //   cache: false,
-    //   contentType: false,
-    //   processData: false,
-    //   timeout: 60000,
-    //   success(data) {
-    //     // your callback here
-    //     console.log(data);
-    //   },
-    //   error(error) {
-    //     // handle error
-    //     console.log(error);
-    //   },
-    // });
+
+    return axios.post(
+      `${this.url}/task/1/upload`,
+      params.formData,
+    );
   },
 
 });
