@@ -15,6 +15,7 @@ const TopicStore = Fluxbone.Store.extend({
   ACTION_ADD_TOPIC_ITEM: 'addTopicItem',
   ACTION_GET_TOPIC_ITEM: 'getTopicItemById',
   ACTION_UPLOAD: 'uploadFile',
+  ACTION_DOWNLOAD: 'download',
 
   model: TopicModel,
   url: `${Config.baseUrl}/v1/topic`,
@@ -123,11 +124,24 @@ const TopicStore = Fluxbone.Store.extend({
   uploadFile(params) {
     console.log(params.formData);
 
-
     return axios.post(
       `${this.url}/task/1/upload`,
       params.formData,
     );
+  },
+
+  download() {
+    const me = this;
+    $.ajax({
+      url: `${me.url}/download`,
+      method: 'GET',
+      success(s) {
+        console.log(s);
+      },
+      error(err) {
+        console.log(err);
+      },
+    });
   },
 
 });

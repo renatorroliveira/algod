@@ -1,6 +1,7 @@
 package com.developerkingdom.algod.entities.discipline.topic;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -17,6 +18,8 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.boilerplate.NoCache;
+import br.com.caelum.vraptor.observer.download.Download;
+import br.com.caelum.vraptor.observer.download.FileDownload;
 import br.com.caelum.vraptor.observer.upload.UploadSizeLimit;
 import br.com.caelum.vraptor.observer.upload.UploadedFile;
 
@@ -159,5 +162,20 @@ public class TopicsController extends UserControlAbstractController {
 			LOGGER.errorf(e, "Erro: %s", e.getMessage());
 		} 
 		this.success(true);
+	}
+	
+	@Get("/download")
+	public Download downloadFile(long id) {
+		File file = new File(ApplicationSetup.UPLOAD_PATH + "/430915.jpg");
+        String contentType = "image/jpg";
+        String filename = "blablabla.jpg";
+
+        try {
+			return new FileDownload(file, contentType, filename);
+		} catch (FileNotFoundException e) {
+			LOGGER.info(e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

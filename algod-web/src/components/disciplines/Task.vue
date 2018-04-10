@@ -13,24 +13,17 @@
         <v-card style="min-height:200px;">
           <v-card-text>
             <p>{{topicItem.description}}</p>
+            <v-btn v-on:click="downloadExample($event)">download example</v-btn>
             <v-spacer class="mb-3"></v-spacer>
-
-<<<<<<< HEAD
-            <div v-if="topicItem.type === 'Task'">
+            <div v-if="topicItem.contentType === 1">
               <form id="formulario" v-on:submit="uploadFile($event)" enctype="multipart/form-data">
                 <input id="fileupload" type="file" name="file" multiple>
                 <input type="submit" name="submit" value="Enviar">
               </form>
-=======
-            <form id="formulario" v-on:submit="uploadFile($event)" enctype="multipart/form-data">
-              <input id="fileupload" type="file" name="file"  multiple>
-              <input type="submit" name="submit" value="Enviar">
-            </form>
-
-            <div v-if="topicItem.contentType === 1">
+            </div>
+            <div v-else-if="topicItem.contentType === 2">
               <!-- <upload-button title="Escolher arquivo" :selectedCallback="fileSelected">
-              </upload-button> -->
->>>>>>> 138eb485d2b9048c2e551c119f4cff1c6fbe38ec
+              </upload-button> -->sda
             </div>
 
             <div v-else>
@@ -75,6 +68,7 @@
 </template>
 
 <script>
+  import $ from 'jquery';
   import UserSession from '@/store/UserSession';
   import TopicStore from '@/store/Topic';
 
@@ -107,14 +101,11 @@
 
       uploadFile(event) {
         event.preventDefault();
-        const form = $('form');
         const formData = new FormData();
+        const fileUpload = $('#fileupload')[0];
 
-        console.log($('#fileupload'));
-
-        formData.append('file', $('#fileupload')[0].files[0]);
-
-        if (form[0].children[0].files[0]) {
+        if (fileUpload.files.length === 1) {
+          formData.append('file', fileUpload.files[0]);
           TopicStore.dispatch({
             action: TopicStore.ACTION_UPLOAD,
             data: {
@@ -122,7 +113,16 @@
               topicItem: this.topicItem,
             },
           });
+        } else if (fileUpload.files.length > 1) {
+          // TODO: upload multiple files
         }
+      },
+      downloadExample(event) {
+        event.preventDefault();
+
+        TopicStore.dispatch({
+          action: TopicStore.ACTION_DOWNLOAD,
+        });
       },
     },
 
