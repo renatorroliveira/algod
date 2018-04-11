@@ -114,7 +114,6 @@
         action: DisciplineStore.ACTION_LIST_SUBSCRIBED_DISCIPLINES,
       });
       DisciplineStore.on('listSubscribedDisciplines', (data) => {
-        console.log(data.data);
         me.disciplines = data.data;
       }, this);
       DisciplineStore.on('doUnsubscribe', () => {
@@ -123,7 +122,6 @@
         });
       }, this);
       DisciplineStore.on('search', (data) => {
-        console.log(data);
         me.query = true;
         me.resultSearch = data.data;
       }, this);

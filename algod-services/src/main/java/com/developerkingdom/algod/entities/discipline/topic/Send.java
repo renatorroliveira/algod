@@ -2,7 +2,6 @@ package com.developerkingdom.algod.entities.discipline.topic;
 
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
@@ -30,11 +29,13 @@ public class Send extends SimpleLogicalDeletableEntity {
 	private String contentType;
 	
 	private String name;
+	
+	private String description;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date sendDate = new Date();
 	
-	@ManyToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
+	@ManyToOne(fetch=FetchType.EAGER)
 	private TopicItem topicItem;
 
 	public User getUser() {
@@ -47,6 +48,14 @@ public class Send extends SimpleLogicalDeletableEntity {
 
 	public String getPath() {
 		return path;
+	}
+	
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public void setPath(String file_Path) {

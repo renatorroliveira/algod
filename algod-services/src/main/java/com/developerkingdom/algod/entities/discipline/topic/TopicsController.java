@@ -2,19 +2,15 @@ package com.developerkingdom.algod.entities.discipline.topic;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Date;
-import java.util.Enumeration;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileUploadException;
 
 import com.developerkingdom.algod.entities.discipline.Discipline;
 import com.developerkingdom.algod.system.UserControlAbstractController;
-import com.developerkingdom.algod.system.config.ApplicationSetup;
 
 import br.com.caelum.vraptor.Consumes;
 import br.com.caelum.vraptor.Controller;
@@ -32,6 +28,7 @@ import br.com.caelum.vraptor.observer.upload.UploadedFile;
 public class TopicsController extends UserControlAbstractController {
 	
 	@Inject private TopicsBS bs;
+	@Inject private static final String PATH = "./upload/files";
 
 	@Post("/create")
 	@Consumes
@@ -158,18 +155,14 @@ public class TopicsController extends UserControlAbstractController {
 		if (topicItem == null)
 			this.result.notFound();
 		else {
-			String filename = file.getFileName();
-			long size = file.getSize();
-			String contentType = file.getContentType();
-			
-			File uploadedFile = new File(ApplicationSetup.UPLOAD_PATH);
+			String filename = this.userSession.getUser().getId().toString() + "_" + topicItem.getId().toString() + "_" + file.getFileName();
+			File uploadedFile = new File(PATH);
 			if (!uploadedFile.exists())
 				uploadedFile.mkdirs();
-			File newFile = new File(ApplicationSetup.UPLOAD_PATH, filename);
+			File newFile = new File(PATH, filename);
 		    try {
 				file.writeTo(newFile);
-				this.bs.sendTask(topicItem, file, ApplicationSetup.UPLOAD_PATH, this.userSession.getUser());
-				this.success();
+				this.success(this.bs.sendTask(topicItem, file, PATH, this.userSession.getUser()));
 			} catch(Exception e) {
 				this.fail(e.getMessage());
 				LOGGER.errorf(e, "Erro: %s", e.getMessage());
@@ -177,30 +170,22 @@ public class TopicsController extends UserControlAbstractController {
 		}
 	}
 	
-	@Get("/download")
-	public Download downloadFile(long id, HttpServletRequest request, HttpServletResponse response) {
-		File file = new File(ApplicationSetup.UPLOAD_PATH + "/430915.jpg");
-		Enumeration<String> headerNames = request.getHeaderNames();
-		String contentType = request.getContentType();
-		LOGGER.info(contentType);
-        while (headerNames.hasMoreElements()) {
-            String key = (String) headerNames.nextElement();
-            String value = request.getHeader(key);
-            LOGGER.info(key);
-            LOGGER.info(value);
-        }
-        String filename = file.getName();
-        try {
-        	if (file.isFile()) {
-        		FileDownload fileDownload = new FileDownload(file, "img/jpg", filename, true);
-				response.setHeader("filename", file.getName());
-        		return fileDownload;
-        	}
-        	return null;
-		} catch (FileNotFoundException e) {
-			LOGGER.info(e.getMessage());
-			e.printStackTrace();
-			return null;
+	@Get("/task/{id}/download")
+	public Download downloadFile(long id, HttpServletResponse response) throws FileNotFoundException {
+		TopicItem topicItem = this.bs.exists(id, TopicItem.class);
+		Send send = this.bs.getSend(this.userSession.getUser(), topicItem);
+		if (topicItem == null)
+			this.result.notFound();
+		if (send == null)
+			this.fail("Você não possui nenhum envio");
+		else {
+			String filename = this.userSession.getUser().getId().toString() + "_" + topicItem.getId().toString() + "_" + send.getName().toString();
+			File file = new File(PATH, filename);
+			response.setHeader("content-type", send.getContentType());
+			response.setHeader("filename", filename);
+	        return new FileDownload(file, send.getContentType().toString(), filename, true);
 		}
+		
+		return null;
 	}
 }

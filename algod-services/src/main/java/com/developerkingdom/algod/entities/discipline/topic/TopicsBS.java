@@ -96,4 +96,17 @@ public class TopicsBS extends HibernateBusiness {
 		
 		return send;
 	}
+	
+	public Send getSend(User user, TopicItem topicItem) {
+		Criteria criteria = this.dao.newCriteria(Send.class)
+				.add(Restrictions.eq("deleted", false))
+				.add(Restrictions.eq("user", user))
+				.add(Restrictions.eq("topicItem", topicItem));
+		Send send = (Send) criteria.uniqueResult();
+		if (send != null)
+			return send;
+		return null;
+	}
+	
+
 }

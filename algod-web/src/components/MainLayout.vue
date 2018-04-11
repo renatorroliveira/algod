@@ -7,9 +7,11 @@
       :clipped="$vuetify.breakpoint.width > 1264"
       v-model="drawer"
       disable-route-watcher
+      v-if="!!user"
     >
-      <v-list>
-        <v-list-tile avatar v-if="!!user" :to="`/user/profile/${user.nickname}`" v-on:click="drawer = false">
+      <v-list v-if="!!user">
+        <span style="display:none;">{{update}}</span>
+        <v-list-tile avatar :to="`/user/profile/${user.nickname}`" v-on:click="drawer = false">
           <v-list-tile-avatar>
             <img :src="user.picture" alt="User" />
           </v-list-tile-avatar>
@@ -21,7 +23,7 @@
 
         <v-divider class="mb-3"></v-divider>
 
-        <v-list-tile v-on:click="drawer = false" avatar to="/">
+        <v-list-tile avatar v-on:click="drawer = false" to="/">
           <v-list-tile-avatar>
             <v-icon>home</v-icon>
           </v-list-tile-avatar>
@@ -30,8 +32,8 @@
           </v-list-tile-content>
         </v-list-tile>
 
-        <v-list-group v-for="(item, i) in items" :key="i" v-if="item.access <= user.accessLevel">
-          <v-list-tile slot="item">
+        <v-list-group v-for="(item, i) in items" :key="i" v-if="(!loading && items.length > 0) && user.accessLevel > item.access">
+          <v-list-tile avatar slot="item">
             <v-list-tile-avatar>
               <v-icon v-html="item.icon"></v-icon>
             </v-list-tile-avatar>
@@ -40,9 +42,9 @@
             </v-list-tile-content>
             <v-icon dark>keyboard_arrow_down</v-icon>
           </v-list-tile>
-          <v-list-tile v-for="(child, j) in item.children" :key="j" :to="child.href">
+          <v-list-tile v-for="(child, j) in item.children" :key="j" :to="child.href" v-on:click="drawer = false">
             <v-list-tile-content>
-              <v-list-tile-title v-on:click="drawer = false" v-text="child.title"></v-list-tile-title>
+              <v-list-tile-title v-text="child.title"></v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
         </v-list-group>
@@ -57,7 +59,6 @@
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-
       </v-list>
     </v-navigation-drawer>
 
@@ -87,20 +88,17 @@
 </template>
 
 <script>
-  import Toastr from 'toastr';
   import UserSession from '@/store/UserSession';
 
   export default {
-    data() {
-      return {
-        title: 'Bem-vindo',
-        loading: UserSession.get('loading'),
-        drawer: false,
-        user: UserSession.get('user'),
-        nickname: '',
-        items: [],
-      };
-    },
+    data: () => ({
+      title: 'Bem-vindo',
+      loading: UserSession.get('loading'),
+      user: UserSession.get('user'),
+      drawer: false,
+      items: [],
+      update: 'k',
+    }),
     created() {
       if (!UserSession.get('loading') && !UserSession.get('logged')) {
         this.$router.push('/auth/login');
@@ -111,44 +109,30 @@
         if (!UserSession.get('logged')) {
           this.$router.push('/auth/login');
         }
-
         this.user = UserSession.get('user');
-        if (this.user != null) {
-          this.nickname = this.user.nickname;
-        }
-
-        console.log('User:');
         console.log(this.user);
-        const me = this;
-        this.items.push({
-          icon: 'supervisor_account',
-          title: 'Usuários',
-          access: 0,
-          children: [{
-            title: 'Perfil',
-            href: `/user/profile/${me.user.nickname}`,
-          }],
-        }, {
-          icon: 'settings',
-          title: 'Sistema',
-          access: 100,
-          children: [{
-            title: 'Instituições',
-            href: '/institution/list',
-          }, {
-            title: 'Disciplinas',
-            href: '/discipline/list',
-          }, {
-            title: 'Usuários',
-            href: '/user/list',
-          }],
-        });
+
         this.loading = false;
+        this.update = 'kk';
       }, this);
-    },
-    mounted() {
+
+      this.items.push({
+        icon: 'settings',
+        title: 'Sistema',
+        access: 30,
+        children: [{
+          title: 'Instituições',
+          href: '/institution/list',
+        }, {
+          title: 'Disciplinas',
+          href: '/discipline/list',
+        }, {
+          title: 'Usuários',
+          href: '/user/list',
+        }],
+      });
+
       UserSession.on('logout', () => {
-        Toastr.success('Logout');
         this.$router.push('/auth/login');
       }, this);
     },

@@ -68,6 +68,7 @@
 </template>
 
 <script>
+  import Toastr from 'toastr';
   import $ from 'jquery';
   import UserSession from '@/store/UserSession';
   import TopicStore from '@/store/Topic';
@@ -79,9 +80,11 @@
       content: '',
       file: null,
       sends: false,
-      headers: [{ text: 'Nome', align: 'left', sortable: true, value: 'name' },
-         { text: 'Data', value: 'date' },
-         { text: 'Arquivo', value: 'arq' }],
+      headers: [
+        { text: 'Nome', align: 'left', sortable: true, value: 'name' },
+        { text: 'Data', value: 'date' },
+        { text: 'Arquivo', value: 'arq' },
+      ],
       items: [{ value: false, name: 'Gustavo', date: '22/04/2018', arq: 'jogo.rar' },
               { value: false, name: 'Guilherme', date: '23/04/2018', arq: 'joguinho.rar' }],
     }),
@@ -95,6 +98,9 @@
       }, this);
       TopicStore.on('successUpload', () => {
         console.log('Upload success');
+      }, this);
+      TopicStore.on('failDownload', (msg) => {
+        Toastr.error(msg);
       }, this);
     },
     methods: {
@@ -125,6 +131,9 @@
 
         TopicStore.dispatch({
           action: TopicStore.ACTION_DOWNLOAD,
+          data: {
+            topicItem: this.topicItem,
+          },
         });
       },
     },

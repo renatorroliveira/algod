@@ -128,6 +128,7 @@ const TopicStore = Fluxbone.Store.extend({
       params.formData,
     );
     promisse.then((result) => {
+      console.log(result);
       if (result.data.success) {
         me.trigger('successUpload');
       }
@@ -137,30 +138,35 @@ const TopicStore = Fluxbone.Store.extend({
     });
   },
 
-  download() {
+  download(params) {
     const me = this;
     $.ajax({
-      url: `${me.url}/download`,
+      url: `${me.url}/task/${params.topicItem.id}/download`,
       method: 'GET',
-      success(file, status, response) {
-        console.log(response.getAllResponseHeaders());
-        const date = response.getResponseHeader('date');
-        const contentType = response.getResponseHeader('content-type');
-        const filename = response.getResponseHeader('filename');
-        console.log(date);
-        console.log(contentType);
-        console.log(filename);
-        // console.log();
-        // console.log(filename);
-        // console.log(contentType);
-        const blob = new Blob([file]);
+      responseType: 'blob',
+      dataType: 'json',
+      success(response, status, xhr) {
+        console.log(xhr);
+        xhr.catch((error) => {
+          me.trigger('failDownload', error.responseJSON.message);
+        });
+        console.log(status);
+        console.log(response);
+        console.log(xhr.getAllResponseHeaders());
+
+        const contentType = xhr.getResponseHeader('content-type');
+        const filename = xhr.getResponseHeader('filename');
+
+        const blob = new Blob([response], { type: contentType }, filename);
+        console.log(blob);
         const link = document.createElement('a');
         link.href = window.URL.createObjectURL(blob);
         link.download = filename;
         link.click();
       },
       error(err) {
-        console.log(err);
+        console.error(err);
+        me.trigger('failDownload', err.responseJSON.message);
       },
     });
   },
