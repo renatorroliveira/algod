@@ -2,9 +2,13 @@ package com.developerkingdom.algod.entities.discipline.topic;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileUploadException;
 
@@ -148,30 +152,51 @@ public class TopicsController extends UserControlAbstractController {
 	}
 
 	@Post("/task/{id}/upload")
-	@UploadSizeLimit(sizeLimit=40 * 1024 * 1024, fileSizeLimit=40 * 1024 * 1024)
+	@UploadSizeLimit(sizeLimit=60 * 1024 * 1024, fileSizeLimit=60 * 1024 * 1024)
 	public void uploadFile(long id, UploadedFile file) throws FileUploadException {
-		LOGGER.info(file.getFileName());
-		File uploadedFile = new File(ApplicationSetup.UPLOAD_PATH);
-		if (!uploadedFile.exists())
-			uploadedFile.mkdirs();
-		File savedPhoto = new File(ApplicationSetup.UPLOAD_PATH, file.getFileName());
-	    try {
-			file.writeTo(savedPhoto);
-		} catch(Exception e) {
-			this.fail(e.getMessage());
-			LOGGER.errorf(e, "Erro: %s", e.getMessage());
-		} 
-		this.success(true);
+		TopicItem topicItem = this.bs.exists(id, TopicItem.class);
+		if (topicItem == null)
+			this.result.notFound();
+		else {
+			String filename = file.getFileName();
+			long size = file.getSize();
+			String contentType = file.getContentType();
+			
+			File uploadedFile = new File(ApplicationSetup.UPLOAD_PATH);
+			if (!uploadedFile.exists())
+				uploadedFile.mkdirs();
+			File newFile = new File(ApplicationSetup.UPLOAD_PATH, filename);
+		    try {
+				file.writeTo(newFile);
+				this.bs.sendTask(topicItem, file, ApplicationSetup.UPLOAD_PATH, this.userSession.getUser());
+				this.success();
+			} catch(Exception e) {
+				this.fail(e.getMessage());
+				LOGGER.errorf(e, "Erro: %s", e.getMessage());
+			} 
+		}
 	}
 	
 	@Get("/download")
-	public Download downloadFile(long id) {
+	public Download downloadFile(long id, HttpServletRequest request, HttpServletResponse response) {
 		File file = new File(ApplicationSetup.UPLOAD_PATH + "/430915.jpg");
-        String contentType = "image/jpg";
-        String filename = "blablabla.jpg";
-
+		Enumeration<String> headerNames = request.getHeaderNames();
+		String contentType = request.getContentType();
+		LOGGER.info(contentType);
+        while (headerNames.hasMoreElements()) {
+            String key = (String) headerNames.nextElement();
+            String value = request.getHeader(key);
+            LOGGER.info(key);
+            LOGGER.info(value);
+        }
+        String filename = file.getName();
         try {
-			return new FileDownload(file, contentType, filename);
+        	if (file.isFile()) {
+        		FileDownload fileDownload = new FileDownload(file, "img/jpg", filename, true);
+				response.setHeader("filename", file.getName());
+        		return fileDownload;
+        	}
+        	return null;
 		} catch (FileNotFoundException e) {
 			LOGGER.info(e.getMessage());
 			e.printStackTrace();

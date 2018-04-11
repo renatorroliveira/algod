@@ -10,8 +10,10 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
 import com.developerkingdom.algod.entities.discipline.Discipline;
+import com.developerkingdom.algod.entities.user.User;
 
 import br.com.caelum.vraptor.boilerplate.HibernateBusiness;
+import br.com.caelum.vraptor.observer.upload.UploadedFile;
 
 @RequestScoped
 public class TopicsBS extends HibernateBusiness {
@@ -80,5 +82,18 @@ public class TopicsBS extends HibernateBusiness {
 			}
 		}
 		return list;
+	}
+	
+	public Send sendTask(TopicItem topicItem, UploadedFile file, String path, User user) {
+		Send send = new Send();
+		send.setPath(path);
+		send.setContentType(file.getContentType());
+		send.setName(file.getFileName());
+		send.setSize(file.getSize());
+		send.setTopicItem(topicItem);
+		send.setUser(user);
+		this.dao.persist(send);
+		
+		return send;
 	}
 }

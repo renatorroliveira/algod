@@ -93,6 +93,9 @@
       TopicStore.on('getTopicItemById', (topicItem) => {
         this.topicItem = topicItem.data;
       }, this);
+      TopicStore.on('successUpload', () => {
+        console.log('Upload success');
+      }, this);
     },
     methods: {
       fileSelected(e) {

@@ -122,12 +122,19 @@ const TopicStore = Fluxbone.Store.extend({
   },
 
   uploadFile(params) {
-    console.log(params.formData);
-
-    return axios.post(
-      `${this.url}/task/1/upload`,
+    const me = this;
+    const promisse = axios.post(
+      `${this.url}/task/${params.topicItem.id}/upload`,
       params.formData,
     );
+    promisse.then((result) => {
+      if (result.data.success) {
+        me.trigger('successUpload');
+      }
+    }).catch((error) => {
+      console.error(error);
+      me.trigger('fail', error);
+    });
   },
 
   download() {
@@ -135,8 +142,22 @@ const TopicStore = Fluxbone.Store.extend({
     $.ajax({
       url: `${me.url}/download`,
       method: 'GET',
-      success(s) {
-        console.log(s);
+      success(file, status, response) {
+        console.log(response.getAllResponseHeaders());
+        const date = response.getResponseHeader('date');
+        const contentType = response.getResponseHeader('content-type');
+        const filename = response.getResponseHeader('filename');
+        console.log(date);
+        console.log(contentType);
+        console.log(filename);
+        // console.log();
+        // console.log(filename);
+        // console.log(contentType);
+        const blob = new Blob([file]);
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
       },
       error(err) {
         console.log(err);

@@ -14,17 +14,23 @@ import com.developerkingdom.algod.entities.user.User;
 
 import br.com.caelum.vraptor.boilerplate.SimpleLogicalDeletableEntity;
 
-@Entity(name = Sends.TABLE)
-@Table(name = Sends.TABLE)
-public class Sends extends SimpleLogicalDeletableEntity {
+@Entity(name = Send.TABLE)
+@Table(name = Send.TABLE)
+public class Send extends SimpleLogicalDeletableEntity {
 	public static final String TABLE = "algod_discipline_task_sends";
 	private static final long serialVersionUID = 1L;
 	
-	@ManyToOne(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
+	@ManyToOne(fetch=FetchType.EAGER)
 	private User user;
 	
-	private byte[] file;
+	private String path;
 	
+	private long size;
+	
+	private String contentType;
+	
+	private String name;
+
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date sendDate = new Date();
 	
@@ -39,19 +45,19 @@ public class Sends extends SimpleLogicalDeletableEntity {
 		this.user = user;
 	}
 
-	public byte[] getFile() {
-		return file;
+	public String getPath() {
+		return path;
 	}
 
-	public void setFile(byte[] file) {
-		this.file = file;
+	public void setPath(String file_Path) {
+		this.path = file_Path;
 	}
 
-	public Date getDate() {
+	public Date getSendDate() {
 		return sendDate;
 	}
 
-	public void setDate(Date date) {
+	public void setSendDate(Date date) {
 		this.sendDate = date;
 	}
 
@@ -61,6 +67,30 @@ public class Sends extends SimpleLogicalDeletableEntity {
 
 	public void setTopicItem(TopicItem topicItem) {
 		this.topicItem = topicItem;
+	}
+	
+	public long getSize() {
+		return size;
+	}
+
+	public void setSize(long size) {
+		this.size = size;
+	}
+
+	public String getContentType() {
+		return contentType;
+	}
+
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 	 
 }
