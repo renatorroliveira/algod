@@ -188,4 +188,15 @@ public class TopicsController extends UserControlAbstractController {
 		
 		return null;
 	}
+	
+	@Get("/task/{id}/sends")
+	public void sends(long id) {
+		TopicItem topicItem = this.bs.exists(id, TopicItem.class);
+		if (topicItem == null)
+			this.result.notFound();
+		else {
+			List<Send> sends = this.bs.listAllSends(topicItem);
+			this.success(sends, (long) sends.size());
+		}
+	}
 }

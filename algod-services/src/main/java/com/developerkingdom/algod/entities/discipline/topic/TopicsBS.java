@@ -108,5 +108,11 @@ public class TopicsBS extends HibernateBusiness {
 		return null;
 	}
 	
+	public List<Send> listAllSends(TopicItem topicItem) {
+		Criteria criteria = this.dao.newCriteria(Send.class)
+				.add(Restrictions.eq("deleted", false))
+				.add(Restrictions.eq("topicItem", topicItem));
+		return this.dao.findByCriteria(criteria, Send.class);
+	}
 
 }

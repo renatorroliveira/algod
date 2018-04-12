@@ -14,8 +14,9 @@ const TopicStore = Fluxbone.Store.extend({
   ACTION_DELETE_TOPIC: 'deleteTopic',
   ACTION_ADD_TOPIC_ITEM: 'addTopicItem',
   ACTION_GET_TOPIC_ITEM: 'getTopicItemById',
-  ACTION_UPLOAD: 'uploadFile',
-  ACTION_DOWNLOAD: 'download',
+  ACTION_UPLOAD: 'uploadSend',
+  ACTION_DOWNLOAD: 'downloadSend',
+  ACTION_SENDS: 'listAllSends',
 
   model: TopicModel,
   url: `${Config.baseUrl}/v1/topic`,
@@ -121,7 +122,7 @@ const TopicStore = Fluxbone.Store.extend({
     });
   },
 
-  uploadFile(params) {
+  uploadSend(params) {
     const me = this;
     const promisse = axios.post(
       `${this.url}/task/${params.topicItem.id}/upload`,
@@ -138,35 +139,42 @@ const TopicStore = Fluxbone.Store.extend({
     });
   },
 
-  download(params) {
+  downloadSend(params) {
     const me = this;
     $.ajax({
       url: `${me.url}/task/${params.topicItem.id}/download`,
       method: 'GET',
-      responseType: 'blob',
-      dataType: 'json',
+      xhrFields: {
+        responseType: 'blob',
+      },
       success(response, status, xhr) {
-        console.log(xhr);
-        xhr.catch((error) => {
-          me.trigger('failDownload', error.responseJSON.message);
-        });
-        console.log(status);
-        console.log(response);
-        console.log(xhr.getAllResponseHeaders());
-
         const contentType = xhr.getResponseHeader('content-type');
         const filename = xhr.getResponseHeader('filename');
-
         const blob = new Blob([response], { type: contentType }, filename);
-        console.log(blob);
         const link = document.createElement('a');
         link.href = window.URL.createObjectURL(blob);
         link.download = filename;
         link.click();
+        me.trigger('successDownload');
       },
       error(err) {
         console.error(err);
         me.trigger('failDownload', err.responseJSON.message);
+      },
+    });
+  },
+
+  listAllSends(id) {
+    const me = this;
+    $.ajax({
+      url: `${me.url}/task/${id}/sends`,
+      method: 'GET',
+      dataType: 'json',
+      success(response) {
+        me.trigger('sends', response.data);
+      },
+      error(args) {
+        me.trigger('fail', args);
       },
     });
   },
