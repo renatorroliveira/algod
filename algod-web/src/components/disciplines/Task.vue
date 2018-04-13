@@ -12,10 +12,10 @@
       <v-flex xs12>
         <v-card style="min-height:200px;">
           <v-card-text>
-            <p>{{topicItem.description}}</p>
+            <p style="font-size: 18px">{{topicItem.description}}</p>
 
-            <v-flex xs6 offset-xs3>
-              <v-card v-if="accessLevel >= 30">
+            <v-flex v-if="accessLevel >= 30" xs6 offset-xs3>
+              <v-card>
                 <v-card-text>
                   <v-layout row wrap v-for="(item, i) in avaliationSummary" :key="i">
                     <v-flex xs6>
@@ -32,46 +32,82 @@
                       <p>{{item.dateAvailableTo}}</p>
                       <p>((now) - (entrega))</p>
                     </v-flex>
+                    <v-flex xs12 text-xs-center>
+                      <v-btn v-if="accessLevel >= 30" color="secondary" @click.stop="sends = true">Ver Envios</v-btn>
+                    </v-flex>
                   </v-layout>
                 </v-card-text>
               </v-card>
             </v-flex>
 
-            <v-btn v-on:click="downloadSend($event)">download example</v-btn>
+            <v-spacer class="mb-3"></v-spacer>
+
+            <v-flex xs6 offset-xs3>
+              <v-card>
+                <v-card-text>
+                  <v-layout row wrap>
+                    <v-flex xs6>
+                      <p>Status de envio</p>
+                      <p>Status da avaliação</p>
+                      <p v-if="!!send">Data de entrega</p>
+                      <p>Tempo restante</p><br>
+                      <p v-if="!!send">Envio de arquivos</p>
+                    </v-flex>
+                    <v-flex xs6>
+                      <p>{{ typeof send === 'undefined' ? 'Aguardando envio' : 'Enviado'}}</p>
+                      <p>Sem nota</p>
+                      <p v-if="!!send">{{send.sendDate}}</p>
+                      <p>Tarefa entregue x horas/dias andiantada</p>
+                      <p v-if="!!send"><v-btn v-on:click="downloadSend($event)" color="secondary"><v-icon dark>file_download</v-icon>&nbsp;download</v-btn></p>
+                    </v-flex>
+                  </v-layout>
+                </v-card-text>
+              </v-card>
+            </v-flex>
 
             <v-spacer class="mb-3"></v-spacer>
 
-            <div v-if="topicItem.contentType === 1">
-              <form id="formulario" v-on:submit="uploadSend($event)" enctype="multipart/form-data">
-                <input id="fileupload" type="file" name="file" multiple>
-                <input type="submit" name="submit" value="Enviar">
-              </form>
-            </div>
+            <v-flex v-if="!send">
+              <div v-if="topicItem.contentType === 1">
+                <form id="formulario" v-on:submit="uploadSend($event)" enctype="multipart/form-data">
+                  <input id="fileupload" type="file" name="file" multiple>
+                  <v-btn type="submit">Entregar</v-btn>
+                </form>
+              </div>
 
-            <div v-else>
-              <v-text-field
-                label="Conteudo"
-                v-model="content"
-                persistent-hint
-                multi-line
-              ></v-text-field>
-            </div>
+              <div v-else>
+                <v-text-field
+                  label="Conteudo"
+                  v-model="content"
+                  persistent-hint
+                  multi-line
+                ></v-text-field>
+              </div>
+            </v-flex>
           </v-card-text>
-
-          <div>
-            <v-btn v-if="accessLevel >= 30" color="primary" dark @click.stop="sends = true">Ver Envios</v-btn>
-          </div>
         </v-card>
 
         <v-dialog v-model="sends" max-width="1000px">
           <v-card>
-            <v-card-title><h3>Envios</h3></v-card-title>
+            <v-card-title>
+              <v-flex xs8>
+                <v-btn flat icon v-on:click="sends = false">
+                  <v-icon>close</v-icon>
+                </v-btn>
+                <span style="font-size: 20px;"><strong>Envios de {{topicItem.label}}</strong></span>
+              </v-flex>
+              <v-flex xs4>
+                <v-btn flat v-on:click="downloadAllSends()">
+                  <v-icon>file_download</v-icon>
+                  Fazer download de todos os envios
+                </v-btn>
+              </v-flex>
+            </v-card-title>
             <v-card-text>
               <template>
                 <v-data-table
                   :headers="headers"
                   :items="sendList"
-                  hide-actions
                   class="elevation-1"
                   >
                   <template slot="items" slot-scope="props">
@@ -106,6 +142,7 @@
       subscribedUsers: [],
       sends: false,
       avaliationSummary: [],
+      send: [],
       headers2: [
         { text: 'Participantes', value: 'Participantes' },
         { text: 'Enviado', value: 'Enviado' },
@@ -128,9 +165,25 @@
         action: TopicStore.ACTION_SENDS,
         data: this.$router.currentRoute.params.topicItemId,
       });
+      TopicStore.dispatch({
+        action: TopicStore.ACTION_GET_SEND,
+        data: this.$router.currentRoute.params.topicItemId,
+      });
+      TopicStore.on('successSendsDownloads', (zipFile, xhr) => {
+        const contentType = xhr.getResponseHeader('content-type');
+        const filename = xhr.getResponseHeader('filename');
+        const blob = new Blob([zipFile], { type: contentType }, filename);
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+      }, this);
       TopicStore.on('sends', (sends) => {
         this.sendList = sends;
-        console.log(this.sendList);
+      }, this);
+      TopicStore.on('getSend', (send) => {
+        this.send = send;
+        console.log(this.send);
       }, this);
       TopicStore.on('getTopicItemById', (topicItem) => {
         this.topicItem = topicItem.data;
@@ -150,6 +203,10 @@
       }, this);
       TopicStore.on('successUpload', () => {
         console.log('Upload success');
+        TopicStore.dispatch({
+          action: TopicStore.ACTION_GET_SEND,
+          data: this.$router.currentRoute.params.topicItemId,
+        });
       }, this);
       TopicStore.on('successDownload', () => {
         console.log('Download success');
@@ -188,6 +245,12 @@
           data: {
             topicItem: this.topicItem,
           },
+        });
+      },
+      downloadAllSends() {
+        TopicStore.dispatch({
+          action: TopicStore.ACTION_SENDS_DOWNLOAD,
+          data: this.$router.currentRoute.params.topicItemId,
         });
       },
     },

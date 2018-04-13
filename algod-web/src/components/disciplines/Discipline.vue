@@ -379,7 +379,7 @@
         event.preventDefault();
         if (this.accessKey === '' && this.discipline.accessKey.length > 0) {
           Toastr.warning('Você deve digitar a senha');
-        } else if (this.discipline.accessKey.length === 0) {
+        } else if (this.discipline.accessKey.length > 0) {
           DisciplineStore.dispatch({
             action: DisciplineStore.ACTION_SUBSCRIBE,
             data: {

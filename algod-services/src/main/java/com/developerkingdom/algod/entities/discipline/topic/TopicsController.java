@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileUploadException;
 
 import com.developerkingdom.algod.entities.discipline.Discipline;
+import com.developerkingdom.algod.entities.user.authz.Permissioned;
 import com.developerkingdom.algod.system.UserControlAbstractController;
 
 import br.com.caelum.vraptor.Consumes;
@@ -19,7 +20,7 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.boilerplate.NoCache;
 import br.com.caelum.vraptor.observer.download.Download;
-import br.com.caelum.vraptor.observer.download.FileDownload;
+import br.com.caelum.vraptor.observer.download.ZipDownload;
 import br.com.caelum.vraptor.observer.upload.UploadSizeLimit;
 import br.com.caelum.vraptor.observer.upload.UploadedFile;
 
@@ -28,7 +29,7 @@ import br.com.caelum.vraptor.observer.upload.UploadedFile;
 public class TopicsController extends UserControlAbstractController {
 	
 	@Inject private TopicsBS bs;
-	@Inject private static final String PATH = "./upload/files";
+	public static final String PATH = "./upload/files";
 
 	@Post("/create")
 	@Consumes
@@ -181,9 +182,9 @@ public class TopicsController extends UserControlAbstractController {
 		else {
 			String filename = this.userSession.getUser().getId().toString() + "_" + topicItem.getId().toString() + "_" + send.getName().toString();
 			File file = new File(PATH, filename);
-			response.setHeader("content-type", send.getContentType());
-			response.setHeader("filename", filename);
-	        return new FileDownload(file, send.getContentType().toString(), filename, true);
+			if (file.exists()) {
+				return this.bs.getFileDownload(response, file, this.userSession.getUser(), filename, send);
+			}
 		}
 		
 		return null;
@@ -197,6 +198,31 @@ public class TopicsController extends UserControlAbstractController {
 		else {
 			List<Send> sends = this.bs.listAllSends(topicItem);
 			this.success(sends, (long) sends.size());
+		}
+	}
+	
+	@Get("/task/{id}/sends/downloads")
+	@Permissioned
+	public Download getAllSendsDownloads(long id, HttpServletResponse response) throws FileNotFoundException {
+		TopicItem topicItem = this.bs.exists(id, TopicItem.class);
+		if (topicItem == null) {
+			this.result.notFound();
+			return null;
+		}
+		else {
+			LOGGER.info("entrouuuuuuuuu");
+			Iterable<java.nio.file.Path> downs = this.bs.listAllSendsDownloads(topicItem, response);
+			return new ZipDownload("files.zip", downs);
+		}
+	}
+	
+	@Get("/task/{id}/send/loggedUser")
+	public void getSend(long id) {
+		TopicItem topicItem = this.bs.exists(id, TopicItem.class);
+		if (topicItem == null)
+			this.result.notFound();
+		else {
+			this.success(this.bs.getSend(topicItem, this.userSession.getUser()));
 		}
 	}
 }

@@ -17,6 +17,8 @@ const TopicStore = Fluxbone.Store.extend({
   ACTION_UPLOAD: 'uploadSend',
   ACTION_DOWNLOAD: 'downloadSend',
   ACTION_SENDS: 'listAllSends',
+  ACTION_SENDS_DOWNLOAD: 'downloadAllSends',
+  ACTION_GET_SEND: 'getSend',
 
   model: TopicModel,
   url: `${Config.baseUrl}/v1/topic`,
@@ -122,6 +124,21 @@ const TopicStore = Fluxbone.Store.extend({
     });
   },
 
+  getSend(id) {
+    const me = this;
+    $.ajax({
+      url: `${me.url}/task/${id}/send/loggedUser`,
+      method: 'GET',
+      dataType: 'json',
+      success(response) {
+        me.trigger('getSend', response.data);
+      },
+      error(args) {
+        me.trigger('fail', args);
+      },
+    });
+  },
+
   uploadSend(params) {
     const me = this;
     const promisse = axios.post(
@@ -159,7 +176,27 @@ const TopicStore = Fluxbone.Store.extend({
       },
       error(err) {
         console.error(err);
-        me.trigger('failDownload', err.responseJSON.message);
+        me.trigger('failDownload', err);
+      },
+    });
+  },
+
+  downloadAllSends(id) {
+    console.log(id);
+    const me = this;
+    $.ajax({
+      url: `${me.url}/task/${id}/sends/downloads`,
+      method: 'GET',
+      xhrFields: {
+        responseType: 'arraybuffer',
+      },
+      success(response, status, xhr) {
+        console.log(status);
+        me.trigger('successSendsDownloads', response, xhr);
+      },
+      error(err) {
+        console.error(err);
+        me.trigger('failDownload', err);
       },
     });
   },

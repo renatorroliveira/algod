@@ -1,9 +1,14 @@
 package com.developerkingdom.algod.entities.discipline.topic;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.nio.file.Path;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
+import javax.servlet.http.HttpServletResponse;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Order;
@@ -13,6 +18,8 @@ import com.developerkingdom.algod.entities.discipline.Discipline;
 import com.developerkingdom.algod.entities.user.User;
 
 import br.com.caelum.vraptor.boilerplate.HibernateBusiness;
+import br.com.caelum.vraptor.observer.download.Download;
+import br.com.caelum.vraptor.observer.download.FileDownload;
 import br.com.caelum.vraptor.observer.upload.UploadedFile;
 
 @RequestScoped
@@ -108,11 +115,40 @@ public class TopicsBS extends HibernateBusiness {
 		return null;
 	}
 	
+	public Download getFileDownload(HttpServletResponse response, File file, User user, String filename, Send send) throws FileNotFoundException {
+		response.setHeader("content-type", send.getContentType());
+		response.setHeader("filename", filename);
+        return new FileDownload(file, send.getContentType().toString(), filename, true);
+	}
+	
 	public List<Send> listAllSends(TopicItem topicItem) {
 		Criteria criteria = this.dao.newCriteria(Send.class)
 				.add(Restrictions.eq("deleted", false))
 				.add(Restrictions.eq("topicItem", topicItem));
 		return this.dao.findByCriteria(criteria, Send.class);
+	}
+	
+	public Iterable<Path> listAllSendsDownloads(TopicItem topicItem, HttpServletResponse response) {
+		List<Path> downList = new LinkedList<Path>();
+		List<Send> sends = this.listAllSends(topicItem);
+		
+		for (int i = 0; i < sends.size(); i++) {
+			User user = sends.get(i).getUser();
+			String filename = user.getId().toString() + "_" + topicItem.getId().toString() + "_" + sends.get(i).getName().toString();
+			Path file = new File(TopicsController.PATH, filename).toPath();
+			downList.add(file);
+		}
+		response.setHeader("filename", "Sends_" + topicItem.getLabel().toString() + "_Downloaded_" + new Date().toString());
+		return downList;
+	}
+	
+	public Send getSend(TopicItem topicItem, User user) {
+		Criteria criteria = this.dao.newCriteria(Send.class)
+				.add(Restrictions.eq("deleted", false))
+				.add(Restrictions.eq("user", user))
+				.add(Restrictions.eq("topicItem", topicItem));
+		Send send = (Send) criteria.uniqueResult();
+		return send;
 	}
 
 }
