@@ -140,9 +140,11 @@ const DisciplineStore = Fluxbone.Store.extend({
       dataType: 'json',
       data: JSON.stringify(params),
       success(response) {
+        console.log(response);
         me.trigger('doSubscribe', response.data);
       },
       error(opts) {
+        console.error(opts);
         me.trigger('fail', opts);
       },
     });

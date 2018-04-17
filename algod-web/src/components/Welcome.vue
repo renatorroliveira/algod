@@ -12,15 +12,10 @@
           realizar suas provas. Tudo por aqui, simples e prático.
         </p>
       </v-flex>
-      <v-flex xs4 offset-xs4>
-        <v-btn v-if="accessLevel < 30" color="primary" dark @click.stop="dialog = true">Pesquisar disciplinas</v-btn> <v-spacer class="mb-4"></v-spacer>
+      <v-flex v-if="disciplines.length > 0" xs4 offset-xs4>
+        <v-divider class="mb-4"></v-divider>
+        <h5>Disciplinas Inscritas</h5>
           <v-card v-for="(discipline, i) in disciplines" :key="discipline.id" class="text-xs-center">
-            <!-- <v-card-media
-              v-if="discipline.discipline.img != null"
-              :src="discipline.discipline.img"
-              height="200px"
-            >
-            </v-card-media> -->
             <v-card-title>
               <v-flex xs12>
                 <h5>{{discipline.discipline.name}}</h5>
@@ -30,7 +25,7 @@
             <v-card-actions>
               <v-flex xs12>
                 <v-btn flat color="purple" :to="`/discipline/${discipline.discipline.id}`">Visitar</v-btn>
-                <v-btn flat color="black" v-on:click="doUnsubscribe($event, discipline.discipline)">Desinscrever</v-btn>
+                <v-btn flat color="black" v-on:click="doUnsubscribe($event, discipline.discipline)">Excluir inscrição</v-btn>
               </v-flex>
             </v-card-actions>
             <v-spacer class="mb-3"></v-spacer>
@@ -65,12 +60,6 @@
           <v-spacer class="mb-3"></v-spacer>
           <v-flex offset-xs3 xs6 v-if="resultSearch.length > 0">
             <v-card xs6 offset-xs3 v-for="(discipline, i) in resultSearch" :key="discipline.id">
-              <!-- <v-card-media
-                v-if="discipline.img != null"
-                :src="discipline.img"
-                height="200px"
-              >
-              </v-card-media> -->
               <v-card-title class="text-xs-center">
                 <v-flex xs12>
                   <h5>{{discipline.name}}</h5>
@@ -88,7 +77,6 @@
       </v-card>
     </v-dialog>
   </v-container>
-
 </template>
 
 <script>
@@ -105,16 +93,14 @@
       terms: '',
       resultSearch: [],
       accessKey: '',
-      query: false,
       dialog: false,
     }),
     mounted() {
-      const me = this;
       DisciplineStore.dispatch({
         action: DisciplineStore.ACTION_LIST_SUBSCRIBED_DISCIPLINES,
       });
       DisciplineStore.on('listSubscribedDisciplines', (data) => {
-        me.disciplines = data.data;
+        this.disciplines = data.data;
       }, this);
       DisciplineStore.on('doUnsubscribe', () => {
         DisciplineStore.dispatch({
@@ -122,8 +108,7 @@
         });
       }, this);
       DisciplineStore.on('search', (data) => {
-        me.query = true;
-        me.resultSearch = data.data;
+        this.resultSearch = data.data;
       }, this);
     },
     methods: {

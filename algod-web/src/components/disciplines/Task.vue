@@ -15,53 +15,66 @@
             <p style="font-size: 18px">{{topicItem.description}}</p>
 
             <v-flex v-if="accessLevel >= 30" xs6 offset-xs3>
-              <v-card>
-                <v-card-text>
-                  <v-layout row wrap v-for="(item, i) in avaliationSummary" :key="i">
-                    <v-flex xs6>
-                      <p>Participantes</p>
-                      <p>Envios</p>
-                      <p>Precisa de avaliaçao</p>
-                      <p>Data de entrega</p>
-                      <p>Tempo restante</p>
-                    </v-flex>
-                    <v-flex xs6>
-                      <p>{{item.participantes}}</p>
-                      <p>{{item.envios}}</p>
-                      <p>{{item.needAvaliation}}</p>
-                      <p>{{item.dateAvailableTo}}</p>
-                      <p>((now) - (entrega))</p>
-                    </v-flex>
-                    <v-flex xs12 text-xs-center>
-                      <v-btn v-if="accessLevel >= 30" color="secondary" @click.stop="sends = true">Ver Envios</v-btn>
-                    </v-flex>
-                  </v-layout>
-                </v-card-text>
+              <v-card v-if="!!send">
+                <v-card-title><h5>Envios da tarefa</h5></v-card-title>
+                <v-divider></v-divider>
+                <v-list>
+                  <v-list-tile>
+                    <v-list-tile-content>Participantes:</v-list-tile-content>
+                    <v-list-tile-content class="align-end">{{subscribedUsers.length}}</v-list-tile-content>
+                  </v-list-tile>
+                  <v-list-tile>
+                    <v-list-tile-content>Envios:</v-list-tile-content>
+                    <v-list-tile-content class="align-end">{{sendList.length}}</v-list-tile-content>
+                  </v-list-tile>
+                  <v-list-tile>
+                    <v-list-tile-content>Precisa de avaliaçao:</v-list-tile-content>
+                    <v-list-tile-content class="align-end">{{sendList.length}}</v-list-tile-content>
+                  </v-list-tile>
+                  <v-list-tile>
+                    <v-list-tile-content>Prazo de entrega:</v-list-tile-content>
+                    <v-list-tile-content class="align-end">{{topicItem.dateAvailableTo}}</v-list-tile-content>
+                  </v-list-tile>
+                  <v-list-tile>
+                    <v-list-tile-content>Tempo restante:</v-list-tile-content>
+                    <v-list-tile-content class="align-end">now - date dateAvailableTo</v-list-tile-content>
+                  </v-list-tile>
+                  <v-list-tile>
+                    <v-list-tile-content>Envios:</v-list-tile-content>
+                    <v-list-tile-content class="align-end"><v-btn v-if="accessLevel >= 30" color="secondary" @click.stop="sends = true">Ver Envios</v-btn></v-list-tile-content>
+                  </v-list-tile>
+                </v-list>
               </v-card>
             </v-flex>
 
             <v-spacer class="mb-3"></v-spacer>
 
             <v-flex xs6 offset-xs3>
-              <v-card>
-                <v-card-text>
-                  <v-layout row wrap>
-                    <v-flex xs6>
-                      <p>Status de envio</p>
-                      <p>Status da avaliação</p>
-                      <p v-if="!!send">Data de entrega</p>
-                      <p>Tempo restante</p><br>
-                      <p v-if="!!send">Envio de arquivos</p>
-                    </v-flex>
-                    <v-flex xs6>
-                      <p>{{ typeof send === 'undefined' ? 'Aguardando envio' : 'Enviado'}}</p>
-                      <p>Sem nota</p>
-                      <p v-if="!!send">{{send.sendDate}}</p>
-                      <p>Tarefa entregue x horas/dias andiantada</p>
-                      <p v-if="!!send"><v-btn v-on:click="downloadSend($event)" color="secondary"><v-icon dark>file_download</v-icon>&nbsp;download</v-btn></p>
-                    </v-flex>
-                  </v-layout>
-                </v-card-text>
+              <v-card v-if="!!send">
+                <v-card-title><h5>Seus envios</h5></v-card-title>
+                <v-divider></v-divider>
+                <v-list>
+                  <v-list-tile>
+                    <v-list-tile-content>Status de envio:</v-list-tile-content>
+                    <v-list-tile-content align-right>{{ typeof send === 'undefined' ? 'Aguardando envio' : 'Enviado'}}</v-list-tile-content>
+                  </v-list-tile>
+                  <v-list-tile>
+                    <v-list-tile-content>Status da avaliação:</v-list-tile-content>
+                    <v-list-tile-content class="align-right">Sem nota</v-list-tile-content>
+                  </v-list-tile>
+                  <v-list-tile>
+                    <v-list-tile-content>Data da entrega:</v-list-tile-content>
+                    <v-list-tile-content class="align-right">{{send.sendDate}}</v-list-tile-content>
+                  </v-list-tile>
+                  <v-list-tile>
+                    <v-list-tile-content>Tempo restante:</v-list-tile-content>
+                    <v-list-tile-content class="align-right">Tarefa entregue x horas/dias andiantada</v-list-tile-content>
+                  </v-list-tile>
+                  <v-list-tile>
+                    <v-list-tile-content>Envio de arquivos:</v-list-tile-content>
+                    <v-list-tile-content class="align-right"><v-btn v-on:click="downloadSend($event)" color="secondary"><v-icon dark>file_download</v-icon>&nbsp;download</v-btn></v-list-tile-content>
+                  </v-list-tile>
+                </v-list>
               </v-card>
             </v-flex>
 
@@ -97,7 +110,7 @@
                 <span style="font-size: 20px;"><strong>Envios de {{topicItem.label}}</strong></span>
               </v-flex>
               <v-flex xs4>
-                <v-btn flat v-on:click="downloadAllSends()">
+                <v-btn v-if="sendList.length > 0" flat v-on:click="downloadAllSends()">
                   <v-icon>file_download</v-icon>
                   Fazer download de todos os envios
                 </v-btn>
@@ -106,7 +119,11 @@
             <v-card-text>
               <template>
                 <v-data-table
+                  disable-initial-sort="true"
+                  no-data-text="A tarefa não possui nenhum envio"
                   :headers="headers"
+                  :rows-per-page-items="rowsPerPageItems"
+                  rows-per-page-text="Linhas por página"
                   :items="sendList"
                   class="elevation-1"
                   >
@@ -131,6 +148,7 @@
   import UserSession from '@/store/UserSession';
   import DisciplineStore from '@/store/Discipline';
   import TopicStore from '@/store/Topic';
+  import UploadButton from './UploadButton';
 
   export default {
     data: () => ({
@@ -141,19 +159,28 @@
       file: null,
       subscribedUsers: [],
       sends: false,
-      avaliationSummary: [],
       send: [],
-      headers2: [
-        { text: 'Participantes', value: 'Participantes' },
-        { text: 'Enviado', value: 'Enviado' },
-        { text: 'Precisa ser avaliado', value: 'Needs avaliation' },
-        { text: 'Data de entrega', value: 'Data' },
-        { text: 'Status', value: 'Status' },
+      rowsPerPageItems: [
+        5, 10, 25,
+        {
+          text: 'Todas',
+          value: -1,
+        },
       ],
       headers: [
-        { text: 'Nome', align: 'left', sortable: true, value: 'user.name' },
-        { text: 'Data', value: 'sendDate' },
-        { text: 'Arquivo', value: 'name' },
+        {
+          text: 'Nome',
+          value: 'name',
+          align: 'left',
+        },
+        {
+          text: 'Data de entrega',
+          value: 'date',
+        },
+        {
+          text: 'Nome do arquivo',
+          value: 'filename',
+        },
       ],
     }),
     created() {
@@ -192,14 +219,8 @@
           data: this.topicItem.topic.discipline.id,
         });
       }, this);
-      DisciplineStore.on(DisciplineStore.ACTION_GET_SUBSCRIBED_USERS, (subscribedUsers) => {
+      DisciplineStore.on('subscribedUsers', (subscribedUsers) => {
         this.subscribedUsers = subscribedUsers.data;
-        this.avaliationSummary.push({
-          participantes: subscribedUsers.data.length,
-          envios: this.sendList.length,
-          needAvaliation: this.sendList.length,
-          dateAvailableTo: this.topicItem.dateAvailableTo,
-        });
       }, this);
       TopicStore.on('successUpload', () => {
         console.log('Upload success');
@@ -219,7 +240,6 @@
       fileSelected(e) {
         console.log(e);
       },
-
       uploadSend(event) {
         event.preventDefault();
         const formData = new FormData();
@@ -254,12 +274,32 @@
         });
       },
     },
-
-    updated() {
-      // console.log(this.form);
-    },
     beforeDestroy() {
       TopicStore.off(null, null, this);
     },
+    components: {
+      UploadButton,
+    },
   };
 </script>
+
+<style scoped>
+.jbtn-file {
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.jbtn-file input[type=file] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 100%;
+  min-height: 100%;
+  text-align: right;
+  filter: alpha(opacity=0);
+  opacity: 0;
+  outline: none;
+  cursor: inherit;
+  display: block;
+}
+</style>

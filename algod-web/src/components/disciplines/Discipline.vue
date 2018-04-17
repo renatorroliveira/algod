@@ -1,5 +1,5 @@
 <template>
-  <v-container grid-list-xl text-xs-center v-if="!!subscription || accessLevel >= 30 && !!discipline">
+  <v-container grid-list-xl text-xs-center v-if="!!discipline && (!!subscription || disciplineRole >= 30)">
     <v-flex xs12>
       <v-card color="blue-grey darken-1 white--text">
         <v-card-text>
@@ -11,26 +11,15 @@
 
     <v-layout row wrap>
       <v-flex xs3>
-        <v-list v-if="items.length > 0">
-          <v-list-group no-action>
-            <v-list-tile slot="item">
-              <v-list-tile-content>
-                <v-list-tile-title><strong>Disciplinas</strong></v-list-tile-title>
-              </v-list-tile-content>
-              <v-list-tile-action>
-                <v-icon>keyboard_arrow_down</v-icon>
-              </v-list-tile-action>
-            </v-list-tile>
-            <v-list-tile v-for="(disciplina, i) in items" :key="disciplina.id" :to="disciplina.href">
-              <v-list-tile-content>
-                <v-list-tile-title>{{disciplina.title}}</v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
-          </v-list-group>
-        </v-list>
-        <v-spacer v-if="accessLevel < 30" class="mb-3"></v-spacer>
-        <v-list v-if="accessLevel < 30">
-          <v-list-tile v-on:click="doUnsubscribe($event)">
+        <v-list>
+          <v-list-tile v-if="subscription === null" v-on:click="modalSubscribe = true">
+            <v-list-tile-content>
+              <v-list-tile-title>
+                Inscrever-se
+              </v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile v-else v-on:click="doUnsubscribe($event)">
             <v-list-tile-content>
               <v-list-tile-title>
                 Excluir inscrição
@@ -39,7 +28,7 @@
           </v-list-tile>
         </v-list>
 
-        <v-spacer v-if="items.length > 0" class="mb-3"></v-spacer>
+        <v-spacer class="mb-3"></v-spacer>
 
         <v-list v-if="disciplineRole >= 30 || accessLevel >= 30">
           <v-list-tile>
@@ -165,6 +154,19 @@
         </v-card>
       </v-dialog>
 
+      <v-dialog v-model="modalSubscribe">
+        <v-card>
+          <v-card-text>
+            <form v-on:submit="doSubscribe($event)">
+              <v-text-field
+              label="Senha de acesso"
+              v-model="accessKey"></v-text-field>
+              <v-btn type="submit">Inscrever-se</v-btn>
+            </form>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
+
       <v-dialog class="text-xs-center" v-model="newTopic" max-width="600px">
         <v-card>
           <v-card-text>
@@ -185,14 +187,14 @@
           </v-card-title>
           <v-card-actions>
             <v-btn color="primary" flat v-on:click="deleteTopic($event);">Sim</v-btn>
-            <v-btn color="primary" flat v-on:click="remTopic = false">Cancelar</v-btn>
+            <v-btn color="primary" flat v-on:click="topicToRemove = ''; remTopic = false">Cancelar</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
     </div>
   </v-container>
 
-  <v-container grid-list-xl text-xs-center v-else-if="!!discipline">
+  <v-container grid-list-xl text-xs-center v-else-if="!subscription && !!discipline">
     <v-layout row wrap>
       <v-flex xs6 offset-xs3>
         <v-card>
@@ -227,6 +229,7 @@
         discipline: null,
         e1: null,
         accessKey: '',
+        modalSubscribe: false,
         exists: false,
         topics: [],
         newTopic: false,
@@ -265,33 +268,13 @@
         action: DisciplineStore.ACTION_GET_SUBSCRIPTION,
         data: this.$router.currentRoute.params.id,
       });
-      DisciplineStore.dispatch({
-        action: DisciplineStore.ACTION_LIST_SUBSCRIBED_DISCIPLINES,
-      });
-      DisciplineStore.on('listSubscribedDisciplines', (data) => {
-        if (data.total > 0) {
-          this.items = [];
-          for (let i = 0; i < data.data.length; i += 1) {
-            this.items.push({
-              title: data.data[i].discipline.name,
-              href: `/discipline/${data.data[i].discipline.id}`,
-            });
-          }
-        }
-      }, this);
-      DisciplineStore.on('fail', (err) => {
-        if (err.status === 404) {
-          this.exists = false;
-          Toastr.warning(err.responseJSON.message);
-        } else {
-          Toastr.warning(err.responseJSON.message);
-        }
-      }, this);
+
       DisciplineStore.on('doSubscribe', () => {
         DisciplineStore.dispatch({
           action: DisciplineStore.ACTION_GET_SUBSCRIPTION,
           data: this.$router.currentRoute.params.id,
         });
+        this.modalSubscribe = false;
       }, this);
       DisciplineStore.on('doUnsubscribe', () => {
         DisciplineStore.dispatch({
@@ -299,9 +282,11 @@
           data: this.$router.currentRoute.params.id,
         });
       }, this);
+
       DisciplineStore.on('getDiscipline', (data) => {
         this.discipline = data;
       }, this);
+
       TopicStore.on('addTopic', () => {
         this.newTopic = false;
         this.label = '';
@@ -324,6 +309,7 @@
         this.getTopics();
         this.update = ' ';
       }, this);
+
       TopicStore.on('listTopics', (data) => {
         this.topics = [];
         if (data.data.length > 0) {
@@ -346,6 +332,7 @@
       }, this);
 
       DisciplineStore.on('getSubscription', (data) => {
+        console.log(data);
         this.exists = true;
         if (typeof data === 'undefined') {
           this.subscription = null;
@@ -354,8 +341,6 @@
             action: DisciplineStore.ACTION_GET_DISCIPLINE,
             data: this.$router.currentRoute.params.id,
           });
-        } else if (this.accessLevel >= 30) {
-          this.discipline = data.discipline;
           this.disciplineRole = this.accessLevel;
         } else {
           this.subscription = data;
@@ -366,7 +351,15 @@
             this.disciplineRole = this.subscription.role;
           }
         }
+
         this.getTopics();
+      }, this);
+
+      DisciplineStore.on('fail', (err) => {
+        if (err.status === 404) {
+          this.exists = false;
+        }
+        Toastr.warning(err.responseJSON.message);
       }, this);
     },
     beforeDestroy() {
@@ -377,9 +370,19 @@
     methods: {
       doSubscribe(event) {
         event.preventDefault();
-        if (this.accessKey === '' && this.discipline.accessKey.length > 0) {
-          Toastr.warning('Você deve digitar a senha');
-        } else if (this.discipline.accessKey.length > 0) {
+        if (this.discipline.accessKey.length > 0) {
+          if (this.accessKey !== '') {
+            DisciplineStore.dispatch({
+              action: DisciplineStore.ACTION_SUBSCRIBE,
+              data: {
+                id: this.$router.currentRoute.params.id,
+                accessKey: this.accessKey,
+              },
+            });
+          } else {
+            Toastr.warning('Você deve digitar a senha');
+          }
+        } else if (this.discipline.accessKey.length === 0) {
           DisciplineStore.dispatch({
             action: DisciplineStore.ACTION_SUBSCRIBE,
             data: {
