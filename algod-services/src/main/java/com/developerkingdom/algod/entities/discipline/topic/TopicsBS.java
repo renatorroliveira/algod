@@ -2,6 +2,7 @@ package com.developerkingdom.algod.entities.discipline.topic;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Date;
 import java.util.LinkedList;
@@ -16,6 +17,7 @@ import org.hibernate.criterion.Restrictions;
 
 import com.developerkingdom.algod.entities.discipline.Discipline;
 import com.developerkingdom.algod.entities.user.User;
+import com.google.common.io.Files;
 
 import br.com.caelum.vraptor.boilerplate.HibernateBusiness;
 import br.com.caelum.vraptor.observer.download.Download;
@@ -91,16 +93,19 @@ public class TopicsBS extends HibernateBusiness {
 		return list;
 	}
 	
-	public Send sendTask(TopicItem topicItem, UploadedFile file, String path, User user) {
+	public Send sendTask(TopicItem topicItem, UploadedFile file, String filename, User user) {
 		Send send = new Send();
-		send.setPath(path);
-		send.setContentType(file.getContentType());
 		send.setName(file.getFileName());
-		send.setSize(file.getSize());
 		send.setTopicItem(topicItem);
 		send.setUser(user);
+		send.setContentType(file.getContentType());
 		this.dao.persist(send);
-		
+		try {
+			File newFile = new File(TopicsController.PATH, filename + "_" + send.getId().toString());
+			file.writeTo(newFile);
+		} catch (Exception e) {
+			LOGGER.info(e.getMessage());
+		}
 		return send;
 	}
 	
@@ -128,15 +133,18 @@ public class TopicsBS extends HibernateBusiness {
 		return this.dao.findByCriteria(criteria, Send.class);
 	}
 	
-	public Iterable<Path> listAllSendsDownloads(TopicItem topicItem, HttpServletResponse response) {
+	public Iterable<Path> listAllSendsDownloads(TopicItem topicItem, HttpServletResponse response) throws IOException {
 		List<Path> downList = new LinkedList<Path>();
 		List<Send> sends = this.listAllSends(topicItem);
 		
 		for (int i = 0; i < sends.size(); i++) {
 			User user = sends.get(i).getUser();
-			String filename = user.getId().toString() + "_" + topicItem.getId().toString() + "_" + sends.get(i).getName().toString();
-			Path file = new File(TopicsController.PATH, filename).toPath();
-			downList.add(file);
+			String filename = user.getId().toString() + "_" + topicItem.getId().toString() + "_" + sends.get(i).getId().toString();
+			File file = new File(TopicsController.PATH, filename);
+			File newFile = new File(TopicsController.PATH + "/downs/" + filename + "_" + sends.get(i).getName().toString());
+			Files.copy(file, newFile);
+			Path sendFile = new File(TopicsController.PATH + "/downs/" + filename + "_" + sends.get(i).getName().toString()).toPath();
+			downList.add(sendFile);
 		}
 		response.setHeader("filename", "Sends_" + topicItem.getLabel().toString() + "_Downloaded_" + new Date().toString());
 		return downList;

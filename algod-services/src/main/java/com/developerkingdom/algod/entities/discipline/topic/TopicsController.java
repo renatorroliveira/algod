@@ -2,6 +2,7 @@ package com.developerkingdom.algod.entities.discipline.topic;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -156,18 +157,29 @@ public class TopicsController extends UserControlAbstractController {
 		if (topicItem == null)
 			this.result.notFound();
 		else {
-			String filename = this.userSession.getUser().getId().toString() + "_" + topicItem.getId().toString() + "_" + file.getFileName();
-			File uploadedFile = new File(PATH);
-			if (!uploadedFile.exists())
-				uploadedFile.mkdirs();
-			File newFile = new File(PATH, filename);
+			String filename = this.userSession.getUser().getId().toString() + "_" + topicItem.getId().toString();
+			File filesPath = new File(PATH);
+			if (!filesPath.exists())
+				filesPath.mkdirs();
 		    try {
-				file.writeTo(newFile);
-				this.success(this.bs.sendTask(topicItem, file, PATH, this.userSession.getUser()));
+				this.success(this.bs.sendTask(topicItem, file, filename, this.userSession.getUser()));
 			} catch(Exception e) {
 				this.fail(e.getMessage());
 				LOGGER.errorf(e, "Erro: %s", e.getMessage());
 			} 
+		}
+	}
+	
+	@Post("/task/{id}/upload/multiple")
+	@UploadSizeLimit(sizeLimit=60 * 1024 * 1024, fileSizeLimit=60 * 1024 * 1024)
+	public void uploadMultipleFiles(long id, UploadedFile[] files) throws FileUploadException {
+		TopicItem topicItem = this.bs.exists(id, TopicItem.class);
+		if (topicItem == null)
+			this.result.notFound();
+		else {
+			for (UploadedFile file : files) {
+				LOGGER.info(file.getFileName());
+			}
 		}
 	}
 	
@@ -180,10 +192,10 @@ public class TopicsController extends UserControlAbstractController {
 		if (send == null)
 			this.fail("Você não possui nenhum envio");
 		else {
-			String filename = this.userSession.getUser().getId().toString() + "_" + topicItem.getId().toString() + "_" + send.getName().toString();
+			String filename = this.userSession.getUser().getId().toString() + "_" + topicItem.getId().toString() + "_" + send.getId().toString();
 			File file = new File(PATH, filename);
 			if (file.exists()) {
-				return this.bs.getFileDownload(response, file, this.userSession.getUser(), filename, send);
+				return this.bs.getFileDownload(response, file, this.userSession.getUser(), filename + "_" + send.getName().toString(), send);
 			}
 		}
 		
@@ -203,14 +215,13 @@ public class TopicsController extends UserControlAbstractController {
 	
 	@Get("/task/{id}/sends/downloads")
 	@Permissioned
-	public Download getAllSendsDownloads(long id, HttpServletResponse response) throws FileNotFoundException {
+	public Download getAllSendsDownloads(long id, HttpServletResponse response) throws IOException {
 		TopicItem topicItem = this.bs.exists(id, TopicItem.class);
 		if (topicItem == null) {
 			this.result.notFound();
 			return null;
 		}
 		else {
-			LOGGER.info("entrouuuuuuuuu");
 			Iterable<java.nio.file.Path> downs = this.bs.listAllSendsDownloads(topicItem, response);
 			return new ZipDownload("files.zip", downs);
 		}

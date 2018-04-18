@@ -22,10 +22,6 @@ public class Send extends SimpleLogicalDeletableEntity {
 	@ManyToOne(fetch=FetchType.EAGER)
 	private User user;
 	
-	private String path;
-	
-	private long size;
-	
 	private String contentType;
 	
 	private String name;
@@ -46,20 +42,12 @@ public class Send extends SimpleLogicalDeletableEntity {
 		this.user = user;
 	}
 
-	public String getPath() {
-		return path;
-	}
-	
 	public String getDescription() {
 		return description;
 	}
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public void setPath(String file_Path) {
-		this.path = file_Path;
 	}
 
 	public Date getSendDate() {
@@ -76,14 +64,6 @@ public class Send extends SimpleLogicalDeletableEntity {
 
 	public void setTopicItem(TopicItem topicItem) {
 		this.topicItem = topicItem;
-	}
-	
-	public long getSize() {
-		return size;
-	}
-
-	public void setSize(long size) {
-		this.size = size;
 	}
 
 	public String getContentType() {

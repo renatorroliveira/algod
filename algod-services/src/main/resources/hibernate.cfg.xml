@@ -11,7 +11,10 @@
 		<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
 		<property name="dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
 		<property name="connection.provider_class">org.hibernate.service.jdbc.connections.internal.C3P0ConnectionProvider</property>
-
+		
+		<property name="connection.characterEnconding">utf8</property>
+		<property name="connection.useUnicode">true</property>
+		
 		<!-- Configuração Propriedades Hibernate -->
 		<property name="hibernate.hbm2ddl.auto">update</property>
 		<property name="hibernate.show_sql">false</property>

@@ -15,6 +15,7 @@ const TopicStore = Fluxbone.Store.extend({
   ACTION_ADD_TOPIC_ITEM: 'addTopicItem',
   ACTION_GET_TOPIC_ITEM: 'getTopicItemById',
   ACTION_UPLOAD: 'uploadSend',
+  ACTION_UPLOAD_MULTIPLE: 'uploadSendMultipleFiles',
   ACTION_DOWNLOAD: 'downloadSend',
   ACTION_SENDS: 'listAllSends',
   ACTION_SENDS_DOWNLOAD: 'downloadAllSends',
@@ -156,6 +157,25 @@ const TopicStore = Fluxbone.Store.extend({
     });
   },
 
+  uploadSendMultipleFiles(params) {
+    console.log(params);
+    // const me = this;
+    // const promisse = axios.post(
+    //   `${this.url}/task/${params.topicItem.id}/upload/multiple`,
+    //   params.formData,
+    // );
+    // console.log(promisse);
+    // promisse.then((result) => {
+    //   console.log(result);
+      // if (result.data.success) {
+      //   me.trigger('successUpload');
+      // }
+    // }).catch((error) => {
+    //   console.error(error);
+      // me.trigger('fail', error);
+    // });
+  },
+
   downloadSend(params) {
     const me = this;
     $.ajax({
@@ -165,14 +185,9 @@ const TopicStore = Fluxbone.Store.extend({
         responseType: 'blob',
       },
       success(response, status, xhr) {
-        const contentType = xhr.getResponseHeader('content-type');
-        const filename = xhr.getResponseHeader('filename');
-        const blob = new Blob([response], { type: contentType }, filename);
-        const link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = filename;
-        link.click();
-        me.trigger('successDownload');
+        if (status === 'success') {
+          me.trigger('successDownload', response, xhr);
+        }
       },
       error(err) {
         console.error(err);
@@ -182,7 +197,6 @@ const TopicStore = Fluxbone.Store.extend({
   },
 
   downloadAllSends(id) {
-    console.log(id);
     const me = this;
     $.ajax({
       url: `${me.url}/task/${id}/sends/downloads`,
@@ -191,8 +205,9 @@ const TopicStore = Fluxbone.Store.extend({
         responseType: 'arraybuffer',
       },
       success(response, status, xhr) {
-        console.log(status);
-        me.trigger('successSendsDownloads', response, xhr);
+        if (status === 'success') {
+          me.trigger('successDownloadZip', response, xhr);
+        }
       },
       error(err) {
         console.error(err);

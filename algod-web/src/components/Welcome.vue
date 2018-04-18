@@ -1,12 +1,11 @@
 <template>
   <v-container grid-list-md text-xs-center>
     <v-layout row wrap>
-      <v-flex xs12 v-if="accessLevel >= 30" class="text-xs-center">
+      <v-flex xs12 class="text-xs-center">
         <v-btn color="primary" dark @click.stop="dialog = true">Pesquisar disciplinas</v-btn> <v-spacer class="mb-4"></v-spacer>
         <h1>Algorithm God 2</h1>
         <h5>Uma nova experiência no ensino da programação de computadores</h5>
-        <p class="body-2">
-          Área de admin!!
+        <p class="body-2"><p v-if="accessLevel >= 30">Logado como admin!</p>
           Bem vindo ao Algod. Nesse site você vai ter acesso a suas grades curriculares,
           acompanhar os exemplos das suas aulas, além de entregar trabalhos, atividades e
           realizar suas provas. Tudo por aqui, simples e prático.
@@ -45,15 +44,17 @@
           <v-card xs5>
             <v-card-text>
               <v-flex xs6 offset-xs3>
-                <v-text-field
-                  prepend-icon="search"
-                  label="Buscar disciplinas"
-                  solo-inverted
-                  v-model="terms"
-                  class="mx-3"
-                  flat>
-                </v-text-field>
-                <v-btn v-on:click="doSearch($event)">Buscar</v-btn>
+                <form v-on:submit="doSearch($event)">
+                  <v-text-field
+                    prepend-icon="search"
+                    label="Buscar disciplinas"
+                    solo-inverted
+                    v-model="terms"
+                    class="mx-3"
+                    flat>
+                  </v-text-field>
+                  <v-btn type="submit">Buscar</v-btn>
+                </form>
               </v-flex>
             </v-card-text>
           </v-card>
