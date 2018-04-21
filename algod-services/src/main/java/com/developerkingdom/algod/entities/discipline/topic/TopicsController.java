@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileUploadException;
@@ -223,6 +224,7 @@ public class TopicsController extends UserControlAbstractController {
 		}
 		else {
 			Iterable<java.nio.file.Path> downs = this.bs.listAllSendsDownloads(topicItem, response);
+			this.bs.deleteZipFiles(topicItem);
 			return new ZipDownload("files.zip", downs);
 		}
 	}
@@ -235,5 +237,14 @@ public class TopicsController extends UserControlAbstractController {
 		else {
 			this.success(this.bs.getSend(topicItem, this.userSession.getUser()));
 		}
+	}
+	
+	@Post("/task/{id}/unsend/loggedUser")
+	public void unsend(@Named long id) throws IOException {
+		TopicItem topicItem = this.bs.exists(id, TopicItem.class);
+		if (topicItem == null)
+			this.result.notFound();
+		else
+			this.success(this.bs.unsend(topicItem, this.userSession.getUser()));
 	}
 }

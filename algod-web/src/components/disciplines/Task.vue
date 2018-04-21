@@ -19,88 +19,132 @@
           <v-card-text>
             <p style="font-size: 18px">{{topicItem.description}}</p>
 
-            <v-flex v-if="accessLevel >= 30" xs6 offset-xs3>
+            <v-flex v-if="accessLevel >= 30" xs8 offset-xs2>
               <v-card>
                 <v-card-title><h5>Envios da tarefa</h5></v-card-title>
                 <v-divider></v-divider>
-                <v-list>
-                  <v-list-tile>
-                    <v-list-tile-content>Participantes:</v-list-tile-content>
-                    <v-list-tile-content class="align-end">{{subscribedUsers.length}}</v-list-tile-content>
-                  </v-list-tile>
-                  <v-list-tile>
-                    <v-list-tile-content>Envios:</v-list-tile-content>
-                    <v-list-tile-content class="align-end">{{sendList.length}}</v-list-tile-content>
-                  </v-list-tile>
-                  <v-list-tile>
-                    <v-list-tile-content>Precisa de avaliaçao:</v-list-tile-content>
-                    <v-list-tile-content class="align-end">{{sendList.length}}</v-list-tile-content>
-                  </v-list-tile>
-                  <v-list-tile>
-                    <v-list-tile-content>Prazo de entrega:</v-list-tile-content>
-                    <v-list-tile-content class="align-end">{{ handleDate(topicItem.dateAvailableTo) }}</v-list-tile-content>
-                  </v-list-tile>
-                  <v-list-tile>
-                    <v-list-tile-content>Tempo restante:</v-list-tile-content>
-                    <v-list-tile-content class="align-end">{{ handleDate(topicItem.dateAvailableTo, 'now-date') }}</v-list-tile-content>
-                  </v-list-tile>
-                  <v-list-tile>
-                    <v-list-tile-content>Envios:</v-list-tile-content>
-                    <v-list-tile-content class="align-end"><v-btn v-if="accessLevel >= 30" color="secondary" @click.stop="sends = true">Ver Envios</v-btn></v-list-tile-content>
-                  </v-list-tile>
-                </v-list>
+                <v-card-text>
+                  <v-layout row wrap>
+                    <v-flex xs6>
+                      <span style="font-size: 18px;">Participantes:</span>
+                    </v-flex>
+                    <v-flex xs6>
+                      <span style="font-size: 18px;">{{subscribedUsers.length}}</span>
+                    </v-flex>
+                  </v-layout>
+                  <v-layout row wrap>
+                    <v-flex xs6>
+                      <span style="font-size: 18px;">Envios:</span>
+                    </v-flex>
+                    <v-flex xs6>
+                      <span style="font-size: 18px;">{{sendList.length}}</span>
+                    </v-flex>
+                  </v-layout>
+                  <v-layout row wrap>
+                    <v-flex xs6>
+                      <span style="font-size: 18px;">Precisa de avaliaçao:</span>
+                    </v-flex>
+                    <v-flex xs6>
+                      <span style="font-size: 18px;" v-if="!!send">{{sendList.length}}</span>
+                      <span style="font-size: 18px;" v-else>0</span>
+                    </v-flex>
+                  </v-layout>
+                  <v-layout row wrap>
+                    <v-flex xs6>
+                      <span style="font-size: 18px;">Prazo de entrega:</span>
+                    </v-flex>
+                    <v-flex xs6>
+                      <span style="font-size: 18px;">{{ handleDate(topicItem.dateAvailableTo) }}</span>
+                    </v-flex>
+                  </v-layout>
+                  <v-layout row wrap>
+                    <v-flex xs6>
+                      <span style="font-size: 18px;">Tempo restante:</span>
+                    </v-flex>
+                    <v-flex xs6>
+                      <span style="font-size: 18px;">{{ handleDate(topicItem.dateAvailableTo, 'now-date') }}</span>
+                    </v-flex>
+                  </v-layout>
+                  <v-layout row wrap>
+                    <v-flex xs6>
+                      <span style="font-size: 18px;">Envios:</span>
+                    </v-flex>
+                    <v-flex xs6>
+                      <span style="font-size: 18px;" v-if="!!send"><v-btn color="secondary" v-on:click="sends = true">Ver Envios</v-btn></span>
+                      <span style="font-size: 18px;" v-else>0</span>
+                    </v-flex>
+                  </v-layout>
+                </v-card-text>
               </v-card>
             </v-flex>
 
             <v-spacer class="mb-3"></v-spacer>
 
-            <v-flex xs6 offset-xs3>
-              <v-card v-if="!!send">
+            <v-flex xs8 offset-xs2>
+              <v-card>
                 <v-card-title><h5>Seus envios</h5></v-card-title>
                 <v-divider></v-divider>
-                <v-list>
-                  <v-list-tile>
-                    <v-list-tile-content>Status de envio:</v-list-tile-content>
-                    <v-list-tile-content align-right>{{ typeof send === 'undefined' ? 'Aguardando envio' : 'Enviado'}}</v-list-tile-content>
-                  </v-list-tile>
-                  <v-list-tile>
-                    <v-list-tile-content>Status da avaliação:</v-list-tile-content>
-                    <v-list-tile-content class="align-right">Sem nota</v-list-tile-content>
-                  </v-list-tile>
-                  <v-list-tile>
-                    <v-list-tile-content>Data da entrega:</v-list-tile-content>
-                    <v-list-tile-content class="align-right" v-if="!!send">{{handleDate(send.sendDate)}}</v-list-tile-content>
-                  </v-list-tile>
-                  <v-list-tile>
-                    <v-list-tile-content>Entregue:</v-list-tile-content>
-                    <v-list-tile-content class="align-right" v-if="!!send">{{ handleDate(topicItem.dateAvailableTo, 'sent')}} adiantado</v-list-tile-content>
-                  </v-list-tile>
-                  <v-list-tile>
-                    <v-list-tile-content>Envio de arquivos:</v-list-tile-content>
-                    <v-list-tile-content class="align-right" v-if="!!send"><v-btn v-on:click="downloadSend($event)" color="secondary"><v-icon dark>file_download</v-icon>&nbsp;download</v-btn></v-list-tile-content>
-                  </v-list-tile>
-                </v-list>
+                <v-card-text>
+                  <v-layout row wrap>
+                    <v-flex xs6>
+                      <span style="font-size: 18px;">Status de envio:</span>
+                    </v-flex>
+                    <v-flex xs6>
+                      <span style="font-size: 18px;">{{ typeof send === 'undefined' || typeof send === 'null' ? 'Aguardando envio' : 'Enviado'}}</span>
+                    </v-flex>
+                  </v-layout>
+                  <v-layout row wrap>
+                    <v-flex xs6>
+                      <span style="font-size: 18px;">Status da avaliação:</span>
+                    </v-flex>
+                    <v-flex xs6>
+                      <span style="font-size: 18px;">Sem nota</span>
+                    </v-flex>
+                  </v-layout>
+                  <v-layout row wrap>
+                    <v-flex xs6>
+                      <span style="font-size: 18px;">Data da entrega:</span>
+                    </v-flex>
+                    <v-flex xs6>
+                      <span style="font-size: 18px;" v-if="!!send">{{ handleDate(send.sendDate) }}</span>
+                      <span style="font-size: 18px;">Sem entregas</span>
+                    </v-flex>
+                  </v-layout>
+                  <v-layout row wrap>
+                    <v-flex xs6>
+                      <span style="font-size: 18px;">Prazo de entrega:</span>
+                    </v-flex>
+                    <v-flex xs6>
+                      <span style="font-size: 18px;">{{ handleDate(topicItem.dateAvailableTo) }}</span>
+                    </v-flex>
+                  </v-layout>
+                  <v-layout row wrap>
+                    <v-flex xs6>
+                      <span style="font-size: 18px;">Tempo restante:</span>
+                    </v-flex>
+                    <v-flex xs6>
+                      <span style="font-size: 18px;">{{ handleDate(topicItem.dateAvailableTo, 'now-date') }}</span>
+                    </v-flex>
+                  </v-layout>
+                  <v-layout row wrap v-if="!!send">
+                    <v-flex xs6>
+                      <span style="font-size: 18px;">Entregue:</span>
+                    </v-flex>
+                    <v-flex xs6>
+                      <span style="font-size: 18px;">{{ handleDate(topicItem.dateAvailableTo, 'sent')}} adiantado</span>
+                    </v-flex>
+                  </v-layout>
+                  <v-layout row wrap>
+                    <v-flex xs6>
+                      <span style="font-size: 18px;">Envio de arquivos:</span>
+                    </v-flex>
+                    <v-flex xs6>
+                      <span style="font-size: 18px;" v-if="!!send"><v-btn v-on:click="downloadSend($event)" color="secondary"><v-icon dark>file_download</v-icon>&nbsp;Download</v-btn></span>
+                      <span style="font-size: 18px;" v-else><v-btn v-on:click="modalSend = true">Adicionar tarefa</v-btn></span>
+                    </v-flex>
+                  </v-layout>
+                </v-card-text>
               </v-card>
-            </v-flex>
-
-            <v-spacer class="mb-3"></v-spacer>
-
-            <v-flex v-if="!send">
-              <div v-if="topicItem.contentType === 1">
-                <form id="formulario" v-on:submit="uploadSend($event)" enctype="multipart/form-data">
-                  <input id="fileupload" type="file" name="file" multiple>
-                  <v-btn type="submit">Entregar</v-btn>
-                </form>
-              </div>
-
-              <div v-else>
-                <v-text-field
-                  label="Conteudo"
-                  v-model="content"
-                  persistent-hint
-                  multi-line
-                ></v-text-field>
-              </div>
             </v-flex>
           </v-card-text>
         </v-card>
@@ -142,18 +186,75 @@
             </v-card-text>
           </v-card>
         </v-dialog>
+        <v-dialog v-model="modalSend" max-width="1000px">
+          <v-card>
+            <v-card-title>Envio de tarefa para {{topicItem.label}}</v-card-title>
+            <v-divider></v-divider>
+            <v-card-text>
+              <form class="my-form" enctype="multipart/form-data">
+                
+                <v-btn v-on:click="openInput($event)" icon flat>
+                  <v-icon>attachment</v-icon>
+                  <input id="inputFile" style="display: none;" type="file" name="file" multiple class="input-file">
+                </v-btn>
+
+                <div id="drop-area"
+                  v-on:dragenter="preventDefaults($event); highlight();"
+                  v-on:dragover="preventDefaults($event); highlight();"
+                  v-on:dragleave="preventDefaults($event); unhighlight();"
+                  v-on:drop="preventDefaults($event); unhighlight(); handleDrop($event)">
+
+                    <p>Você pode arrastar e soltar arquivos aqui para adicioná-los.</p>
+
+                    <v-spacer></v-spacer><br>
+                    <span v-for="(file, i) in fileList">arquivo {{(parseInt(i) + 1)}}: {{file.name}}<br> </span>
+                </div>
+                <v-text-field
+                  label="Descrição"
+                  hint="Opcional"
+                  persistent-hint
+                  v-model="sendDesc"
+                  multi-line
+                ></v-text-field>
+              </form>
+              <div class="text-xs-right">
+                <v-btn color="red lighten-3" v-on:click="modalSend = false">Cancelar</v-btn>
+                <v-btn type="submit" color="green lighten-3">Entregar</v-btn>
+              </div>
+              <!-- <v-flex v-if="!send">
+                <div v-if="topicItem.contentType === 1">
+                  <form xs6 id="formulario" v-on:submit="uploadSend($event)">
+                    <input id="fileupload" type="file" name="file" multiple class="input-file">
+                    <div class="red" droppable="true" ondrop="alert('dajskf')">
+                      fjsdhkas
+                    </div>
+
+                  </form>
+                </div>
+
+                <div v-else>
+                  <v-text-field
+                    label="Conteudo"
+                    v-model="content"
+                    persistent-hint
+                    multi-line
+                  ></v-text-field>
+                </div>
+              </v-flex> -->
+            </v-card-text>
+          </v-card>
+        </v-dialog>
       </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
+  // import $ from 'jquery';
   import Toastr from 'toastr';
-  import $ from 'jquery';
   import UserSession from '@/store/UserSession';
   import DisciplineStore from '@/store/Discipline';
   import TopicStore from '@/store/Topic';
-  import UploadButton from './UploadButton';
 
   export default {
     data: () => ({
@@ -164,9 +265,12 @@
       file: null,
       subscribedUsers: [],
       sends: false,
+      sendDesc: '',
+      modalSend: false,
       send: [],
       discipline: [],
       subscription: [],
+      fileList: [],
       months: [
         'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out',
         'Nov', 'Dez',
@@ -259,33 +363,6 @@
       fileSelected(e) {
         console.log(e);
       },
-      uploadSend(event) {
-        event.preventDefault();
-        const formData = new FormData();
-        const fileUpload = $('#fileupload')[0];
-
-        if (fileUpload.files.length === 1) {
-          formData.append('file', fileUpload.files[0]);
-          TopicStore.dispatch({
-            action: TopicStore.ACTION_UPLOAD,
-            data: {
-              formData,
-              topicItem: this.topicItem,
-            },
-          });
-        } else if (fileUpload.files.length > 1) {
-          for (let i = 0; i < fileUpload.files.length; i += 1) {
-            formData.append('file', fileUpload.files[i]);
-          }
-          TopicStore.dispatch({
-            action: TopicStore.ACTION_UPLOAD_MULTIPLE,
-            data: {
-              formData,
-              topicItem: this.topicItem,
-            },
-          });
-        }
-      },
       downloadSend(event) {
         event.preventDefault();
         TopicStore.dispatch({
@@ -301,6 +378,37 @@
           data: this.$router.currentRoute.params.topicItemId,
         });
       },
+      handleFiles(files) {
+        console.log(files);
+      },
+      handleUpload(fileList) {
+        const formData = new FormData();
+        if (fileList) {
+          this.fileList = fileList;
+        }
+        console.log(fileList);
+        if (fileList.length === 1) {
+          formData.append('file', fileList[0]);
+          // TopicStore.dispatch({
+          //   action: TopicStore.ACTION_UPLOAD,
+          //   data: {
+          //     formData,
+          //     topicItem: this.topicItem,
+          //   },
+          // });
+        } else if (fileList.length > 1) {
+          // for (let i = 0; i < fileUpload.files.length; i += 1) {
+          //   formData.append('file', fileUpload.files[i], fileUpload.files[i].name);
+          // }
+          // TopicStore.dispatch({
+          //   action: TopicStore.ACTION_UPLOAD_MULTIPLE,
+          //   data: {
+          //     formData,
+          //     topicItem: this.topicItem,
+          //   },
+          // });
+        }
+      },
       handleDate(date, type) {
         const newDate = new Date(date);
 
@@ -309,9 +417,17 @@
         const m = newDate.getMonth();
         const y = newDate.getFullYear();
 
+        let hr = newDate.getHours();
+        let min = newDate.getMinutes();
+        if (min === 0) {
+          min = '00';
+        }
+        if (hr === 0) {
+          hr = '00';
+        }
+
         if (type === 'now-date') {
           const diff = new Date(Date.now() - newDate.getTime());
-
           const diffMonth = parseInt(diff / 1000 / 60 / 60 / 24 / 30, 10) * -1;
           const diffDays = parseInt(diff / 1000 / 60 / 60 / 24, 10) * -1;
           const diffHours = parseInt(diff / 1000 / 60 / 60, 10) * -1;
@@ -322,6 +438,7 @@
           const ttlHours = ((diffDays * 24) - diffHours) * -1;
           const ttlMin = ((diffHours * 60) - diffMin) * -1;
           const ttlSec = ((diffMin * 60) - diffSec) * -1;
+
           let remainingTime;
 
           remainingTime = `${ttlDays} dias, ${ttlHours}h${ttlMin}m e ${ttlSec}s`;
@@ -330,6 +447,12 @@
           }
           if (ttlDays <= 0 && ttlHours <= 0) {
             remainingTime = `${ttlMin}min e ${ttlSec}seg`;
+          }
+          if (ttlDays <= 0 && ttlHours <= 0 && ttlMin <= 0) {
+            remainingTime = `${ttlSec}seg`;
+          }
+          if (ttlDays <= 0 && ttlHours <= 0 && ttlMin <= 0 && ttlSec <= 0) {
+            remainingTime = 'Tempo esgotado';
           }
           return remainingTime;
         }
@@ -356,31 +479,51 @@
           if (ttlDays <= 0 && ttlHours <= 0) {
             earlyTime = `${ttlMin}min e ${ttlSec}seg`;
           }
+          if (ttlDays <= 0 && ttlHours <= 0 && ttlMin <= 0) {
+            earlyTime = `${ttlSec}seg`;
+          }
+          if (ttlDays <= 0 && ttlHours <= 0 && ttlMin <= 0 && ttlSec <= 0) {
+            earlyTime = 'Entregue atrasado';
+          }
           return earlyTime;
         }
 
-        const fullDate = `${this.weekDays[wd]}, ${d} de ${this.months[m]} de ${y}`;
+        const fullDate = `${this.weekDays[wd]}, ${d} de ${this.months[m]} de ${y} as ${hr}:${min} `;
         return fullDate;
       },
       handleDownloads(response, xhr, type) {
+        const link = document.createElement('a');
+        const contentType = xhr.getResponseHeader('content-type');
+        const filename = xhr.getResponseHeader('filename');
         if (type === 'zip') {
-          const contentType = xhr.getResponseHeader('content-type');
-          const filename = xhr.getResponseHeader('filename');
           const blob = new Blob([response], { type: contentType }, filename);
-          const link = document.createElement('a');
           link.href = window.URL.createObjectURL(blob);
           link.download = filename;
           link.click();
         }
         if (type === 'file') {
-          const contentType = xhr.getResponseHeader('content-type');
-          const filename = xhr.getResponseHeader('filename');
           const blob = new Blob([response], { type: contentType }, filename);
-          const link = document.createElement('a');
           link.href = window.URL.createObjectURL(blob);
           link.download = filename;
           link.click();
         }
+      },
+      preventDefaults(event) {
+        event.preventDefault();
+        event.stopPropagation();
+      },
+      unhighlight() {
+        const dropArea = document.getElementById('drop-area');
+        dropArea.classList.remove('highlight');
+      },
+      highlight() {
+        const dropArea = document.getElementById('drop-area');
+        dropArea.classList.add('highlight');
+      },
+      handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        this.handleUpload(files);
       },
     },
     beforeDestroy() {
@@ -388,29 +531,48 @@
       UserSession.off(null, null, this);
       DisciplineStore.off(null, null, this);
     },
-    components: {
-      UploadButton,
-    },
   };
 </script>
 
 <style scoped>
-.jbtn-file {
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-.jbtn-file input[type=file] {
-  position: absolute;
-  top: 0;
-  right: 0;
-  min-width: 100%;
-  min-height: 100%;
-  text-align: right;
-  filter: alpha(opacity=0);
-  opacity: 0;
-  outline: none;
-  cursor: inherit;
-  display: block;
-}
+  #drop-area {
+    border: 2px dashed #ccc;
+    border-radius: 20px;
+    width: 480px;
+    font-family: sans-serif;
+    margin: auto;
+    padding: 20px;
+  }
+  #drop-area.highlight {
+    border-color: purple;
+  }
+  p {
+    margin-top: 0;
+  }
+  .my-form {
+    margin-bottom: 10px;
+  }
+  #gallery {
+    margin-top: 10px;
+  }
+  #gallery img {
+    width: 150px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+  .button {
+    display: inline-block;
+    padding: 10px;
+    background: #ccc;
+    cursor: pointer;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  .button:hover {
+    background: #ddd;
+  }
+  #fileElem {
+    display: none;
+  }
 </style>

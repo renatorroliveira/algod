@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -137,17 +136,35 @@ public class TopicsBS extends HibernateBusiness {
 		List<Path> downList = new LinkedList<Path>();
 		List<Send> sends = this.listAllSends(topicItem);
 		
+		File downPath = new File(TopicsController.PATH + "/downsCopy/");
+		if (!downPath.exists()) {
+			downPath.mkdirs();
+		}
+		
 		for (int i = 0; i < sends.size(); i++) {
 			User user = sends.get(i).getUser();
 			String filename = user.getId().toString() + "_" + topicItem.getId().toString() + "_" + sends.get(i).getId().toString();
 			File file = new File(TopicsController.PATH, filename);
-			File newFile = new File(TopicsController.PATH + "/downs/" + filename + "_" + sends.get(i).getName().toString());
+			File newFile = new File(TopicsController.PATH + "/downsCopy/" + filename + "_" + sends.get(i).getName().toString());
 			Files.copy(file, newFile);
-			Path sendFile = new File(TopicsController.PATH + "/downs/" + filename + "_" + sends.get(i).getName().toString()).toPath();
+			Path sendFile = new File(TopicsController.PATH + "/downsCopy/" + filename + "_" + sends.get(i).getName().toString()).toPath();
 			downList.add(sendFile);
 		}
-		response.setHeader("filename", "Sends_" + topicItem.getLabel().toString() + "_Downloaded_" + new Date().toString());
+		response.setHeader("filename", "Sends_" + topicItem.getLabel().toString());
 		return downList;
+	}
+	
+	public void deleteZipFiles(TopicItem topicItem) throws IOException {
+		List<Send> sends = this.listAllSends(topicItem);
+		for (Send send: sends) {
+			User user = send.getUser();
+			String fullPath = 
+					TopicsController.PATH + user.getId().toString() + "_" + topicItem.getId().toString() + "_" + send.getId().toString() + send.getName().toString();
+			File file = new File(fullPath);
+			if (file.exists()) {
+				file.delete();
+			}
+		}
 	}
 	
 	public Send getSend(TopicItem topicItem, User user) {
@@ -158,5 +175,23 @@ public class TopicsBS extends HibernateBusiness {
 		Send send = (Send) criteria.uniqueResult();
 		return send;
 	}
-
+	
+	public Send unsend(TopicItem topicItem, User user) throws IOException {
+		Send send = this.getSend(topicItem, user);
+		if (send == null)
+			return null;
+		else {
+			send.setDeleted(true);
+			this.deleteFile(topicItem, send, user);
+			this.dao.persist(send);
+			return send;
+		}
+	}
+	
+	public void deleteFile(TopicItem topicItem, Send send, User user) throws IOException {
+		File file = new File(TopicsController.PATH, user.getId().toString() + "_" + topicItem.getId().toString() + "_" + send.getId().toString());
+		if (file.exists()) {
+			file.delete();
+		}
+	}
 }

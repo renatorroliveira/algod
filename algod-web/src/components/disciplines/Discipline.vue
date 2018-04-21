@@ -73,10 +73,10 @@
                 <v-layout row wrap v-for="item in topicItems" :key="item.id" v-if="topic.id === item.topic.id">
                   <v-flex xs10 class="text-sm-left">
                     <div v-if="item.type === 'Link'">
-                      <v-icon>public</v-icon> <a target="_blank" id="externalUrl" :href="item.content">{{item.label}}</a>
+                       <a target="_blank" id="externalUrl" :href="item.content"><v-icon>public</v-icon>{{item.label}}</a>
                     </div>
                     <div v-else-if="item.type === 'Task'">
-                      <v-icon>class</v-icon> <router-link id="internalUrl" :to="`/discipline/${discipline.id}/task/${item.id}`">{{item.label}}</router-link>
+                      <router-link id="internalUrl" :to="`/discipline/${discipline.id}/task/${item.id}`"><v-icon>class</v-icon> {{item.label}}</router-link>
                     </div>
                   </v-flex>
                 </v-layout>
