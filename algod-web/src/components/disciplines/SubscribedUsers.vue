@@ -1,14 +1,18 @@
 <template>
-  <v-container grid-list-xl text-xs-center v-if="accessLevel >= 30 || disciplineRole >= 30">
+  <v-container grid-list-xl text-xs-center v-if="disciplineRole >= 30">
     <v-flex sx12>
       <v-card color="blue-grey darken-1 white--text">
         <v-card-text>
-          <div class="display-1">
-            <v-btn flat icon :title="`Voltar para ${discipline.name}`" :to="`/discipline/${discipline.id}`">
-              <v-icon dark>chevron_left</v-icon>
-            </v-btn>
-            Usuários inscritos em {{discipline.name}}
-          </div>
+          <v-layout row wrap>
+            <v-flex xs1>
+              <v-btn flat icon :title="`Voltar para ${discipline.name}`" :to="`/discipline/${discipline.id}`">
+                <v-icon dark>chevron_left</v-icon>
+              </v-btn>
+            </v-flex>
+            <v-flex xs11 text-xs-center>
+              <span class="display-1">Usuários inscritos em {{discipline.name}}</span>
+            </v-flex>
+          </v-layout>
         </v-card-text>
         <v-spacer class="mb-3"></v-spacer>
       </v-card>
@@ -103,20 +107,27 @@
     </v-dialog>
 
     <v-dialog class="text-xs-center" v-model="editUser" max-width="600px">
-      <v-card>
-        <v-card-title>Alterar as permissões de &nbsp;<span class="subheading">{{selectedUser.name}}</span> </v-card-title>
-        <v-card-text>
-          <v-select
-            required
-            v-bind:items="permissions"
-            v-model="e1"
-            label="Permissões"
-            single-line
-            bottom
-          ></v-select>
-          <v-btn v-on:click="editUserRole($event)">Salvar</v-btn>
-        </v-card-text>
-      </v-card>
+          <v-card>
+
+            <v-card-title><span class="subheading">Alterar as permissões de {{selectedUser.name}}</span></v-card-title>
+            <v-layout row wrap>
+              <v-flex xs6 offset-xs3>
+            <v-card-text>
+              <v-select
+                required
+                v-bind:items="permissions"
+                v-model="e1"
+                label="Permissões"
+                single-line
+                bottom
+              ></v-select>
+              <v-btn v-on:click="editUserRole($event)">Salvar</v-btn>
+              <v-btn v-on:click="editUser = false">Cancelar</v-btn>
+            </v-card-text>
+          </v-flex>
+        </v-layout>
+          </v-card>
+
     </v-dialog>
 
     <v-dialog v-model="unsubUser" max-width="500px">
@@ -213,14 +224,21 @@
       }, this);
       DisciplineStore.on('getSubscription', (data) => {
         if (typeof data === 'undefined') {
+          this.subscription = null;
+          this.accessKey = '';
           DisciplineStore.dispatch({
             action: DisciplineStore.ACTION_GET_DISCIPLINE,
-            data: this.$route.params.id,
+            data: this.$router.currentRoute.params.id,
           });
-        } else if (this.accessLevel > data.role) {
           this.disciplineRole = this.accessLevel;
         } else {
-          this.disciplineRole = data.role;
+          this.subscription = data;
+          this.discipline = data.discipline;
+          if (this.accessLevel > this.subscription.role) {
+            this.disciplineRole = this.accessLevel;
+          } else {
+            this.disciplineRole = this.subscription.role;
+          }
         }
       }, this);
       DisciplineStore.on('getDiscipline', (data) => {

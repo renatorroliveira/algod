@@ -1,8 +1,8 @@
 <template>
-  <v-container grid-list-xl text-xs-center v-if="!!discipline && (!!subscription || disciplineRole >= 30)">
+  <v-container grid-list-xl v-if="!!discipline && (!!subscription || disciplineRole >= 30)">
     <v-flex xs12>
       <v-card color="blue-grey darken-1 white--text">
-        <v-card-text>
+        <v-card-text class="text-xs-center">
           <div class="display-1">{{discipline.name}}</div>
           <div class="subheading">{{discipline.shortName}}</div>
         </v-card-text>
@@ -12,7 +12,14 @@
     <v-layout row wrap>
       <v-flex xs3>
         <v-list>
-          <v-list-tile v-if="subscription === null" v-on:click="modalSubscribe = true">
+          <v-list-tile v-if="subscription === null && discipline.accessKey.length > 0" v-on:click="modalSubscribe = true">
+            <v-list-tile-content>
+              <v-list-tile-title>
+                Inscrever-se
+              </v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile v-else-if="subscription === null && discipline.accessKey.length === 0" v-on:click="doSubscribe($event);">
             <v-list-tile-content>
               <v-list-tile-title>
                 Inscrever-se
@@ -30,7 +37,7 @@
 
         <v-spacer class="mb-3"></v-spacer>
 
-        <v-list v-if="disciplineRole >= 30 || accessLevel >= 30">
+        <v-list v-if="disciplineRole >= 30">
           <v-list-tile>
             <v-list-tile-content>
               <v-list-tile-title><strong>Administração</strong></v-list-tile-title>
@@ -53,30 +60,43 @@
         <v-layout row wrap>
           <v-flex xs12 v-for="(topic, i) in topics" :key="topic.id">
             <v-card color="white" style="min-height: 200px;">
-              <v-card-title primary-title>
-                <span style="display: none;">{{update}}</span>
-                <v-flex xs10>
-                  <h5 class="text-sm-left">{{topic.title}}</h5>
-                </v-flex>
-                <v-flex xs1>
-                  <v-btn v-if="disciplineRole >= 30 || accessLevel >= 30" flat icon title="Adicionar item" v-on:click="newTopicItem = !newTopicItem; topicId = topic.id">
-                    <v-icon>add</v-icon>
-                  </v-btn>
-                </v-flex>
-                <v-flex xs1>
-                  <v-btn v-if="disciplineRole >= 30 || accessLevel >= 30" flat icon :title="`Remover ${topic.title}`" v-on:click="remTopic = !remTopic; topicId = topic.id; topicToRemove = topic.title">
-                    <v-icon>close</v-icon>
-                  </v-btn>
-                </v-flex>
-              </v-card-title>
+              <v-card-text>
+                <v-layout row wrap>
+                  <span style="display: none;">{{update}}</span>
+                  <v-flex xs10>
+                    <h5 class="text-sm-left">{{topic.title}}</h5>
+                  </v-flex>
+                  <v-flex xs2 class="text-xs-right">
+                    <v-btn v-if="disciplineRole >= 30" flat icon title="Adicionar item" v-on:click="newTopicItem = !newTopicItem; topicId = topic.id">
+                      <v-icon>add</v-icon>
+                    </v-btn>
+                    <v-btn v-if="disciplineRole >= 30" flat icon :title="`Remover ${topic.title}`" v-on:click="remTopic = !remTopic; topicId = topic.id; topicToRemove = topic.title">
+                      <v-icon>close</v-icon>
+                    </v-btn>
+                  </v-flex>
+                </v-layout>
+              </v-card-text>
               <v-card-text v-if="topicItems.length > 0">
                 <v-layout row wrap v-for="item in topicItems" :key="item.id" v-if="topic.id === item.topic.id">
-                  <v-flex xs10 class="text-sm-left">
+                  <v-flex xs12 class="text-sm-left">
                     <div v-if="item.type === 'Link'">
                        <a target="_blank" id="externalUrl" :href="item.content"><v-icon>public</v-icon>{{item.label}}</a>
                     </div>
                     <div v-else-if="item.type === 'Task'">
-                      <router-link id="internalUrl" :to="`/discipline/${discipline.id}/task/${item.id}`"><v-icon>class</v-icon> {{item.label}}</router-link>
+                      <v-layout row wrap>
+                        <v-flex xs10 class="text-xs-left">
+                          <v-spacer class="mb-2"></v-spacer>
+                          <router-link id="internalUrl" :to="`/discipline/${discipline.id}/task/${item.id}`"><v-icon>class</v-icon> {{item.label}}</router-link>
+                        </v-flex>
+                        <v-flex xs2 class="text-xs-right">
+                          <v-btn v-if="disciplineRole >= 30" flat icon :title="`Editar ${item.label}`" v-on:click="editTopicItem = true; selectedTopicItem = item">
+                            <v-icon>edit</v-icon>
+                          </v-btn>
+                          <v-btn v-if="disciplineRole >= 30" flat icon :title="`Remover ${item.label}`" v-on:click="remTopicItem = true; topicItemId = item.id; topicItemToRemove = item.title">
+                            <v-icon>close</v-icon>
+                          </v-btn>
+                        </v-flex>
+                      </v-layout>
                     </div>
                   </v-flex>
                 </v-layout>
@@ -134,14 +154,56 @@
                 single-line
                 v-else
               ></v-select>
-              <v-text-field
-                label="Date available To"
+              <v-menu
+              ref="menu"
+              lazy
+              :close-on-content-click="false"
+              v-model="menu"
+              transition="scale-transition"
+              offset-y
+              full-width
+              min-width="290px"
+            >
+            <v-text-field
+              slot="activator"
+              label="Picker in menu"
+              v-model="date"
+              prepend-icon="event"
+              readonly
+            ></v-text-field>
+            <v-date-picker v-model="date" no-title scrollable>
+              <v-spacer></v-spacer>
+              <v-btn flat color="primary" @click="menu = false">Cancel</v-btn>
+              <v-btn flat color="primary" @click="$refs.menu.save(date)">OK</v-btn>
+            </v-date-picker>
+          </v-menu>
+              <v-date-picker v-model="dateAvailableTo" landscape locale="pt-br"></v-date-picker>
+              <!-- <v-text-field
+                label="Data de entrega"
                 v-model="dateAvailableTo"
                 type="date"
                 persistent-hint
-              ></v-text-field>
+              ></v-text-field> -->
+              <v-dialog
+                v-model="modal2"
+              >
+                <v-text-field
+                  slot="activator"
+                  label="Hora de entrega"
+                  v-model="time"
+                  prepend-icon="access_time"
+                  readonly
+                ></v-text-field>
+                <v-time-picker v-model="time" format="24hr" scrollable>
+                </v-time-picker>
+                <v-card>
+                  <v-card-text>
+                    <v-btn flat color="primary" @click="modal2 = false">Ok</v-btn>
+                  </v-card-text>
+                </v-card>
+              </v-dialog>
               <v-text-field
-                label="Date visible To"
+                label="Visível até"
                 v-model="dateVisibleTo"
                 type="date"
                 persistent-hint
@@ -169,13 +231,38 @@
 
       <v-dialog class="text-xs-center" v-model="newTopic" max-width="600px">
         <v-card>
+          <form v-on:submit="saveNewTopic($event)">
+            <v-card-text>
+              <v-text-field
+                label="Título do tópico"
+                v-model="newTopicTitle"
+              ></v-text-field>
+              <v-btn type="submit">Criar tópico</v-btn>
+              <v-btn v-on:click="newTopicTitle = ''; newTopic = false">Cancelar</v-btn>
+            </v-card-text>
+          </form>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog class="text-xs-center" v-model="editTopicItem" max-width="600px">
+        <v-card>
+          <v-card-title>
+            <h5>Editar {{selectedTopicItem.label}}</h5>
+          </v-card-title>
+          <v-spacer></v-spacer>
           <v-card-text>
-            <v-text-field
-              label="Título do tópico"
-              v-model="newTopicTitle"
-            ></v-text-field>
-            <v-btn v-on:click="saveNewTopic($event)">Criar tópico</v-btn>
-            <v-btn v-on:click="newTopicTitle = ''; newTopic = false">Cancelar</v-btn>
+            <form v-on:submit="editTopicItemFunc($event)">
+              <v-text-field
+                label="Título do tópico"
+                v-model="selectedTopicItem.label"
+              ></v-text-field>
+              <v-text-field
+                label="Descrição"
+                v-model="selectedTopicItem.description"
+              ></v-text-field>
+              <v-btn type="submit">Salvar tópico</v-btn>
+              <v-btn v-on:click="editTopicItem = false">Cancelar</v-btn>
+            </form>
           </v-card-text>
         </v-card>
       </v-dialog>
@@ -228,11 +315,23 @@
         subscription: null,
         discipline: null,
         e1: null,
+        remTopicItem: false,
+        topicItemToRemove: '',
+        editTopicItem: false,
+        hourAvailableTo: null,
+        selectedTopicItem: [],
+        time: null,
+        menu2: false,
+        modal2: false,
         accessKey: '',
         modalSubscribe: false,
         exists: false,
+        modalHour: false,
         topics: [],
         newTopic: false,
+        date: null,
+        menu: false,
+        modal: false,
         newTopicItem: false,
         editUser: false,
         newTopicTitle: '',
@@ -254,7 +353,7 @@
         label: '',
         description: '',
         content: '',
-        dateAvailableTo: '',
+        dateAvailableTo: null,
         update: '',
         dateVisibleTo: '',
         topicId: null,
@@ -332,7 +431,6 @@
       }, this);
 
       DisciplineStore.on('getSubscription', (data) => {
-        console.log(data);
         this.exists = true;
         if (typeof data === 'undefined') {
           this.subscription = null;
@@ -440,6 +538,9 @@
         } else {
           Toastr.warning('Você deve completar todos os campos');
         }
+      },
+      editTopicItemFunc(event) {
+        event.preventDefault();
       },
       getTopics() {
         TopicStore.dispatch({

@@ -4,12 +4,16 @@
       <v-flex xs12 text-xs-center>
         <v-card color="blue-grey darken-1 white--text">
           <v-card-text>
-            <div class="display-1">
-              <v-btn flat icon :title="`Voltar para ${discipline.name}`" :to="`/discipline/${discipline.id}`">
-                <v-icon dark>chevron_left</v-icon>
-              </v-btn>
-              {{topicItem.label}}
-            </div>
+            <v-layout row wrap>
+              <v-flex xs1>
+                <v-btn flat icon :title="`Voltar para ${discipline.name}`" :to="`/discipline/${discipline.id}`">
+                  <v-icon dark>chevron_left</v-icon>
+                </v-btn>
+              </v-flex>
+              <v-flex xs11 text-xs-center>
+                <span class="display-1">{{topicItem.label}}</span>
+              </v-flex>
+            </v-layout>
           </v-card-text>
         </v-card>
       </v-flex>
@@ -19,7 +23,7 @@
           <v-card-text>
             <p style="font-size: 18px">{{topicItem.description}}</p>
 
-            <v-flex v-if="accessLevel >= 30" xs8 offset-xs2>
+            <v-flex v-if="disciplineRole >= 30" xs6 offset-xs3>
               <v-card>
                 <v-card-title><h5>Envios da tarefa</h5></v-card-title>
                 <v-divider></v-divider>
@@ -80,7 +84,7 @@
 
             <v-spacer class="mb-3"></v-spacer>
 
-            <v-flex xs8 offset-xs2>
+            <v-flex xs6 offset-xs3>
               <v-card>
                 <v-card-title><h5>Seus envios</h5></v-card-title>
                 <v-divider></v-divider>
@@ -107,7 +111,7 @@
                     </v-flex>
                     <v-flex xs6>
                       <span style="font-size: 18px;" v-if="!!send">{{ handleDate(send.sendDate) }}</span>
-                      <span style="font-size: 18px;">Sem entregas</span>
+                      <span style="font-size: 18px;" v-else>Sem entregas</span>
                     </v-flex>
                   </v-layout>
                   <v-layout row wrap>
@@ -139,6 +143,7 @@
                       <span style="font-size: 18px;">Envio de arquivos:</span>
                     </v-flex>
                     <v-flex xs6>
+                      <span style="font-size: 18px;" v-if="!!send"><v-btn v-on:click="modalSend = true">Editar envio</v-btn></span>
                       <span style="font-size: 18px;" v-if="!!send"><v-btn v-on:click="downloadSend($event)" color="secondary"><v-icon dark>file_download</v-icon>&nbsp;Download</v-btn></span>
                       <span style="font-size: 18px;" v-else><v-btn v-on:click="modalSend = true">Adicionar tarefa</v-btn></span>
                     </v-flex>
@@ -190,9 +195,15 @@
           <v-card>
             <v-card-title>Envio de tarefa para {{topicItem.label}}</v-card-title>
             <v-divider></v-divider>
-            <v-card-text>
-              <form class="my-form" enctype="multipart/form-data">
-                
+            <v-card-text v-if="handleDate(topicItem.dateAvailableTo, 'now-date') === 'Tempo esgotado' && !send">
+              <h5>O tempo limite de envio acabou!</h5>
+              <div class="text-xs-right">
+                <v-btn color="red lighten-3" v-on:click="modalSend = false">Fechar</v-btn>
+              </div>
+            </v-card-text>
+            <v-card-text v-else>
+              <form class="my-form" v-on:submit="handleUpload($event)" enctype="multipart/form-data">
+
                 <v-btn v-on:click="openInput($event)" icon flat>
                   <v-icon>attachment</v-icon>
                   <input id="inputFile" style="display: none;" type="file" name="file" multiple class="input-file">
@@ -221,26 +232,6 @@
                 <v-btn color="red lighten-3" v-on:click="modalSend = false">Cancelar</v-btn>
                 <v-btn type="submit" color="green lighten-3">Entregar</v-btn>
               </div>
-              <!-- <v-flex v-if="!send">
-                <div v-if="topicItem.contentType === 1">
-                  <form xs6 id="formulario" v-on:submit="uploadSend($event)">
-                    <input id="fileupload" type="file" name="file" multiple class="input-file">
-                    <div class="red" droppable="true" ondrop="alert('dajskf')">
-                      fjsdhkas
-                    </div>
-
-                  </form>
-                </div>
-
-                <div v-else>
-                  <v-text-field
-                    label="Conteudo"
-                    v-model="content"
-                    persistent-hint
-                    multi-line
-                  ></v-text-field>
-                </div>
-              </v-flex> -->
             </v-card-text>
           </v-card>
         </v-dialog>
@@ -250,7 +241,6 @@
 </template>
 
 <script>
-  // import $ from 'jquery';
   import Toastr from 'toastr';
   import UserSession from '@/store/UserSession';
   import DisciplineStore from '@/store/Discipline';
@@ -264,6 +254,7 @@
       content: '',
       file: null,
       subscribedUsers: [],
+      disciplineRole: 0,
       sends: false,
       sendDesc: '',
       modalSend: false,
@@ -318,10 +309,24 @@
         action: DisciplineStore.ACTION_GET_SUBSCRIPTION,
         data: this.$router.currentRoute.params.id,
       });
-      DisciplineStore.on('getSubscription', (subscription) => {
-        this.subscription = subscription;
-        this.discipline = subscription.discipline;
-        console.log(subscription);
+      DisciplineStore.on('getSubscription', (data) => {
+        if (typeof data === 'undefined') {
+          this.subscription = null;
+          this.accessKey = '';
+          DisciplineStore.dispatch({
+            action: DisciplineStore.ACTION_GET_DISCIPLINE,
+            data: this.$router.currentRoute.params.id,
+          });
+          this.disciplineRole = this.accessLevel;
+        } else {
+          this.subscription = data;
+          this.discipline = data.discipline;
+          if (this.accessLevel > this.subscription.role) {
+            this.disciplineRole = this.accessLevel;
+          } else {
+            this.disciplineRole = this.subscription.role;
+          }
+        }
       }, this);
       TopicStore.on('sends', (sends) => {
         this.sendList = sends;
@@ -348,6 +353,7 @@
           action: TopicStore.ACTION_SENDS,
           data: this.$router.currentRoute.params.topicItemId,
         });
+        this.modalSend = false;
       }, this);
       TopicStore.on('successDownload', (file, xhr) => {
         this.handleDownloads(file, xhr, 'file');
@@ -360,9 +366,6 @@
       }, this);
     },
     methods: {
-      fileSelected(e) {
-        console.log(e);
-      },
       downloadSend(event) {
         event.preventDefault();
         TopicStore.dispatch({
@@ -378,35 +381,26 @@
           data: this.$router.currentRoute.params.topicItemId,
         });
       },
-      handleFiles(files) {
-        console.log(files);
+      handleFiles(fileList) {
+        this.fileList = fileList;
       },
-      handleUpload(fileList) {
-        const formData = new FormData();
-        if (fileList) {
-          this.fileList = fileList;
-        }
-        console.log(fileList);
-        if (fileList.length === 1) {
-          formData.append('file', fileList[0]);
-          // TopicStore.dispatch({
-          //   action: TopicStore.ACTION_UPLOAD,
-          //   data: {
-          //     formData,
-          //     topicItem: this.topicItem,
-          //   },
-          // });
-        } else if (fileList.length > 1) {
-          // for (let i = 0; i < fileUpload.files.length; i += 1) {
-          //   formData.append('file', fileUpload.files[i], fileUpload.files[i].name);
-          // }
-          // TopicStore.dispatch({
-          //   action: TopicStore.ACTION_UPLOAD_MULTIPLE,
-          //   data: {
-          //     formData,
-          //     topicItem: this.topicItem,
-          //   },
-          // });
+      handleUpload() {
+        const date = this.handleDate(this.topicItem.dateAvailableTo, 'now-date');
+        if (date === 'Tempo esgotado') {
+          Toastr.warning('Tempo limite esgotado! hahahaha');
+        } else {
+          const formData = new FormData();
+          console.log(this.fileList);
+          if (this.fileList.length === 1) {
+            formData.append('file', this.fileList[0]);
+            TopicStore.dispatch({
+              action: TopicStore.ACTION_UPLOAD,
+              data: {
+                formData,
+                topicItem: this.topicItem,
+              },
+            });
+          }
         }
       },
       handleDate(date, type) {
@@ -523,7 +517,7 @@
       handleDrop(e) {
         const dt = e.dataTransfer;
         const files = dt.files;
-        this.handleUpload(files);
+        this.fileList = files;
       },
     },
     beforeDestroy() {
