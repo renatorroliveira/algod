@@ -26,6 +26,7 @@
     "underscore": "^1.8.3",
     "vue": "2.x.x",
     "vue-router": "2.x.x",
+    "vuejs-datepicker": "^0.9.29",
     "vuetify": "^0.16.7"
   },
   "devDependencies": {

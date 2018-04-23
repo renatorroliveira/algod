@@ -49,7 +49,7 @@
                       <span style="font-size: 18px;">Precisa de avaliaçao:</span>
                     </v-flex>
                     <v-flex xs6>
-                      <span style="font-size: 18px;" v-if="!!send">{{sendList.length}}</span>
+                      <span style="font-size: 18px;" v-if="sendList.length > 0">{{sendList.length}}</span>
                       <span style="font-size: 18px;" v-else>0</span>
                     </v-flex>
                   </v-layout>
@@ -74,8 +74,7 @@
                       <span style="font-size: 18px;">Envios:</span>
                     </v-flex>
                     <v-flex xs6>
-                      <span style="font-size: 18px;" v-if="!!send"><v-btn color="secondary" v-on:click="sends = true">Ver Envios</v-btn></span>
-                      <span style="font-size: 18px;" v-else>0</span>
+                      <span text-xs-center style="font-size: 18px;" v-if="sendList.length > 0"><v-btn :to="`/discipline/${discipline.id}/task/${topicItem.id}/sends`" :title="`Lista de envios de ${topicItem.label}`">Envios</v-btn></span>
                     </v-flex>
                   </v-layout>
                 </v-card-text>
@@ -86,7 +85,15 @@
 
             <v-flex xs6 offset-xs3>
               <v-card>
-                <v-card-title><h5>Seus envios</h5></v-card-title>
+                <v-card-title>
+                  <v-layout row wrap>
+                    <v-flex xs6><h5>Seus envios</h5></v-flex>
+                    <v-flex xs6>
+                      <span style="font-size: 18px;" v-if="!!send"><v-btn flat icon v-on:click="modalSend = true" title="Editar envio"><v-icon>edit</v-icon></v-btn></span>
+                      <span style="font-size: 18px;" v-if="!!send"><v-btn v-on:click="downloadSend($event)" :title="`Fazer download de ${send.name}`" flat icon><v-icon>file_download</v-icon></v-btn></span>
+                    </v-flex>
+                  </v-layout>
+                </v-card-title>
                 <v-divider></v-divider>
                 <v-card-text>
                   <v-layout row wrap>
@@ -138,14 +145,12 @@
                       <span style="font-size: 18px;">{{ handleDate(topicItem.dateAvailableTo, 'sent')}} adiantado</span>
                     </v-flex>
                   </v-layout>
-                  <v-layout row wrap>
+                  <v-layout row wrap v-if="!send">
                     <v-flex xs6>
                       <span style="font-size: 18px;">Envio de arquivos:</span>
                     </v-flex>
+                      <span style="font-size: 18px;"><v-btn v-on:click="modalSend = true">Adicionar tarefa</v-btn></span>
                     <v-flex xs6>
-                      <span style="font-size: 18px;" v-if="!!send"><v-btn v-on:click="modalSend = true">Editar envio</v-btn></span>
-                      <span style="font-size: 18px;" v-if="!!send"><v-btn v-on:click="downloadSend($event)" color="secondary"><v-icon dark>file_download</v-icon>&nbsp;Download</v-btn></span>
-                      <span style="font-size: 18px;" v-else><v-btn v-on:click="modalSend = true">Adicionar tarefa</v-btn></span>
                     </v-flex>
                   </v-layout>
                 </v-card-text>
@@ -154,43 +159,6 @@
           </v-card-text>
         </v-card>
 
-        <v-dialog v-model="sends" max-width="1000px">
-          <v-card>
-            <v-card-title>
-              <v-flex xs8>
-                <v-btn flat icon v-on:click="sends = false">
-                  <v-icon>close</v-icon>
-                </v-btn>
-                <span style="font-size: 20px;"><strong>Envios de {{topicItem.label}}</strong></span>
-              </v-flex>
-              <v-flex xs4>
-                <v-btn v-if="sendList.length > 0" flat v-on:click="downloadAllSends()">
-                  <v-icon>file_download</v-icon>
-                  Fazer download de todos os envios
-                </v-btn>
-              </v-flex>
-            </v-card-title>
-            <v-card-text>
-              <template>
-                <v-data-table
-                  disable-initial-sort="true"
-                  no-data-text="A tarefa não possui nenhum envio"
-                  :headers="headers"
-                  :rows-per-page-items="rowsPerPageItems"
-                  rows-per-page-text="Linhas por página"
-                  :items="sendList"
-                  class="elevation-1"
-                  >
-                  <template slot="items" slot-scope="props">
-                    <td>{{ props.item.user.name }}</td>
-                    <td class="text-xs-right">{{ handleDate(props.item.sendDate) }}</td>
-                    <td class="text-xs-right">{{ props.item.name }}</td>
-                  </template>
-                </v-data-table>
-              </template>
-            </v-card-text>
-          </v-card>
-        </v-dialog>
         <v-dialog v-model="modalSend" max-width="1000px">
           <v-card>
             <v-card-title>Envio de tarefa para {{topicItem.label}}</v-card-title>
@@ -203,11 +171,6 @@
             </v-card-text>
             <v-card-text v-else>
               <form class="my-form" v-on:submit="handleUpload($event)" enctype="multipart/form-data">
-
-                <v-btn v-on:click="openInput($event)" icon flat>
-                  <v-icon>attachment</v-icon>
-                  <input id="inputFile" style="display: none;" type="file" name="file" multiple class="input-file">
-                </v-btn>
 
                 <div id="drop-area"
                   v-on:dragenter="preventDefaults($event); highlight();"
@@ -227,11 +190,18 @@
                   v-model="sendDesc"
                   multi-line
                 ></v-text-field>
+                <div class="text-xs-right">
+                  <v-btn color="red lighten-3" v-on:click="modalSend = false">Cancelar</v-btn>
+                  <v-btn type="submit" color="green lighten-3">Entregar</v-btn>
+                </div>
               </form>
-              <div class="text-xs-right">
-                <v-btn color="red lighten-3" v-on:click="modalSend = false">Cancelar</v-btn>
-                <v-btn type="submit" color="green lighten-3">Entregar</v-btn>
-              </div>
+            </v-card-text>
+          </v-card>
+        </v-dialog>
+        <v-dialog v-model="modalAvaliation">
+          <v-card>
+            <v-card-text>
+              <h5>fjsdfskkl</h5>
             </v-card-text>
           </v-card>
         </v-dialog>
@@ -262,6 +232,7 @@
       discipline: [],
       subscription: [],
       fileList: [],
+      modalAvaliation: false,
       months: [
         'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out',
         'Nov', 'Dez',
@@ -269,36 +240,10 @@
       weekDays: [
         'Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb',
       ],
-      rowsPerPageItems: [
-        5, 10, 25,
-        {
-          text: 'Todas',
-          value: -1,
-        },
-      ],
-      headers: [
-        {
-          text: 'Nome',
-          value: 'name',
-          align: 'left',
-        },
-        {
-          text: 'Data de entrega',
-          value: 'date',
-        },
-        {
-          text: 'Nome do arquivo',
-          value: 'filename',
-        },
-      ],
     }),
     created() {
       TopicStore.dispatch({
         action: TopicStore.ACTION_GET_TOPIC_ITEM,
-        data: this.$router.currentRoute.params.topicItemId,
-      });
-      TopicStore.dispatch({
-        action: TopicStore.ACTION_SENDS,
         data: this.$router.currentRoute.params.topicItemId,
       });
       TopicStore.dispatch({
@@ -328,9 +273,6 @@
           }
         }
       }, this);
-      TopicStore.on('sends', (sends) => {
-        this.sendList = sends;
-      }, this);
       TopicStore.on('getSend', (send) => {
         this.send = send;
       }, this);
@@ -358,9 +300,6 @@
       TopicStore.on('successDownload', (file, xhr) => {
         this.handleDownloads(file, xhr, 'file');
       }, this);
-      TopicStore.on('successDownloadZip', (zipFile, xhr) => {
-        this.handleDownloads(zipFile, xhr, 'zip');
-      }, this);
       TopicStore.on('failDownload', (msg) => {
         Toastr.error(msg);
       }, this);
@@ -375,16 +314,11 @@
           },
         });
       },
-      downloadAllSends() {
-        TopicStore.dispatch({
-          action: TopicStore.ACTION_SENDS_DOWNLOAD,
-          data: this.$router.currentRoute.params.topicItemId,
-        });
-      },
       handleFiles(fileList) {
         this.fileList = fileList;
       },
-      handleUpload() {
+      handleUpload(event) {
+        event.preventDefault();
         const date = this.handleDate(this.topicItem.dateAvailableTo, 'now-date');
         if (date === 'Tempo esgotado') {
           Toastr.warning('Tempo limite esgotado! hahahaha');

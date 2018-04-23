@@ -71,7 +71,7 @@
                       <v-icon>add</v-icon>
                     </v-btn>
                     <v-btn v-if="disciplineRole >= 30" flat icon :title="`Remover ${topic.title}`" v-on:click="remTopic = !remTopic; topicId = topic.id; topicToRemove = topic.title">
-                      <v-icon>close</v-icon>
+                      <v-icon>delete</v-icon>
                     </v-btn>
                   </v-flex>
                 </v-layout>
@@ -93,7 +93,7 @@
                             <v-icon>edit</v-icon>
                           </v-btn>
                           <v-btn v-if="disciplineRole >= 30" flat icon :title="`Remover ${item.label}`" v-on:click="remTopicItem = true; topicItemId = item.id; topicItemToRemove = item.title">
-                            <v-icon>close</v-icon>
+                            <v-icon>delete</v-icon>
                           </v-btn>
                         </v-flex>
                       </v-layout>
@@ -155,58 +155,58 @@
                 v-else
               ></v-select>
               <v-menu
-              ref="menu"
-              lazy
-              :close-on-content-click="false"
-              v-model="menu"
-              transition="scale-transition"
-              offset-y
-              full-width
-              min-width="290px"
-            >
-            <v-text-field
-              slot="activator"
-              label="Picker in menu"
-              v-model="date"
-              prepend-icon="event"
-              readonly
-            ></v-text-field>
-            <v-date-picker v-model="date" no-title scrollable>
-              <v-spacer></v-spacer>
-              <v-btn flat color="primary" @click="menu = false">Cancel</v-btn>
-              <v-btn flat color="primary" @click="$refs.menu.save(date)">OK</v-btn>
-            </v-date-picker>
-          </v-menu>
-              <v-date-picker v-model="dateAvailableTo" landscape locale="pt-br"></v-date-picker>
-              <!-- <v-text-field
-                label="Data de entrega"
-                v-model="dateAvailableTo"
-                type="date"
-                persistent-hint
-              ></v-text-field> -->
-              <v-dialog
-                v-model="modal2"
+                ref="menu"
+                lazy
+                :close-on-content-click="true"
+                v-model="menu"
+                transition="scale-transition"
+                offset-y
+                full-width
+                :nudge-right="40"
+                min-width="290px"
+                :return-value.sync="date"
               >
                 <v-text-field
                   slot="activator"
-                  label="Hora de entrega"
-                  v-model="time"
-                  prepend-icon="access_time"
+                  label="Prazo de entrega"
+
+                  prepend-icon="event"
                   readonly
                 ></v-text-field>
-                <v-time-picker v-model="time" format="24hr" scrollable>
-                </v-time-picker>
-                <v-card>
-                  <v-card-text>
-                    <v-btn flat color="primary" @click="modal2 = false">Ok</v-btn>
-                  </v-card-text>
-                </v-card>
-              </v-dialog>
+                <datepicker :inline="true" v-model="dateAvailableTo" language="pt-br" format="dd MMM yyyy"></datepicker>
+                <v-btn flat icon v-on:click="menu = false"><v-icon>save</v-icon></v-btn>
+              </v-menu>
+              <v-text-field
+                type="text"
+                label="Prazo de entrega"
+                v-model="dateAvailableTo"
+                mask="##/##/####"
+                return-masked-value
+                persistent-hint
+              ></v-text-field>
+              <v-text-field
+                type="text"
+                label="Hora"
+                v-model="timeAvailableTo"
+                mask="##:##"
+                return-masked-value
+                persistent-hint
+              ></v-text-field>
               <v-text-field
                 label="Visível até"
                 v-model="dateVisibleTo"
-                type="date"
+                type="text"
+                mask="##/##/####"
+                return-masked-value
                 persistent-hint
+              ></v-text-field>
+              <v-text-field
+                label="Hora"
+                v-model="timeVisibleTo"
+                type="text"
+                persistent-hint
+                mask="##:##"
+                return-masked-value
               ></v-text-field>
               <div class="input-field">
                 <v-btn type="submit" color="secondary">Criar novo item</v-btn>
@@ -306,6 +306,7 @@
   import DisciplineStore from '@/store/Discipline';
   import TopicStore from '@/store/Topic';
   import Toastr from 'toastr';
+  import Datepicker from 'vuejs-datepicker';
 
   export default {
     data() {
@@ -322,6 +323,8 @@
         selectedTopicItem: [],
         time: null,
         menu2: false,
+        timeVisibleTo: '',
+        timeAvailableTo: '',
         modal2: false,
         accessKey: '',
         modalSubscribe: false,
@@ -351,6 +354,7 @@
         contentType: [],
         selecTypes: null,
         label: '',
+        formatedDateAvailableTo: '',
         description: '',
         content: '',
         dateAvailableTo: null,
@@ -552,6 +556,9 @@
           data: this.$router.currentRoute.params.id,
         });
       },
+    },
+    components: {
+      Datepicker,
     },
   };
 </script>

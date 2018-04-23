@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileUploadException;
 
 import com.developerkingdom.algod.entities.discipline.Discipline;
+import com.developerkingdom.algod.entities.user.User;
 import com.developerkingdom.algod.entities.user.authz.Permissioned;
 import com.developerkingdom.algod.system.UserControlAbstractController;
 
@@ -247,4 +248,22 @@ public class TopicsController extends UserControlAbstractController {
 		else
 			this.success(this.bs.unsend(topicItem, this.userSession.getUser()));
 	}
+
+	@Post("/task/{id}/{userID}/avaliation")
+	public void avaliation(long id, long userId, Avaliation avaliation) {
+		TopicItem topicItem = this.bs.exists(id, TopicItem.class);
+		User user = this.bs.exists(userId, User.class);
+		Send send = this.bs.getSend(user, topicItem);
+		if (topicItem == null)
+			this.result.notFound();
+		else if (user == null)
+			this.result.notFound();
+		else if (send == null)
+			this.result.notFound();
+		else {
+			Avaliation avail = this.bs.avail(send, user, avaliation);
+			this.success(avail);
+		}
+	}
+	
 }

@@ -194,4 +194,18 @@ public class TopicsBS extends HibernateBusiness {
 			file.delete();
 		}
 	}
+	
+	public Avaliation avail(Send send, User user, Avaliation avaliation) {
+		Avaliation aval = this.exists(avaliation.getId(), Avaliation.class);
+		if (aval == null) {
+			aval = new Avaliation();
+			aval.setUser(user);
+			aval.setComment(avaliation.getComment());
+			aval.setScore(avaliation.getScore());
+			aval.setSend(send);
+			this.dao.persist(aval);
+			return aval;
+		}
+		return null;
+	}
 }

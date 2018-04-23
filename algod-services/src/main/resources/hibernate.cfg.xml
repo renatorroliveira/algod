@@ -54,6 +54,7 @@
   		<mapping class="com.developerkingdom.algod.entities.discipline.topic.Topic" />
   		<mapping class="com.developerkingdom.algod.entities.discipline.topic.TopicItem"/>
   		<mapping class="com.developerkingdom.algod.entities.discipline.topic.Send" />
+  		<mapping class="com.developerkingdom.algod.entities.discipline.topic.Avaliation" />
   		<mapping class="com.developerkingdom.algod.entities.user.User" />
   		<mapping class="com.developerkingdom.algod.entities.user.UserRecoverRequest" />
   		<mapping class="com.developerkingdom.algod.entities.user.auth.UserAccessToken" />

@@ -14,7 +14,7 @@ import NewDiscipline from '@/components/disciplines/AddDiscipline';
 import Task from '@/components/disciplines/Task';
 import Discipline from '@/components/disciplines/Discipline';
 import DisciplineUsers from '@/components/disciplines/SubscribedUsers';
-
+import Sends from '@/components/disciplines/Sends';
 
 import Login from '@/components/auth/Login';
 import Register from '@/components/auth/Register';
@@ -95,6 +95,10 @@ export default new Router({
       path: 'discipline/:id/task/:topicItemId',
       name: 'Atividade',
       component: Task,
+    }, {
+      path: 'discipline/:id/task/:topicItemId/sends',
+      name: 'Envios da atividade',
+      component: Sends,
     }],
   }],
 });
