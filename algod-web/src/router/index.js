@@ -11,9 +11,10 @@ import ListInstitutions from '@/components/institution/ListInstitutions';
 
 import ListDisciplines from '@/components/disciplines/ListDisciplines';
 import NewDiscipline from '@/components/disciplines/AddDiscipline';
+import Task from '@/components/disciplines/Task';
 import Discipline from '@/components/disciplines/Discipline';
 import DisciplineUsers from '@/components/disciplines/SubscribedUsers';
-import Task from '@/components/disciplines/Task';
+
 
 import Login from '@/components/auth/Login';
 import Register from '@/components/auth/Register';

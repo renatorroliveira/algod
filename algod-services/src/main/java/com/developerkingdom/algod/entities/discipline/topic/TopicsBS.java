@@ -159,7 +159,7 @@ public class TopicsBS extends HibernateBusiness {
 		for (Send send: sends) {
 			User user = send.getUser();
 			String fullPath = 
-					TopicsController.PATH + user.getId().toString() + "_" + topicItem.getId().toString() + "_" + send.getId().toString() + send.getName().toString();
+					TopicsController.PATH + "/downsCopy/" + user.getId().toString() + "_" + topicItem.getId().toString() + "_" + send.getId().toString() + "_" + send.getName().toString();
 			File file = new File(fullPath);
 			if (file.exists()) {
 				file.delete();

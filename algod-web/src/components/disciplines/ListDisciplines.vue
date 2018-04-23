@@ -1,13 +1,27 @@
 <template>
   <v-flex xs12>
     <v-card>
+      <v-card-title>
+        Disciplinas
+        <v-spacer></v-spacer>
+        <v-text-field
+          append-icon="search"
+          label="Procurar pelo nome"
+          single-line
+          hide-details
+          v-model="search"
+        ></v-text-field>
+      </v-card-title>
       <v-card-text>
         <v-data-table
           v-if="list"
           v-model="selected"
           :headers="headers"
           :items="list"
+          :search="search"
           select-all
+          no-data-text="Nenhuma disciplina para esta Instituição"
+          rows-per-page-text="Disciplinas por página"
           v-bind:pagination.sync="pagination"
           item-key="item.id"
           class="elevation-1">
@@ -67,36 +81,35 @@
   export default {
     name: 'Lista-de-Disciplines',
 
-    data() {
-      return {
-        pagination: {
-          sortBy: 'id',
-        },
-        selected: [],
-        list: [],
-        headers: [{
-          text: 'ID',
-          value: 'id',
-          align: 'left',
-        }, {
-          text: 'Nome',
-          value: 'name',
-          align: 'center',
-        }, {
-          text: 'Categoria',
-          value: 'desc',
-          align: 'center',
-        }, {
-          text: 'Instituição',
-          value: 'host',
-          align: 'center',
-        }, {
-          text: 'Visitar',
-          value: 'visit',
-          align: 'center',
-        }],
-      };
-    },
+    data: () => ({
+      search: '',
+      pagination: {
+        sortBy: 'id',
+      },
+      selected: [],
+      list: [],
+      headers: [{
+        text: 'ID',
+        value: 'id',
+        align: 'left',
+      }, {
+        text: 'Nome',
+        value: 'name',
+        align: 'center',
+      }, {
+        text: 'Categoria',
+        value: 'desc',
+        align: 'center',
+      }, {
+        text: 'Instituição',
+        value: 'host',
+        align: 'center',
+      }, {
+        text: 'Visitar',
+        value: 'visit',
+        align: 'center',
+      }],
+    }),
 
     created() {
       DisciplineStore.on('delete', () => {
@@ -104,7 +117,6 @@
         Toastr.success('Disciplina removida');
       }, this);
       DisciplineStore.on('listAll', (data) => {
-        console.log(data);
         this.list = data.data;
       }, this);
       this.refreshList();
