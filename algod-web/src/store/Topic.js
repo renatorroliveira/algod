@@ -20,6 +20,10 @@ const TopicStore = Fluxbone.Store.extend({
   ACTION_SENDS: 'listAllSends',
   ACTION_SENDS_DOWNLOAD: 'downloadAllSends',
   ACTION_GET_SEND: 'getSend',
+  ACTION_DOWNLOAD_USER_FILE: 'downloadUserFile',
+  ACTION_GET_EVALUATIONS: 'getAllEvaluations',
+  ACTION_SEND_EVALUATION: 'sendEvaluation',
+  ACTION_GET_EVALUATION: 'getEvaluation',
 
   model: TopicModel,
   url: `${Config.baseUrl}/v1/topic`,
@@ -157,25 +161,6 @@ const TopicStore = Fluxbone.Store.extend({
     });
   },
 
-  uploadSendMultipleFiles(params) {
-    console.log(params);
-    // const me = this;
-    // const promisse = axios.post(
-    //   `${this.url}/task/${params.topicItem.id}/upload/multiple`,
-    //   params.formData,
-    // );
-    // console.log(promisse);
-    // promisse.then((result) => {
-    //   console.log(result);
-      // if (result.data.success) {
-      //   me.trigger('successUpload');
-      // }
-    // }).catch((error) => {
-    //   console.error(error);
-      // me.trigger('fail', error);
-    // });
-  },
-
   downloadSend(params) {
     const me = this;
     $.ajax({
@@ -227,6 +212,76 @@ const TopicStore = Fluxbone.Store.extend({
       },
       error(args) {
         me.trigger('fail', args);
+      },
+    });
+  },
+
+  downloadUserFile(params) {
+    const me = this;
+    $.ajax({
+      url: `${me.url}/task/${params.topicItem.id}/download/user/${params.user.id}`,
+      method: 'GET',
+      xhrFields: {
+        responseType: 'blob',
+      },
+      success(response, status, xhr) {
+        if (status === 'success') {
+          me.trigger('successDownload', response, xhr);
+        }
+      },
+      error(err) {
+        console.error(err);
+        me.trigger('failDownload', err);
+      },
+    });
+  },
+
+  getAllEvaluations(id) {
+    const me = this;
+    $.ajax({
+      url: `${me.url}/task/${id}/evaluations`,
+      method: 'GET',
+      dataType: 'json',
+      success(data) {
+        me.trigger('evaluations', data.data);
+      },
+      error(err) {
+        console.error(err);
+      },
+    });
+  },
+
+  getEvaluation(id) {
+    const me = this;
+    $.ajax({
+      url: `${me.url}/task/${id}/evaluation`,
+      method: 'GET',
+      dataType: 'json',
+      success(data) {
+        me.trigger('evaluation', data.data);
+      },
+      error(err) {
+        console.error(err);
+      },
+    });
+  },
+
+  sendEvaluation(params) {
+    const me = this;
+    $.ajax({
+      url: `${me.url}/task/${params.topicItem.id}/user/evaluation`,
+      method: 'POST',
+      dataType: 'json',
+      data: JSON.stringify({
+        avaliation: params.avaliation,
+        user: params.user,
+      }),
+      success(data) {
+        console.log(data);
+        me.trigger('evaluated', data.data);
+      },
+      error(err) {
+        console.error(err);
       },
     });
   },

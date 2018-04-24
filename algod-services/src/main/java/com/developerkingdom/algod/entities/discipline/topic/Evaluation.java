@@ -1,40 +1,31 @@
 package com.developerkingdom.algod.entities.discipline.topic;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.developerkingdom.algod.entities.user.User;
-
 import br.com.caelum.vraptor.boilerplate.SimpleLogicalDeletableEntity;
 
 
-@Entity(name = Avaliation.TABLE)
-@Table(name = Avaliation.TABLE)
-public class Avaliation extends SimpleLogicalDeletableEntity {
+@Entity(name = Evaluation.TABLE)
+@Table(name = Evaluation.TABLE)
+public class Evaluation extends SimpleLogicalDeletableEntity {
 	public final static String TABLE = "algod_discipline_task_sends_avaliation";
 	private static final long serialVersionUID = 1L;
-	
+
 	@ManyToOne(fetch=FetchType.EAGER)
-	private User user;
-	
-	@ManyToOne(fetch=FetchType.EAGER)
-	private Send send;
+	private TopicItem topicItem;
 	
 	@Column(nullable=true)
 	private String comment;
 	
+	@ManyToOne(fetch=FetchType.EAGER, cascade = {CascadeType.ALL})
+	private Send send;
+	
 	private double score = 0.0;
-
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
 	
 	public Send getSend() {
 		return send;
@@ -42,6 +33,14 @@ public class Avaliation extends SimpleLogicalDeletableEntity {
 
 	public void setSend(Send send) {
 		this.send = send;
+	}
+
+	public TopicItem getTopicItem() {
+		return topicItem;
+	}
+
+	public void setTopicItem(TopicItem topicItem) {
+		this.topicItem = topicItem;
 	}
 
 	public String getComment() {

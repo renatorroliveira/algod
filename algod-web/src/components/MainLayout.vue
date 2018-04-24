@@ -82,7 +82,7 @@
       </v-container>
     </v-content>
     <v-footer app>
-      <span>Copyrights &copy; 2018 All rights reserved</span>
+      <span>Copyrights &copy; Algod 2017-2018</span>
     </v-footer>
   </v-app>
 </template>

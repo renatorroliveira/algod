@@ -92,11 +92,12 @@ public class TopicsBS extends HibernateBusiness {
 		return list;
 	}
 	
-	public Send sendTask(TopicItem topicItem, UploadedFile file, String filename, User user) {
+	public Send sendTask(TopicItem topicItem, UploadedFile file, String filename, User user, String description) {
 		Send send = new Send();
 		send.setName(file.getFileName());
 		send.setTopicItem(topicItem);
 		send.setUser(user);
+		send.setDescription(description);
 		send.setContentType(file.getContentType());
 		this.dao.persist(send);
 		try {
@@ -107,18 +108,7 @@ public class TopicsBS extends HibernateBusiness {
 		}
 		return send;
 	}
-	
-	public Send getSend(User user, TopicItem topicItem) {
-		Criteria criteria = this.dao.newCriteria(Send.class)
-				.add(Restrictions.eq("deleted", false))
-				.add(Restrictions.eq("user", user))
-				.add(Restrictions.eq("topicItem", topicItem));
-		Send send = (Send) criteria.uniqueResult();
-		if (send != null)
-			return send;
-		return null;
-	}
-	
+
 	public Download getFileDownload(HttpServletResponse response, File file, User user, String filename, Send send) throws FileNotFoundException {
 		response.setHeader("content-type", send.getContentType());
 		response.setHeader("filename", filename);
@@ -154,19 +144,6 @@ public class TopicsBS extends HibernateBusiness {
 		return downList;
 	}
 	
-	public void deleteZipFiles(TopicItem topicItem) throws IOException {
-		List<Send> sends = this.listAllSends(topicItem);
-		for (Send send: sends) {
-			User user = send.getUser();
-			String fullPath = 
-					TopicsController.PATH + "/downsCopy/" + user.getId().toString() + "_" + topicItem.getId().toString() + "_" + send.getId().toString() + "_" + send.getName().toString();
-			File file = new File(fullPath);
-			if (file.exists()) {
-				file.delete();
-			}
-		}
-	}
-	
 	public Send getSend(TopicItem topicItem, User user) {
 		Criteria criteria = this.dao.newCriteria(Send.class)
 				.add(Restrictions.eq("deleted", false))
@@ -195,17 +172,55 @@ public class TopicsBS extends HibernateBusiness {
 		}
 	}
 	
-	public Avaliation avail(Send send, User user, Avaliation avaliation) {
-		Avaliation aval = this.exists(avaliation.getId(), Avaliation.class);
-		if (aval == null) {
-			aval = new Avaliation();
-			aval.setUser(user);
-			aval.setComment(avaliation.getComment());
-			aval.setScore(avaliation.getScore());
+	public Send getSendByUser(TopicItem topicItem, User user) {
+		Criteria criteria = this.dao.newCriteria(Send.class)
+				.add(Restrictions.eq("user", user))
+				.add(Restrictions.eq("topicItem", topicItem))
+				.add(Restrictions.eq("deleted", false));
+		Send send = (Send) criteria.uniqueResult();
+		return send;
+		
+	}
+	
+	public Evaluation getEvaluation(TopicItem topicItem, User user) {
+		Send send = this.getSend(topicItem, user);
+		Criteria criteria = this.dao.newCriteria(Evaluation.class)
+				.add(Restrictions.eq("topicItem", topicItem))
+				.add(Restrictions.eq("send", send))
+				.add(Restrictions.eq("deleted", false));
+		Evaluation avaliation = (Evaluation) criteria.uniqueResult();
+		return avaliation;
+	}
+	
+	public List<Evaluation> listAvail(TopicItem topicItem) {
+		Criteria criteria = this.dao.newCriteria(Evaluation.class)
+				.add(Restrictions.eq("deleted", false))
+				.add(Restrictions.eq("topicItem", topicItem))
+				.addOrder(Order.asc("topicItem.id"));;
+		List<Evaluation> listAvail = this.dao.findByCriteria(criteria, Evaluation.class);
+		return listAvail;
+	}
+	
+	public Evaluation avail(TopicItem topicItem, Evaluation aval, User user) {
+		Send send = this.getSendByUser(topicItem, user);
+		Criteria criteria = this.dao.newCriteria(Evaluation.class)
+				.add(Restrictions.eq("deleted", false))
+				.add(Restrictions.eq("send", send))
+				.add(Restrictions.eq("topicItem", topicItem));
+		Evaluation avaliation = (Evaluation) criteria.uniqueResult();
+		if (avaliation == null) {
+			aval.setDeleted(false);
 			aval.setSend(send);
+			aval.setTopicItem(topicItem);
 			this.dao.persist(aval);
 			return aval;
+		} else {
+			avaliation.setSend(send);
+			avaliation.setComment(aval.getComment());
+			avaliation.setScore(aval.getScore());
+			avaliation.setTopicItem(topicItem);
+			this.dao.persist(avaliation);
+			return avaliation;
 		}
-		return null;
 	}
 }
