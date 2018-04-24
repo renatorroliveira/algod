@@ -2,7 +2,6 @@
   <v-container grid-list-md text-xs-center>
     <v-layout row wrap>
       <v-flex xs12 class="text-xs-center">
-        <v-btn color="primary" dark @click.stop="dialog = true">Pesquisar disciplinas</v-btn> <v-spacer class="mb-4"></v-spacer>
         <h1>Algorithm God 2</h1>
         <h5>Uma nova experiência no ensino da programação de computadores</h5>
         <p class="body-2"><p v-if="accessLevel >= 30">Logado como admin!</p>
@@ -10,11 +9,14 @@
           acompanhar os exemplos das suas aulas, além de entregar trabalhos, atividades e
           realizar suas provas. Tudo por aqui, simples e prático.
         </p>
+        <v-btn v-on:click="dialog = true">Pesquisar disciplinas</v-btn>
       </v-flex>
-      <v-flex v-if="disciplines.length > 0" xs4 offset-xs4>
+      <v-layout row wrap v-if="disciplines.length > 0">
+        <v-spacer class="mb-4"></v-spacer>
         <v-divider class="mb-4"></v-divider>
-        <h5>Disciplinas Inscritas</h5>
-          <v-card v-for="(discipline, i) in disciplines" :key="discipline.id" class="text-xs-center">
+        <v-flex xs12><h5>Disciplinas Inscritas</h5></v-flex>
+        <v-flex xs2 v-for="(discipline, i) in disciplines" :key="discipline.id">
+          <v-card class="text-xs-center">
             <v-card-title>
               <v-flex xs12>
                 <h5>{{discipline.discipline.name}}</h5>
@@ -23,17 +25,17 @@
             </v-card-title>
             <v-card-actions>
               <v-flex xs12>
-                <v-btn flat color="purple" :to="`/discipline/${discipline.discipline.id}`">Visitar</v-btn>
-                <v-btn flat color="black" v-on:click="doUnsubscribe($event, discipline.discipline)">Excluir inscrição</v-btn>
+                <v-btn flat :to="`/discipline/${discipline.discipline.id}`">Visitar</v-btn>
+                <v-btn flat color="secondary" v-on:click="doUnsubscribe($event, discipline.discipline)">Excluir inscrição</v-btn>
               </v-flex>
             </v-card-actions>
-            <v-spacer class="mb-3"></v-spacer>
           </v-card>
-      </v-flex>
+        </v-flex>
+      </v-layout>
     </v-layout>
 
     <v-dialog v-model="dialog" fullscreen transition="dialog-bottom-transition" :overlay="false" scrollable>
-      <v-card tile>
+      <v-card>
         <v-toolbar card dark color="blue-grey darken-2">
           <v-btn icon @click.native="dialog = false">
             <v-icon>close</v-icon>
@@ -41,39 +43,43 @@
           <v-toolbar-title>Pesquisar disciplinas</v-toolbar-title>
         </v-toolbar>
         <v-card-text>
-          <v-card xs5>
-            <v-card-text>
-              <v-flex xs6 offset-xs3>
-                <form v-on:submit="doSearch($event)">
-                  <v-text-field
-                    prepend-icon="search"
-                    label="Buscar disciplinas"
-                    solo-inverted
-                    v-model="terms"
-                    class="mx-3"
-                    flat>
-                  </v-text-field>
-                  <v-btn type="submit">Buscar</v-btn>
-                </form>
-              </v-flex>
-            </v-card-text>
-          </v-card>
-          <v-spacer class="mb-3"></v-spacer>
-          <v-flex offset-xs3 xs6 v-if="resultSearch.length > 0">
-            <v-card xs6 offset-xs3 v-for="(discipline, i) in resultSearch" :key="discipline.id">
-              <v-card-title class="text-xs-center">
-                <v-flex xs12>
-                  <h5>{{discipline.name}}</h5>
-                  <span class="grey--text">{{discipline.shortName}}</span>
-                </v-flex>
-              </v-card-title>
-              <v-card-actions>
-                <v-flex xs12>
-                  <v-btn flat color="secondary" :to="`/discipline/${discipline.id}`">Visitar</v-btn>
-                </v-flex>
-              </v-card-actions>
-            </v-card>
-          </v-flex>
+          <v-layout row wrap>
+            <v-flex xs6 offset-xs3>
+              <v-card>
+                <v-card-text>
+                  <form v-on:submit="doSearch($event)">
+                    <v-text-field
+                      prepend-icon="search"
+                      label="Buscar disciplinas"
+                      solo-inverted
+                      v-model="terms"
+                      class="mx-3"
+                      flat>
+                    </v-text-field>
+                    <v-btn type="submit">Buscar</v-btn>
+                  </form>
+                </v-card-text>
+              </v-card>
+            </v-flex>
+          </v-layout>
+          <v-spacer class="mb-4"></v-spacer>
+          <v-layout row wrap>
+            <v-flex offset-xs5 xs2 v-if="resultSearch.length > 0">
+              <v-card v-for="(discipline, i) in resultSearch" :key="discipline.id">
+                <v-card-title class="text-xs-center">
+                  <v-flex xs12>
+                    <h5>{{discipline.name}}</h5>
+                    <span class="grey--text">{{discipline.shortName}}</span>
+                  </v-flex>
+                </v-card-title>
+                <v-card-actions>
+                  <v-flex xs12>
+                    <v-btn flat color="secondary" :to="`/discipline/${discipline.id}`">Visitar</v-btn>
+                  </v-flex>
+                </v-card-actions>
+              </v-card>
+            </v-flex>
+          </v-layout>
         </v-card-text>
       </v-card>
     </v-dialog>
@@ -101,6 +107,7 @@
         action: DisciplineStore.ACTION_LIST_SUBSCRIBED_DISCIPLINES,
       });
       DisciplineStore.on('listSubscribedDisciplines', (data) => {
+        console.log(data.data);
         this.disciplines = data.data;
       }, this);
       DisciplineStore.on('doUnsubscribe', () => {

@@ -154,7 +154,7 @@ public class TopicsController extends UserControlAbstractController {
 
 	@Post("/task/{id}/upload")
 	@UploadSizeLimit(sizeLimit=60 * 1024 * 1024, fileSizeLimit=60 * 1024 * 1024)
-	public void uploadFile(long id, UploadedFile file) throws FileUploadException {
+	public void uploadFile(long id, UploadedFile file, String description) throws FileUploadException {
 		TopicItem topicItem = this.bs.exists(id, TopicItem.class);
 		if (topicItem == null)
 			this.result.notFound();
@@ -164,7 +164,7 @@ public class TopicsController extends UserControlAbstractController {
 			if (!filesPath.exists())
 				filesPath.mkdirs();
 		    try {
-				this.success(this.bs.sendTask(topicItem, file, filename, this.userSession.getUser()));
+				this.success(this.bs.sendTask(topicItem, file, filename, this.userSession.getUser(), description));
 			} catch(Exception e) {
 				this.fail(e.getMessage());
 				LOGGER.errorf(e, "Erro: %s", e.getMessage());
@@ -188,7 +188,7 @@ public class TopicsController extends UserControlAbstractController {
 	@Get("/task/{id}/download")
 	public Download downloadFile(long id, HttpServletResponse response) throws FileNotFoundException {
 		TopicItem topicItem = this.bs.exists(id, TopicItem.class);
-		Send send = this.bs.getSend(this.userSession.getUser(), topicItem);
+		Send send = this.bs.getSend(topicItem, this.userSession.getUser());
 		if (topicItem == null)
 			this.result.notFound();
 		if (send == null)
@@ -201,6 +201,29 @@ public class TopicsController extends UserControlAbstractController {
 			}
 		}
 		
+		return null;
+	}
+	
+	@Get("/task/{id}/download/user/{userId}")
+	public Download downloadUserSendFile(long id, long userId) throws FileNotFoundException {
+		TopicItem topicItem = this.bs.exists(id, TopicItem.class);
+		User user = this.bs.exists(userId, User.class);
+		if (topicItem == null) 
+			this.result.notFound();
+		if (user == null)
+			this.result.notFound();
+		else {
+			Send send = this.bs.getSendByUser(topicItem, user);
+			if (send == null)
+				this.result.notFound();
+			else {
+				String filename = user.getId().toString() + "_" + topicItem.getId().toString() + "_" + send.getId().toString();
+				File file = new File(PATH, filename);
+				if (file.exists()) {
+					return this.bs.getFileDownload(response, file, user, filename + "_" + send.getName().toString(), send);
+				}
+			}
+		}
 		return null;
 	}
 	
@@ -225,7 +248,6 @@ public class TopicsController extends UserControlAbstractController {
 		}
 		else {
 			Iterable<java.nio.file.Path> downs = this.bs.listAllSendsDownloads(topicItem, response);
-			this.bs.deleteZipFiles(topicItem);
 			return new ZipDownload("files.zip", downs);
 		}
 	}
@@ -249,20 +271,37 @@ public class TopicsController extends UserControlAbstractController {
 			this.success(this.bs.unsend(topicItem, this.userSession.getUser()));
 	}
 
-	@Post("/task/{id}/{userID}/avaliation")
-	public void avaliation(long id, long userId, Avaliation avaliation) {
+	@Consumes
+	@Post("/task/{id}/user/evaluation")
+	public void doAvaliation(long id, Evaluation avaliation, User user) {
+		LOGGER.info("Avaliation LOG:  " + avaliation.getComment());
+		LOGGER.info("USer LOG: " + user.getName());
 		TopicItem topicItem = this.bs.exists(id, TopicItem.class);
-		User user = this.bs.exists(userId, User.class);
-		Send send = this.bs.getSend(user, topicItem);
 		if (topicItem == null)
 			this.result.notFound();
-		else if (user == null)
+		else {
+			Evaluation aval = this.bs.avail(topicItem, avaliation, user);
+			this.success(aval);
+		}
+	}
+	
+	@Get("/task/{id}/evaluation")
+	public void getEvaluation(long id) {
+		TopicItem topicItem = this.bs.exists(id, TopicItem.class);
+		if (topicItem == null)
 			this.result.notFound();
-		else if (send == null)
+		else
+			this.success(this.bs.getEvaluation(topicItem, this.userSession.getUser()));
+	}
+	
+	@Get("/task/{id}/evaluations")
+	public void avaliations(long id) {
+		TopicItem topicItem = this.bs.exists(id, TopicItem.class);
+		if (topicItem == null)
 			this.result.notFound();
 		else {
-			Avaliation avail = this.bs.avail(send, user, avaliation);
-			this.success(avail);
+			List<Evaluation> listAvail = this.bs.listAvail(topicItem);
+			this.success(listAvail, (long) listAvail.size());
 		}
 	}
 	

@@ -75,6 +75,7 @@
                     </v-flex>
                     <v-flex xs6>
                       <span text-xs-center style="font-size: 18px;" v-if="sendList.length > 0"><v-btn :to="`/discipline/${discipline.id}/task/${topicItem.id}/sends`" :title="`Lista de envios de ${topicItem.label}`">Envios</v-btn></span>
+                      <span text-xs-center style="font-size: 18px;" v-else>Nenhum envio</span>
                     </v-flex>
                   </v-layout>
                 </v-card-text>
@@ -109,7 +110,9 @@
                       <span style="font-size: 18px;">Status da avaliação:</span>
                     </v-flex>
                     <v-flex xs6>
-                      <span style="font-size: 18px;">Sem nota</span>
+                      <span style="font-size: 18px;" v-if="evaluation">Nota: {{evaluation.score}}</span><br>
+                      <span style="font-size: 18px;" v-if="evaluation">Comentário: {{evaluation.comment}}</span>
+                      <span style="font-size: 18px;" v-else>Sem correções</span>
                     </v-flex>
                   </v-layout>
                   <v-layout row wrap>
@@ -180,16 +183,26 @@
 
                     <p>Você pode arrastar e soltar arquivos aqui para adicioná-los.</p>
 
-                    <v-spacer></v-spacer><br>
-                    <span v-for="(file, i) in fileList">arquivo {{(parseInt(i) + 1)}}: {{file.name}}<br> </span>
+                    <v-spacer></v-spacer>
+                    <span v-if="fileList.length > 0">{{fileList[0].name}}</span>
                 </div>
-                <v-text-field
-                  label="Descrição"
-                  hint="Opcional"
-                  persistent-hint
-                  v-model="sendDesc"
-                  multi-line
-                ></v-text-field>
+                <v-flex xs6 offset-xs3>
+                  <v-text-field
+                    label="Descrição"
+                    hint="Opcional"
+                    persistent-hint
+                    v-model="sendDesc"
+                    multi-line
+                  ></v-text-field>
+                </v-flex>
+                <v-flex xs6 offset-xs3>
+                  <v-text-field
+                    label="Salvar como"
+                    hint="Opcional"
+                    persistent-hint
+                    v-model="possibleName"
+                  ></v-text-field>
+                </v-flex>
                 <div class="text-xs-right">
                   <v-btn color="red lighten-3" v-on:click="modalSend = false">Cancelar</v-btn>
                   <v-btn type="submit" color="green lighten-3">Entregar</v-btn>
@@ -225,10 +238,12 @@
       file: null,
       subscribedUsers: [],
       disciplineRole: 0,
+      possibleName: '',
       sends: false,
       sendDesc: '',
       modalSend: false,
       send: [],
+      evaluation: [],
       discipline: [],
       subscription: [],
       fileList: [],
@@ -247,9 +262,23 @@
         data: this.$router.currentRoute.params.topicItemId,
       });
       TopicStore.dispatch({
+        action: TopicStore.ACTION_SENDS,
+        data: this.$router.currentRoute.params.topicItemId,
+      });
+      TopicStore.on('sends', (sends) => {
+        this.sendList = sends;
+      }, this);
+      TopicStore.dispatch({
         action: TopicStore.ACTION_GET_SEND,
         data: this.$router.currentRoute.params.topicItemId,
       });
+      TopicStore.dispatch({
+        action: TopicStore.ACTION_GET_EVALUATION,
+        data: this.$router.currentRoute.params.topicItemId,
+      });
+      TopicStore.on('evaluation', (ev) => {
+        this.evaluation = ev;
+      }, this);
       DisciplineStore.dispatch({
         action: DisciplineStore.ACTION_GET_SUBSCRIPTION,
         data: this.$router.currentRoute.params.id,
@@ -298,7 +327,7 @@
         this.modalSend = false;
       }, this);
       TopicStore.on('successDownload', (file, xhr) => {
-        this.handleDownloads(file, xhr, 'file');
+        this.handleDownloads(file, xhr);
       }, this);
       TopicStore.on('failDownload', (msg) => {
         Toastr.error(msg);
@@ -327,6 +356,7 @@
           console.log(this.fileList);
           if (this.fileList.length === 1) {
             formData.append('file', this.fileList[0]);
+            formData.append('description', this.sendDesc);
             TopicStore.dispatch({
               action: TopicStore.ACTION_UPLOAD,
               data: {
@@ -373,6 +403,9 @@
           if (ttlDays <= 0) {
             remainingTime = `${ttlHours}h${ttlMin}m e ${ttlSec}s`;
           }
+          if (ttlDays === 1) {
+            remainingTime = `${ttlDays} dia, ${ttlHours}h${ttlMin}m e ${ttlSec}s`;
+          }
           if (ttlDays <= 0 && ttlHours <= 0) {
             remainingTime = `${ttlMin}min e ${ttlSec}seg`;
           }
@@ -404,6 +437,9 @@
           if (ttlDays <= 0) {
             earlyTime = `${ttlHours}h${ttlMin}m e ${ttlSec}s`;
           }
+          if (ttlDays === 1) {
+            earlyTime = `${ttlDays} dia, ${ttlHours}h${ttlMin}m e ${ttlSec}s`;
+          }
           if (ttlDays <= 0 && ttlHours <= 0) {
             earlyTime = `${ttlMin}min e ${ttlSec}seg`;
           }
@@ -419,22 +455,15 @@
         const fullDate = `${this.weekDays[wd]}, ${d} de ${this.months[m]} de ${y} as ${hr}:${min} `;
         return fullDate;
       },
-      handleDownloads(response, xhr, type) {
+      handleDownloads(response, xhr) {
         const link = document.createElement('a');
         const contentType = xhr.getResponseHeader('content-type');
         const filename = xhr.getResponseHeader('filename');
-        if (type === 'zip') {
-          const blob = new Blob([response], { type: contentType }, filename);
-          link.href = window.URL.createObjectURL(blob);
-          link.download = filename;
-          link.click();
-        }
-        if (type === 'file') {
-          const blob = new Blob([response], { type: contentType }, filename);
-          link.href = window.URL.createObjectURL(blob);
-          link.download = filename;
-          link.click();
-        }
+
+        const blob = new Blob([response], { type: contentType }, filename);
+        link.href = window.URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
       },
       preventDefaults(event) {
         event.preventDefault();
@@ -467,6 +496,7 @@
     border: 2px dashed #ccc;
     border-radius: 20px;
     width: 480px;
+    height: 300px;
     font-family: sans-serif;
     margin: auto;
     padding: 20px;

@@ -2,7 +2,6 @@
   <v-flex sm8 md6>
     <v-card>
       <v-card-text>
-        <h5 class="headline text-xs-center">Adicionar disciplina</h5>
         <form v-on:submit="add($event)">
           <v-text-field
             label="Nome"

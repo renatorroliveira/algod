@@ -41,8 +41,6 @@ public class ApplicationSetup {
 
 	private static final String INSTITUTION_NAME = "Instituto Federal Catarinense - Campus Concórdia";
 	
-	public static final String UPLOAD_PATH = "./pdfs";
-	
 	protected ApplicationSetup() {
 	}
 
@@ -116,9 +114,12 @@ public class ApplicationSetup {
 		}
 		
 		List<String> names = new LinkedList<String>();
-		names.add("Programming");
-		names.add("Web development");
-		names.add("Software development for Mobile");
+		names.add("Programação");
+		names.add("Desenvolvimento Web");
+		names.add("DSDM");
+		names.add("IPC");
+		names.add("Banco de dados");
+		names.add("Química");
 			
 		for (int i = 0; i < names.size(); i++) {
 			Criteria crit = dao.newCriteria(DisciplineCategory.class)
