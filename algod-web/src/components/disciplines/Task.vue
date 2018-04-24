@@ -152,8 +152,9 @@
                     <v-flex xs6>
                       <span style="font-size: 18px;">Envio de arquivos:</span>
                     </v-flex>
-                      <span style="font-size: 18px;"><v-btn v-on:click="modalSend = true">Adicionar tarefa</v-btn></span>
                     <v-flex xs6>
+                      <span style="font-size: 18px;" v-if="!!subscription"><v-btn v-on:click="modalSend = true">Adicionar tarefa</v-btn></span>
+                      <span style="font-size: 18px;" v-else>Você precisa se inscrever na disciplina</span>
                     </v-flex>
                   </v-layout>
                 </v-card-text>
@@ -267,6 +268,9 @@
       });
       TopicStore.on('sends', (sends) => {
         this.sendList = sends;
+      }, this);
+      DisciplineStore.on('getDiscipline', (discipline) => {
+        this.discipline = discipline;
       }, this);
       TopicStore.dispatch({
         action: TopicStore.ACTION_GET_SEND,

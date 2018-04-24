@@ -8,11 +8,12 @@ const TopicModel = Fluxbone.Model.extend({
 });
 
 const TopicStore = Fluxbone.Store.extend({
-  ACTION_LIST_TOPICS: 'listTopics',
-  ACTION_LIST_TOPIC_ITEMS: 'listTopicItems',
-  ACTION_ADD_TOPIC: 'addTopic',
+  ACTION_ADD_TOPIC: 'createTopic',
   ACTION_DELETE_TOPIC: 'deleteTopic',
   ACTION_ADD_TOPIC_ITEM: 'addTopicItem',
+  ACTION_DELETE_TOPIC_ITEM: 'deleteTopicItem',
+  ACTION_LIST_TOPICS: 'listTopics',
+  ACTION_LIST_TOPIC_ITEMS: 'listTopicItems',
   ACTION_GET_TOPIC_ITEM: 'getTopicItemById',
   ACTION_UPLOAD: 'uploadSend',
   ACTION_UPLOAD_MULTIPLE: 'uploadSendMultipleFiles',
@@ -28,7 +29,7 @@ const TopicStore = Fluxbone.Store.extend({
   model: TopicModel,
   url: `${Config.baseUrl}/v1/topic`,
 
-  addTopic(params) {
+  createTopic(params) {
     const me = this;
     $.ajax({
       url: `${me.url}/create`,
@@ -54,7 +55,7 @@ const TopicStore = Fluxbone.Store.extend({
   deleteTopic(params) {
     const me = this;
     $.ajax({
-      url: `${me.url}/del/${params}`,
+      url: `${me.url}/${params}/del`,
       method: 'POST',
       dataType: 'json',
       success(data) {
@@ -77,6 +78,21 @@ const TopicStore = Fluxbone.Store.extend({
       }),
       success(data) {
         me.trigger('addTopicItem', data);
+      },
+      error(opts) {
+        me.trigger('fail', opts);
+      },
+    });
+  },
+
+  deleteTopicItem(id) {
+    const me = this;
+    $.ajax({
+      url: `${me.url}/${id}/item/del`,
+      method: 'GET',
+      dataType: 'json',
+      success(data) {
+        me.trigger('delTopicItem', data);
       },
       error(opts) {
         me.trigger('fail', opts);
@@ -129,25 +145,10 @@ const TopicStore = Fluxbone.Store.extend({
     });
   },
 
-  getSend(id) {
-    const me = this;
-    $.ajax({
-      url: `${me.url}/task/${id}/send/loggedUser`,
-      method: 'GET',
-      dataType: 'json',
-      success(response) {
-        me.trigger('getSend', response.data);
-      },
-      error(args) {
-        me.trigger('fail', args);
-      },
-    });
-  },
-
   uploadSend(params) {
     const me = this;
     const promisse = axios.post(
-      `${this.url}/task/${params.topicItem.id}/upload`,
+      `${this.url}/task/${params.topicItem.id}/send`,
       params.formData,
     );
     promisse.then((result) => {
@@ -181,17 +182,17 @@ const TopicStore = Fluxbone.Store.extend({
     });
   },
 
-  downloadAllSends(id) {
+  downloadUserFile(params) {
     const me = this;
     $.ajax({
-      url: `${me.url}/task/${id}/sends/downloads`,
+      url: `${me.url}/task/${params.topicItem.id}/download/user/${params.user.id}`,
       method: 'GET',
       xhrFields: {
-        responseType: 'arraybuffer',
+        responseType: 'blob',
       },
       success(response, status, xhr) {
         if (status === 'success') {
-          me.trigger('successDownloadZip', response, xhr);
+          me.trigger('successDownload', response, xhr);
         }
       },
       error(err) {
@@ -216,17 +217,17 @@ const TopicStore = Fluxbone.Store.extend({
     });
   },
 
-  downloadUserFile(params) {
+  downloadAllSends(id) {
     const me = this;
     $.ajax({
-      url: `${me.url}/task/${params.topicItem.id}/download/user/${params.user.id}`,
+      url: `${me.url}/task/${id}/sends/downloads`,
       method: 'GET',
       xhrFields: {
-        responseType: 'blob',
+        responseType: 'arraybuffer',
       },
       success(response, status, xhr) {
         if (status === 'success') {
-          me.trigger('successDownload', response, xhr);
+          me.trigger('successDownloadZip', response, xhr);
         }
       },
       error(err) {
@@ -236,14 +237,49 @@ const TopicStore = Fluxbone.Store.extend({
     });
   },
 
-  getAllEvaluations(id) {
+  getSend(id) {
     const me = this;
     $.ajax({
-      url: `${me.url}/task/${id}/evaluations`,
+      url: `${me.url}/task/${id}/send/loggedUser`,
       method: 'GET',
       dataType: 'json',
+      success(response) {
+        me.trigger('getSend', response.data);
+      },
+      error(args) {
+        me.trigger('fail', args);
+      },
+    });
+  },
+
+  getUnsend(id) {
+    const me = this;
+    $.ajax({
+      url: `${me.url}/task/${id}/unsend/loggedUser`,
+      method: 'GET',
+      dataType: 'json',
+      success(response) {
+        me.trigger('getUnsend', response.data);
+      },
+      error(args) {
+        me.trigger('fail', args);
+      },
+    });
+  },
+
+  sendEvaluation(params) {
+    const me = this;
+    $.ajax({
+      url: `${me.url}/task/${params.topicItem.id}/user/evaluation`,
+      method: 'POST',
+      dataType: 'json',
+      data: JSON.stringify({
+        avaliation: params.avaliation,
+        user: params.user,
+      }),
       success(data) {
-        me.trigger('evaluations', data.data);
+        console.log(data);
+        me.trigger('evaluated', data.data);
       },
       error(err) {
         console.error(err);
@@ -266,19 +302,14 @@ const TopicStore = Fluxbone.Store.extend({
     });
   },
 
-  sendEvaluation(params) {
+  getAllEvaluations(id) {
     const me = this;
     $.ajax({
-      url: `${me.url}/task/${params.topicItem.id}/user/evaluation`,
-      method: 'POST',
+      url: `${me.url}/task/${id}/evaluations`,
+      method: 'GET',
       dataType: 'json',
-      data: JSON.stringify({
-        avaliation: params.avaliation,
-        user: params.user,
-      }),
       success(data) {
-        console.log(data);
-        me.trigger('evaluated', data.data);
+        me.trigger('evaluations', data.data);
       },
       error(err) {
         console.error(err);

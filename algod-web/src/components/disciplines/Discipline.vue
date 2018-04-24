@@ -107,7 +107,7 @@
         </v-layout>
       </v-flex>
 
-      <v-flex xs9 v-else>
+      <v-flex xs9 v-else text-xs-center>
         <v-card style="min-height:200px;">
           <v-card-text>
             <h5>A disciplina não possui nenhum tópico criado</h5>
@@ -181,7 +181,6 @@
                 label="Prazo de entrega"
                 v-model="dateAvailableTo"
                 mask="##/##/####"
-                return-masked-value
                 persistent-hint
               ></v-text-field>
               <v-text-field
@@ -189,7 +188,6 @@
                 label="Hora"
                 v-model="timeAvailableTo"
                 mask="##:##"
-                return-masked-value
                 persistent-hint
               ></v-text-field>
               <v-text-field
@@ -197,7 +195,6 @@
                 v-model="dateVisibleTo"
                 type="text"
                 mask="##/##/####"
-                return-masked-value
                 persistent-hint
               ></v-text-field>
               <v-text-field
@@ -206,7 +203,6 @@
                 type="text"
                 persistent-hint
                 mask="##:##"
-                return-masked-value
               ></v-text-field>
               <div class="input-field">
                 <v-btn type="submit" color="secondary">Criar novo item</v-btn>

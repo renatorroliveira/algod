@@ -170,6 +170,9 @@
       TopicStore.on('sends', (sends) => {
         this.sendList = sends;
       }, this);
+      DisciplineStore.on('getDiscipline', (discipline) => {
+        this.discipline = discipline;
+      }, this);
       TopicStore.on('evaluations', (avaliationList) => {
         this.avaliations = avaliationList;
       }, this);

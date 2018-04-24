@@ -6,9 +6,7 @@ import javax.inject.Inject;
 
 import com.developerkingdom.algod.entities.company.Institution;
 import com.developerkingdom.algod.entities.user.User;
-import com.developerkingdom.algod.entities.user.authz.AccessLevels;
 import com.developerkingdom.algod.entities.user.authz.Permissioned;
-import com.developerkingdom.algod.entities.user.authz.permission.ManageUsersPermission;
 import com.developerkingdom.algod.system.UserControlAbstractController;
 
 import br.com.caelum.vraptor.Consumes;
@@ -27,7 +25,7 @@ public class DisciplineController extends UserControlAbstractController {
 	@Post("/create")
 	@Consumes
 	@NoCache
-	@Permissioned(value = AccessLevels.MANAGER, permissions = { ManageUsersPermission.class })
+	@Permissioned
 	public void create(Discipline discipline, DisciplineCategory category, Institution institution) {
 		try {
 			if (discipline != null) {
@@ -142,6 +140,7 @@ public class DisciplineController extends UserControlAbstractController {
 	@Post("/unsubscribe")
 	@NoCache
 	@Consumes
+	@Permissioned
 	public void unsubscribe(Discipline discipline) {
 		try {
 			if (discipline != null) {
@@ -175,6 +174,7 @@ public class DisciplineController extends UserControlAbstractController {
 	}
 
 	@Get("/search/{terms}")
+	@Permissioned
 	public void search(String terms) {
 		try {
 			if (terms != null) {

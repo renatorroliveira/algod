@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileUploadException;
@@ -56,8 +55,7 @@ public class TopicsController extends UserControlAbstractController {
 		}
 	}
 	
-	@Post("/del/{id}")
-	@Consumes
+	@Post("/{id}/del")
 	@NoCache
 	public void delete(Long id) {
 		try {
@@ -93,11 +91,16 @@ public class TopicsController extends UserControlAbstractController {
 	}
 	
 	@Post("/{id}/item/del")
-	@Consumes
 	@NoCache
 	public void deleteTopicItem(long id) {
 		try {
-			// TODO: Delete topic Item
+			TopicItem topicItem = this.bs.exists(id, TopicItem.class);
+			if (topicItem == null)
+				this.result.notFound();
+			else {
+				topicItem = this.bs.deleteTopicItem(topicItem);
+				this.success(topicItem);
+			}
 		} catch (Throwable e) {
 			this.fail(e.getMessage());
 		}
@@ -139,7 +142,6 @@ public class TopicsController extends UserControlAbstractController {
 
 	@Get("/item/{id}")
 	@NoCache
-	@Consumes
 	public void getTopicById(long id) {
 		try {
 			TopicItem topicItem = this.bs.exists(id, TopicItem.class);
@@ -152,7 +154,7 @@ public class TopicsController extends UserControlAbstractController {
 		}
 	}
 
-	@Post("/task/{id}/upload")
+	@Post("/task/{id}/send")
 	@UploadSizeLimit(sizeLimit=60 * 1024 * 1024, fileSizeLimit=60 * 1024 * 1024)
 	public void uploadFile(long id, UploadedFile file, String description) throws FileUploadException {
 		TopicItem topicItem = this.bs.exists(id, TopicItem.class);
@@ -169,19 +171,6 @@ public class TopicsController extends UserControlAbstractController {
 				this.fail(e.getMessage());
 				LOGGER.errorf(e, "Erro: %s", e.getMessage());
 			} 
-		}
-	}
-	
-	@Post("/task/{id}/upload/multiple")
-	@UploadSizeLimit(sizeLimit=60 * 1024 * 1024, fileSizeLimit=60 * 1024 * 1024)
-	public void uploadMultipleFiles(long id, UploadedFile[] files) throws FileUploadException {
-		TopicItem topicItem = this.bs.exists(id, TopicItem.class);
-		if (topicItem == null)
-			this.result.notFound();
-		else {
-			for (UploadedFile file : files) {
-				LOGGER.info(file.getFileName());
-			}
 		}
 	}
 	
@@ -263,7 +252,7 @@ public class TopicsController extends UserControlAbstractController {
 	}
 	
 	@Post("/task/{id}/unsend/loggedUser")
-	public void unsend(@Named long id) throws IOException {
+	public void unsend(long id) throws IOException {
 		TopicItem topicItem = this.bs.exists(id, TopicItem.class);
 		if (topicItem == null)
 			this.result.notFound();
@@ -272,6 +261,7 @@ public class TopicsController extends UserControlAbstractController {
 	}
 
 	@Consumes
+	@NoCache
 	@Post("/task/{id}/user/evaluation")
 	public void doAvaliation(long id, Evaluation avaliation, User user) {
 		LOGGER.info("Avaliation LOG:  " + avaliation.getComment());

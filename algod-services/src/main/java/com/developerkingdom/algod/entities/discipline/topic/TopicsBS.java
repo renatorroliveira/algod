@@ -61,8 +61,9 @@ public class TopicsBS extends HibernateBusiness {
 	}
 	
 	public TopicItem deleteTopicItem(TopicItem topicItem) {
-		// TODO: Delete topic item
-		return null;
+		topicItem.setDeleted(true);
+		this.dao.persist(topicItem);
+		return topicItem;
 	}
 	
 	public List<Topic> listTopics(Discipline discipline) {
@@ -118,7 +119,8 @@ public class TopicsBS extends HibernateBusiness {
 	public List<Send> listAllSends(TopicItem topicItem) {
 		Criteria criteria = this.dao.newCriteria(Send.class)
 				.add(Restrictions.eq("deleted", false))
-				.add(Restrictions.eq("topicItem", topicItem));
+				.add(Restrictions.eq("topicItem", topicItem))
+				.addOrder(Order.asc("topicItem.id"));
 		return this.dao.findByCriteria(criteria, Send.class);
 	}
 	
