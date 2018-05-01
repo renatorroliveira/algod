@@ -79,16 +79,23 @@
               <v-card-text v-if="topicItems.length > 0">
                 <v-layout row wrap v-for="item in topicItems" :key="item.id" v-if="topic.id === item.topic.id">
                   <v-flex xs12 class="text-sm-left">
-                    <div v-if="item.type === 'Link'">
-                       <a target="_blank" id="externalUrl" :href="item.content"><v-icon>public</v-icon>{{item.label}}</a>
-                    </div>
-                    <div v-else-if="item.type === 'Task'">
+                    <v-flex v-if="item.type === 'Link'">
                       <v-layout row wrap>
                         <v-flex xs10 class="text-xs-left">
-                          <v-spacer class="mb-2"></v-spacer>
-                          <router-link id="internalUrl" :to="`/discipline/${discipline.id}/task/${item.id}`"><v-icon>class</v-icon> {{item.label}}</router-link>
+                          <a target="_blank" id="externalUrl" :href="item.content"><v-icon>public</v-icon> {{item.label}}</a>
+                           <v-btn v-if="disciplineRole >= 30" flat icon small :title="`Editar ${item.label}`" v-on:click="editTopicItem = true; selectedTopicItem = item">
+                              <v-icon>edit</v-icon>
+                            </v-btn>
+                            <v-btn v-if="disciplineRole >= 30" flat small icon :title="`Remover ${item.label}`" v-on:click="remTopicItem = true; topicItemId = item.id; topicItemToRemove = item.title">
+                              <v-icon>delete</v-icon>
+                            </v-btn>
                         </v-flex>
-                        <v-flex xs2 class="text-xs-right">
+                      </v-layout>
+                    </v-flex>
+                    <v-flex v-else-if="item.type === 'Task'">
+                      <v-layout row wrap>
+                        <v-flex xs10 class="text-xs-left">
+                          <router-link id="internalUrl" :to="`/discipline/${discipline.id}/task/${item.id}`"><v-icon>class</v-icon> {{item.label}}</router-link>
                           <v-btn v-if="disciplineRole >= 30" flat icon :title="`Editar ${item.label}`" v-on:click="editTopicItem = true; selectedTopicItem = item">
                             <v-icon>edit</v-icon>
                           </v-btn>
@@ -97,7 +104,7 @@
                           </v-btn>
                         </v-flex>
                       </v-layout>
-                    </div>
+                    </v-flex>
                   </v-flex>
                 </v-layout>
               </v-card-text>
@@ -154,56 +161,82 @@
                 single-line
                 v-else
               ></v-select>
-              <v-menu
-                ref="menu"
-                lazy
-                :close-on-content-click="true"
-                v-model="menu"
-                transition="scale-transition"
-                offset-y
-                full-width
-                :nudge-right="40"
-                min-width="290px"
-                :return-value.sync="date"
-              >
-                <v-text-field
-                  slot="activator"
-                  label="Prazo de entrega"
-
-                  prepend-icon="event"
-                  readonly
-                ></v-text-field>
-                <datepicker :inline="true" v-model="dateAvailableTo" language="pt-br" format="dd MMM yyyy"></datepicker>
-                <v-btn flat icon v-on:click="menu = false"><v-icon>save</v-icon></v-btn>
-              </v-menu>
-              <v-text-field
-                type="text"
-                label="Prazo de entrega"
-                v-model="dateAvailableTo"
-                mask="##/##/####"
-                persistent-hint
-              ></v-text-field>
-              <v-text-field
-                type="text"
-                label="Hora"
-                v-model="timeAvailableTo"
-                mask="##:##"
-                persistent-hint
-              ></v-text-field>
-              <v-text-field
-                label="Visível até"
-                v-model="dateVisibleTo"
-                type="text"
-                mask="##/##/####"
-                persistent-hint
-              ></v-text-field>
-              <v-text-field
-                label="Hora"
-                v-model="timeVisibleTo"
-                type="text"
-                persistent-hint
-                mask="##:##"
-              ></v-text-field>
+              <v-layout row wrap>
+                <v-flex xs6>
+                  <v-dialog
+                    v-model="modal"
+                    scrollable
+                    max-width="290px"
+                  >
+                    <v-text-field
+                      slot="activator"
+                      label="Data de entrega"
+                      v-model="dateAvailableTo"
+                      prepend-icon="event"
+                      readonly
+                    ></v-text-field>
+                    <v-date-picker locale="pt-br" :first-day-of-week="0" v-model="dateAvailableTo">
+                    </v-date-picker>
+                  </v-dialog>
+                </v-flex>
+                <v-flex xs6>
+                  <v-dialog
+                    v-model="modal2"
+                    scrollable
+                    max-width="290px"
+                  >
+                    <v-text-field
+                      slot="activator"
+                      label="Hora de entrega"
+                      v-model="hourAvailableTo"
+                      prepend-icon="access_time"
+                      readonly
+                    ></v-text-field>
+                    <v-time-picker v-model="hourAvailableTo" format="24hr"></v-time-picker>
+                    </v-date-picker>
+                  </v-dialog>
+                </v-flex>
+              </v-layout>
+              <v-layout row wrap>
+                <v-flex xs6>
+                  <v-dialog
+                    v-model="modal3"
+                    scrollable
+                    max-width="290px"
+                  >
+                    <v-text-field
+                      slot="activator"
+                      label="Visível até"
+                      v-model="dateVisibleTo"
+                      prepend-icon="event"
+                      persistent-hint
+                      hint="Em branco para ilimitado"
+                      readonly
+                    ></v-text-field>
+                    <v-date-picker locale="pt-br" :first-day-of-week="0" v-model="dateVisibleTo">
+                    </v-date-picker>
+                  </v-dialog>
+                </v-flex>
+                <v-flex xs6>
+                  <v-dialog
+                    v-model="modal4"
+                    scrollable
+                    max-width="290px"
+                  >
+                    <v-text-field
+                      slot="activator"
+                      label="Visível até"
+                      v-model="hourVisibleTo"
+                      prepend-icon="access_time"
+                      hint="Em branco para ilimitado"
+                      persistent-hint
+                      readonly
+                    ></v-text-field>
+                    <v-time-picker v-model="hourVisibleTo" format="24hr"></v-time-picker>
+                    </v-date-picker>
+                  </v-dialog>
+                </v-flex>
+              </v-layout>
               <div class="input-field">
                 <v-btn type="submit" color="secondary">Criar novo item</v-btn>
               </div>
@@ -302,7 +335,6 @@
   import DisciplineStore from '@/store/Discipline';
   import TopicStore from '@/store/Topic';
   import Toastr from 'toastr';
-  import Datepicker from 'vuejs-datepicker';
 
   export default {
     data() {
@@ -311,26 +343,19 @@
         topicItems: [],
         subscription: null,
         discipline: null,
-        e1: null,
         remTopicItem: false,
         topicItemToRemove: '',
         editTopicItem: false,
-        hourAvailableTo: null,
         selectedTopicItem: [],
-        time: null,
-        menu2: false,
-        timeVisibleTo: '',
-        timeAvailableTo: '',
-        modal2: false,
         accessKey: '',
         modalSubscribe: false,
         exists: false,
-        modalHour: false,
         topics: [],
         newTopic: false,
-        date: null,
-        menu: false,
         modal: false,
+        modal2: false,
+        modal3: false,
+        modal4: false,
         newTopicItem: false,
         editUser: false,
         newTopicTitle: '',
@@ -354,8 +379,10 @@
         description: '',
         content: '',
         dateAvailableTo: null,
+        hourAvailableTo: null,
+        dateVisibleTo: null,
+        hourVisibleTo: null,
         update: '',
-        dateVisibleTo: '',
         topicId: null,
         disciplineRole: 0,
         topicToRemove: '',
@@ -518,8 +545,17 @@
         event.preventDefault();
         if (this.topicId !== null && this.label !== ''
           && this.description !== ''
-          && (this.content !== '' || !!this.contentType) && this.dateVisibleTo !== ''
-          && this.dateAvailableTo !== '') {
+          && (this.content !== '' || !!this.contentType)) {
+          let dateAvailableTo = this.dateAvailableTo.split('-');
+          const hourAvailableTo = this.hourAvailableTo.split(':');
+          dateAvailableTo = new Date(dateAvailableTo[0], dateAvailableTo[1] - 1,
+            dateAvailableTo[2], hourAvailableTo[0], hourAvailableTo[1]);
+          if (this.dateVisibleTo !== null && this.hourVisibleTo !== null) {
+            const dateVisibleTo = this.dateVisibleTo.split('-');
+            const hourVisibleTo = this.hourvisibleTo.split(':');
+            this.dateVisibleTo = new Date(dateVisibleTo[0], dateVisibleTo[1] - 1,
+              dateVisibleTo[2], hourVisibleTo[0], hourVisibleTo[1]);
+          }
           TopicStore.dispatch({
             action: TopicStore.ACTION_ADD_TOPIC_ITEM,
             data: {
@@ -530,7 +566,7 @@
                 description: this.description,
                 content: this.content,
                 dateVisibleTo: this.dateVisibleTo,
-                dateAvailableTo: this.dateAvailableTo,
+                dateAvailableTo,
                 contentType: this.contentType.id,
               },
             },
@@ -552,9 +588,6 @@
           data: this.$router.currentRoute.params.id,
         });
       },
-    },
-    components: {
-      Datepicker,
     },
   };
 </script>

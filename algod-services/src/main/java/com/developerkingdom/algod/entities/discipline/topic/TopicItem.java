@@ -34,7 +34,7 @@ public class TopicItem extends SimpleLogicalDeletableEntity {
 	private Date dateVisibleFrom = new Date();
 	
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(nullable=false)
+	@Column(nullable=true)
 	private Date dateVisibleTo;
 	
 	@Temporal(TemporalType.TIMESTAMP)

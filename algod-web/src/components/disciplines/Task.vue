@@ -173,7 +173,23 @@
                 <v-btn color="red lighten-3" v-on:click="modalSend = false">Fechar</v-btn>
               </div>
             </v-card-text>
-            <v-card-text v-else>
+            <v-card-text v-else-if="topicItem.contentType === 2">
+            <form v-on:submit="">
+              <v-flex xs6 offset-xs3>
+                <v-text-field
+                  label="Conteúdo"
+                  v-model="sendDesc"
+                  multi-line
+                  required
+                ></v-text-field>
+              </v-flex>
+              <div class="text-xs-right">
+                <v-btn color="red lighten-3" v-on:click="modalSend = false">Cancelar</v-btn>
+                <v-btn type="submit" color="green lighten-3">Entregar</v-btn>
+              </div>
+            </form>
+            </v-card-text>
+            <v-card-text v-else-if="topicItem.contentType === 1">
               <form class="my-form" v-on:submit="handleUpload($event)" enctype="multipart/form-data">
 
                 <div id="drop-area"
@@ -406,6 +422,9 @@
           remainingTime = `${ttlDays} dias, ${ttlHours}h${ttlMin}m e ${ttlSec}s`;
           if (ttlDays <= 0) {
             remainingTime = `${ttlHours}h${ttlMin}m e ${ttlSec}s`;
+          }
+          if (ttlHours === 0) {
+            remainingTime = `${ttlDays} dias, ${ttlMin}m e ${ttlSec}s`;
           }
           if (ttlDays === 1) {
             remainingTime = `${ttlDays} dia, ${ttlHours}h${ttlMin}m e ${ttlSec}s`;

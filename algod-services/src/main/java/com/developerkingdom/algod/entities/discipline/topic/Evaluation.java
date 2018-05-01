@@ -13,7 +13,7 @@ import br.com.caelum.vraptor.boilerplate.SimpleLogicalDeletableEntity;
 @Entity(name = Evaluation.TABLE)
 @Table(name = Evaluation.TABLE)
 public class Evaluation extends SimpleLogicalDeletableEntity {
-	public final static String TABLE = "algod_discipline_task_sends_avaliation";
+	public final static String TABLE = "algod_discipline_task_sends_evaluation";
 	private static final long serialVersionUID = 1L;
 
 	@ManyToOne(fetch=FetchType.EAGER)
