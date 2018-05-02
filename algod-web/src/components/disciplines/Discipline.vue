@@ -67,10 +67,10 @@
                     <h5 class="text-sm-left">{{topic.title}}</h5>
                   </v-flex>
                   <v-flex xs2 class="text-xs-right">
-                    <v-btn v-if="disciplineRole >= 30" flat icon title="Adicionar item" v-on:click="newTopicItem = !newTopicItem; topicId = topic.id">
+                    <v-btn v-if="disciplineRole >= 30" flat icon small title="Adicionar item" v-on:click="newTopicItem = !newTopicItem; topicId = topic.id">
                       <v-icon>add</v-icon>
                     </v-btn>
-                    <v-btn v-if="disciplineRole >= 30" flat icon :title="`Remover ${topic.title}`" v-on:click="remTopic = !remTopic; topicId = topic.id; topicToRemove = topic.title">
+                    <v-btn v-if="disciplineRole >= 30" flat icon small :title="`Remover ${topic.title}`" v-on:click="remTopic = !remTopic; topicId = topic.id; topicToRemove = topic.title">
                       <v-icon>delete</v-icon>
                     </v-btn>
                   </v-flex>
@@ -78,33 +78,35 @@
               </v-card-text>
               <v-card-text v-if="topicItems.length > 0">
                 <v-layout row wrap v-for="item in topicItems" :key="item.id" v-if="topic.id === item.topic.id">
-                  <v-flex xs12 class="text-sm-left">
-                    <v-flex v-if="item.type === 'Link'">
-                      <v-layout row wrap>
-                        <v-flex xs10 class="text-xs-left">
-                          <a target="_blank" id="externalUrl" :href="item.content"><v-icon>public</v-icon> {{item.label}}</a>
-                           <v-btn v-if="disciplineRole >= 30" flat icon small :title="`Editar ${item.label}`" v-on:click="editTopicItem = true; selectedTopicItem = item">
-                              <v-icon>edit</v-icon>
-                            </v-btn>
-                            <v-btn v-if="disciplineRole >= 30" flat small icon :title="`Remover ${item.label}`" v-on:click="remTopicItem = true; topicItemId = item.id; topicItemToRemove = item.title">
-                              <v-icon>delete</v-icon>
-                            </v-btn>
-                        </v-flex>
-                      </v-layout>
-                    </v-flex>
-                    <v-flex v-else-if="item.type === 'Task'">
-                      <v-layout row wrap>
-                        <v-flex xs10 class="text-xs-left">
-                          <router-link id="internalUrl" :to="`/discipline/${discipline.id}/task/${item.id}`"><v-icon>class</v-icon> {{item.label}}</router-link>
-                          <v-btn v-if="disciplineRole >= 30" flat icon :title="`Editar ${item.label}`" v-on:click="editTopicItem = true; selectedTopicItem = item">
-                            <v-icon>edit</v-icon>
-                          </v-btn>
-                          <v-btn v-if="disciplineRole >= 30" flat icon :title="`Remover ${item.label}`" v-on:click="remTopicItem = true; topicItemId = item.id; topicItemToRemove = item.title">
-                            <v-icon>delete</v-icon>
-                          </v-btn>
-                        </v-flex>
-                      </v-layout>
-                    </v-flex>
+                  <v-flex v-if="(item.type === 'Link') && ((new Date(item.dateVisibleTo).getTime() - new Date().getTime() >= 0) || (disciplineRole >= 30))">
+                    <v-layout row wrap>
+                      <v-flex xs10 class="text-xs-left">
+                        <a target="_blank" id="externalUrl" :href="item.content"><v-icon>public</v-icon> {{item.label}}</a>
+                      </v-flex>
+                      <v-flex xs2 text-xs-right>
+                        <v-btn v-if="disciplineRole >= 30" flat icon small :title="`Editar ${item.label}`" v-on:click="editTopicItem = true; selectedTopicItem = item">
+                           <v-icon>edit</v-icon>
+                         </v-btn>
+                         <v-btn v-if="disciplineRole >= 30" flat small icon :title="`Remover ${item.label}`" v-on:click="remTopicItem = true; topicItemId = item.id; topicItemToRemove = item.title">
+                           <v-icon>delete</v-icon>
+                         </v-btn>
+                      </v-flex>
+                    </v-layout>
+                  </v-flex>
+                  <v-flex v-else-if="(item.type === 'Task') && ((new Date(item.dateVisibleTo).getTime() - new Date().getTime() >= 0) || (disciplineRole >= 30))">
+                    <v-layout row wrap>
+                      <v-flex xs10 class="text-xs-left">
+                        <router-link id="internalUrl" :to="`/discipline/${discipline.id}/task/${item.id}`"><v-icon>class</v-icon> {{item.label}}</router-link>
+                      </v-flex>
+                      <v-flex xs2 text-xs-right>
+                        <v-btn v-if="disciplineRole >= 30" flat icon small :title="`Editar ${item.label}`" v-on:click="editTopicItem = true; selectedTopicItem = item">
+                          <v-icon>edit</v-icon>
+                        </v-btn>
+                        <v-btn v-if="disciplineRole >= 30" flat icon small :title="`Remover ${item.label}`" v-on:click="remTopicItem = true; topicItemId = item.id; topicItemToRemove = item.title">
+                          <v-icon>delete</v-icon>
+                        </v-btn>
+                      </v-flex>
+                    </v-layout>
                   </v-flex>
                 </v-layout>
               </v-card-text>
@@ -418,8 +420,8 @@
         this.label = '';
         this.content = '';
         this.selecTypes = null;
-        this.dateVisibleTo = '';
-        this.dateAvailableTo = '';
+        this.dateVisibleTo = null;
+        this.dateAvailableTo = null;
         this.description = '';
         this.getTopics();
         this.update = ' ';
@@ -476,7 +478,6 @@
             this.disciplineRole = this.subscription.role;
           }
         }
-
         this.getTopics();
       }, this);
 
@@ -545,17 +546,19 @@
         event.preventDefault();
         if (this.topicId !== null && this.label !== ''
           && this.description !== ''
-          && (this.content !== '' || !!this.contentType)) {
-          let dateAvailableTo = this.dateAvailableTo.split('-');
-          const hourAvailableTo = this.hourAvailableTo.split(':');
-          dateAvailableTo = new Date(dateAvailableTo[0], dateAvailableTo[1] - 1,
-            dateAvailableTo[2], hourAvailableTo[0], hourAvailableTo[1]);
-          if (this.dateVisibleTo !== null && this.hourVisibleTo !== null) {
-            const dateVisibleTo = this.dateVisibleTo.split('-');
-            const hourVisibleTo = this.hourvisibleTo.split(':');
-            this.dateVisibleTo = new Date(dateVisibleTo[0], dateVisibleTo[1] - 1,
-              dateVisibleTo[2], hourVisibleTo[0], hourVisibleTo[1]);
-          }
+          && (this.content !== '' || !!this.contentType)
+          && this.dateVisibleTo !== null && this.hourVisibleTo !== null
+          && this.dateAvailableTo !== null && this.hourAvailableTo !== null) {
+          const dateAvail = this.dateAvailableTo.split('-');
+          const dateVisib = this.dateVisibleTo.split('-');
+          const hourAvailal = this.hourAvailableTo.split(':');
+          const hourVisib = this.hourVisibleTo.split(':');
+
+          const dateVisibleTo = new Date(dateVisib[0], dateVisib[1] - 1,
+            dateVisib[2], hourVisib[0], hourVisib[1]);
+          const dateAvailableTo = new Date(dateAvail[0], dateAvail[1] - 1,
+            dateAvail[2], hourAvailal[0], hourAvailal[1]);
+
           TopicStore.dispatch({
             action: TopicStore.ACTION_ADD_TOPIC_ITEM,
             data: {
@@ -565,7 +568,7 @@
                 type: this.selecTypes,
                 description: this.description,
                 content: this.content,
-                dateVisibleTo: this.dateVisibleTo,
+                dateVisibleTo,
                 dateAvailableTo,
                 contentType: this.contentType.id,
               },

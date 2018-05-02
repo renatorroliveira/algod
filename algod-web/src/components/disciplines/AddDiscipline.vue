@@ -10,12 +10,12 @@
             autofocus
           ></v-text-field>
           <v-text-field
-            label="Short name"
+            label="Nome curto"
             v-model="shortName"
             persistent-hint
           ></v-text-field>
           <v-text-field
-            label="Acess Key"
+            label="Senha de acesso"
             v-model="accessKey"
             persistent-hint
           ></v-text-field>
@@ -29,7 +29,7 @@
           <v-select
             v-bind:items="institutions"
             v-model="e2"
-            label="Institution"
+            label="Instituição"
             single-line
             bottom
           ></v-select>

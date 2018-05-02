@@ -22,9 +22,10 @@
             persistent-hint
           ></v-text-field>
           <v-text-field
-            id="phone"
             label="Telefone"
             v-model="phone"
+            mask="(##) # ####-####"
+            return-masked-value
             persistent-hint
           ></v-text-field>
           <v-text-field

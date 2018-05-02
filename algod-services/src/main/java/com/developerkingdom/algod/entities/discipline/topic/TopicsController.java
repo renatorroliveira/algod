@@ -264,8 +264,6 @@ public class TopicsController extends UserControlAbstractController {
 	@NoCache
 	@Post("/task/{id}/user/evaluation")
 	public void doAvaliation(long id, Evaluation avaliation, User user) {
-		LOGGER.info("Avaliation LOG:  " + avaliation.getComment());
-		LOGGER.info("USer LOG: " + user.getName());
 		TopicItem topicItem = this.bs.exists(id, TopicItem.class);
 		if (topicItem == null)
 			this.result.notFound();
